@@ -1,0 +1,8 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Apply the Prompt font globally */
+body {
+    font-family: 'Prompt', sans-serif;
+}
