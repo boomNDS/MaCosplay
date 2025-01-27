@@ -1,17 +1,19 @@
 <script>
 	import { goto } from '$app/navigation'; // Updated import path
 	let username = ''; // Variable to hold the username
+	let shopName = ''; // Variable to hold the shopName
+	let shopDetails = ''; // Variable to hold the shopDetails
 	let version = ''; // Variable to hold the version
 	let errorMessage = ''; // Variable to hold the error message
 	let showAlert = false; // Variable to control alert visibility
 
 	async function createInstance() {
-		const response = await fetch('../api/create-instance', {
+		const response = await fetch('../api/create-shop', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ username, version })
+			body: JSON.stringify({ shopName, shopDetails })
 		});
 
 		if (response.ok) {
@@ -33,18 +35,46 @@
 		<div class="login-card rounded-lg p-8 shadow-lg">
 			<div class="container mx-auto p-6">
 				<article class="prose">
-					<h1>สร้าง PocketBase Instance</h1>
-					<p>กรอกข้อมูลด้านล่างเพื่อสร้าง PocketBase instance ใหม่</p>
+					<h1>เปิดร้านค้า</h1>
 				</article>
+				<div class="mb-4">
+					<label for="username" class="mb-2 block text-sm font-bold">ชื่อร้านค้า</label>
+					<input
+						type="text"
+						id="shopName"
+						bind:value={shopName}
+						class="input input-bordered w-full"
+						required
+						on:input={event => {
+							// Remove any character that is not a letter or number
+							shopName = event.target.value.replace(/[^a-zA-Z0-9]/g, '');
+						}}
+					/>
+				</div>
+				<div class="mb-4">
+					<label for="username" class="mb-2 block text-sm font-bold">รายละเอียดร้านค้า</label>
+					<input
+						type="text"
+						id="shopDetails"
+						bind:value={shopDetails}
+						class="input input-bordered w-full"
+						required
+						on:input={event => {
+							// Remove any character that is not a letter or number
+							shopDetails = event.target.value.replace(/[^a-zA-Z0-9]/g, '');
+						}}
+					/>
+				</div>
+
 
 				<form class="mt-6" on:submit|preventDefault={createInstance}>
 					<div class="mb-4">
-						<label for="region" class="mb-2 block text-sm font-bold">Region</label>
+						<label for="region" class="mb-2 block text-sm font-bold">จังหวัด</label>
 						<select id="region" class="select select-bordered w-full" required>
-							<option value="us-east">Thailand</option>
+							<option value="us-east">กรุงเทพมหานคร</option>
 						</select>
 					</div>
-					<div class="mb-4">
+					<!-- <div class="mb-4">
 						<label for="version" class="mb-2 block text-sm font-bold">Select Version</label>
 						<select id="version" class="select select-bordered w-full" bind:value={version} required>
 						  <option value="0.24.3">0.24.3</option>
@@ -68,24 +98,11 @@
 						  <option value="0.22.29">0.22.29</option>
 						  <option value="0.22.28">0.22.28</option>
 						  <option value="0.22.27">0.22.27</option>
-						  <!-- Add more versions as needed -->
+						
 						</select>
-					  </div>
-					<div class="mb-4">
-						<label for="username" class="mb-2 block text-sm font-bold">ชื่อ Instance</label>
-						<input
-							type="text"
-							id="username"
-							bind:value={username}
-							class="input input-bordered w-full"
-							required
-							on:input={event => {
-								// Remove any character that is not a letter or number
-								username = event.target.value.replace(/[^a-zA-Z0-9]/g, '');
-							}}
-						/>
-					</div>
-					<button type="submit" class="btn btn-primary">สร้าง Instance</button>
+					  </div> -->
+					
+					<button type="submit" class="btn btn-primary">เปิดร้านค้า</button>
 					<div class="mb-4">
                     {#if showAlert}
 						<div role="alert" class="alert alert-error">

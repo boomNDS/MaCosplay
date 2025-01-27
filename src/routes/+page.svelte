@@ -10,10 +10,13 @@
 				MaCosplay คือแพลตฟอร์มที่สร้างขึ้นเพื่อเชื่อมโยงนักคอสเพลย์ที่ต้องการเช่าชุดกับเจ้าของชุดคอสเพลย์ทั่วประเทศ ด้วยฟีเจอร์ที่ใช้งานง่ายและปลอดภัย คุณสามารถลงประกาศให้เช่าชุดของคุณ หรือค้นหาชุดที่ตรงใจสำหรับงานอีเวนต์หรือการถ่ายรูปได้อย่างสะดวกสบาย
 			  </p>
 			<div class="flex flex-col sm:flex-row sm:space-x-2 mt-4">
-				<a href="/Host">
+				<a href="/dashboard">
 					<button class="btn btn-neutral btn-active w-full sm:w-auto">เปิดร้านค้า</button>
 				</a>
-				<button class="btn btn-outline w-full sm:w-auto mt-2 sm:mt-0">หาร้านค้า</button>
+				<a href="/shop">
+					<button class="btn btn-outline w-full sm:w-auto mt-2 sm:mt-0">หาชุดคอสเพลย์</button>
+				</a>
+				
 			</div>
 		</article>
 		<div class="p-6 sm:p-6 w-full mt-12">
@@ -179,23 +182,15 @@
 		</aside>
 		<nav>
 		  <h6 class="footer-title">Services</h6>
-		  <a class="link link-hover">Branding</a>
-		  <a class="link link-hover">Design</a>
-		  <a class="link link-hover">Marketing</a>
-		  <a class="link link-hover">Advertisement</a>
+	
 		</nav>
 		<nav>
 		  <h6 class="footer-title">Company</h6>
-		  <a class="link link-hover">About us</a>
-		  <a class="link link-hover">Contact</a>
-		  <a class="link link-hover">Jobs</a>
-		  <a class="link link-hover">Press kit</a>
+	
 		</nav>
 		<nav>
 		  <h6 class="footer-title">Legal</h6>
-		  <a class="link link-hover">Terms of use</a>
-		  <a class="link link-hover">Privacy policy</a>
-		  <a class="link link-hover">Cookie policy</a>
+		
 		</nav>
 	  </footer>
 	
