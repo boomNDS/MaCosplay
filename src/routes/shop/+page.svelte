@@ -1,11 +1,16 @@
 <script lang="ts">
     export let data: { itemList: any[] }; // Define data type
     let selectedProvince = ''; // State to hold the selected province
+    let selectedSize = ''; // State to hold the selected size
 
-    // Function to filter items based on the selected province
+
+    // Function to filter items based on the selected province and size
     const filteredItems = () => {
-        if (!selectedProvince) return data.itemList; // Return all items if no province is selected
-        return data.itemList.filter(item => item.Province === selectedProvince); // Adjust the property name as needed
+        return data.itemList.filter(item => {
+            const matchesProvince = !selectedProvince || item.Province === selectedProvince;
+            const matchesSize = !selectedSize || item.Size === selectedSize;
+            return matchesProvince && matchesSize; // Return items that match both filters
+        });
     };
 
     console.log(data?.itemList);
@@ -48,6 +53,19 @@
                 <!-- เพิ่มจังหวัดเพิ่มเติมตามต้องการ -->
             </select>
         </label>
+
+        <!-- ตัวกรองขนาดใหม่ -->
+        <label class="input input-bordered flex items-center gap-2">
+            <select class="grow" bind:value={selectedSize}>
+                <option value="">เลือกขนาด</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+                <!-- เพิ่มขนาดเพิ่มเติมตามต้องการ -->
+            </select>
+        </label>
     </div>
     
 </section>
@@ -59,27 +77,43 @@
         <section class="mb-6">
             <h2 class="mb-2 text-2xl font-semibold">ตามหาชุดเช่าได้ที่นี่เลย</h2>
         </section>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-h-[48rem] overflow-y-auto"> <!-- Limit to 4 rows -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[48rem] overflow-y-auto"> <!-- Limit to 4 rows -->
             {#if filteredItems().length > 0}
-                {#each filteredItems() as shop}
+                {#each filteredItems() as item}
                     <div class="card bg-base-100 shadow-xl">
                         <figure>
                             <img 
-                                src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${shop.id}/${shop.Image}`} 
-                                alt="{shop.Name} Thumbnail" 
+                                src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`} 
+                                alt="{item.Name} Thumbnail" 
                                 class="w-full h-auto max-h-48 object-cover" 
                             />
                         </figure>
                         <div class="card-body">
-                            <div class="avatar mb-2">
-                                <div class="w-8 h-8 rounded-full overflow-hidden"> <!-- Adjusted size for smaller avatar -->
-                                    <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" alt="Avatar" class="w-full h-full object-cover" />
+                            <div class="flex justify-between items-center">
+                                <div class="avatar mb-2">
+                                    <div class="w-8 h-8 rounded-full overflow-hidden">
+                                        {#if item.user && item.expand?.user?.avatar}
+                                            <img src={`https://macosplay.saas.in.th/api/files/_pb_users_auth_/${item.expand?.user?.id}/${item.expand?.user?.avatar}`} alt="Avatar" class="w-full h-full object-cover" />
+                                        {:else}
+                                            <img src="/path/to/fallback-avatar.png" alt="Fallback Avatar" class="w-full h-full object-cover" />
+                                        {/if}
+                                    </div>
+                                </div>
+                                <div class="badge {item.expand?.user?.VerifyShop === 'ยืนยันร้านค้าแล้ว' ? 'badge-primary badge-outline' : item.expand?.user?.VerifyShop === 'ยังไม่ได้ยืนยันร้านค้า'} gap-2">
+                                    
+                                    {item.expand?.user?.VerifyShop}
                                 </div>
                             </div>
-                            <div class="badge badge-neutral">{shop.Province}</div>
-                            <h2 class="card-title">{limitText(shop.Name, 33)}</h2>
-                            <p>{shop.Details}</p>
-                            <p class="font-bold">ราคา: {shop.price.toLocaleString()} บาท</p>
+                            
+                            <div class="badge badge-neutral">{item.Province}</div>
+                            <div class="badge badge-outline">Size: {item.Size}</div>
+                            <div class="badge {item.Status === 'พร้อมให้เช่า' ? 'badge-success' : item.Status === 'กำลังถูกเช่า' ? 'badge-warning' : item.Status === 'อยู่ระหว่างการซ่อมบำรุง' ? 'badge-error' : ''} gap-2">
+                                
+                                {item.Status}
+                            </div>
+                            <h2 class="card-title">{limitText(item.Name, 33)}</h2>
+                            <p>{item.Details}</p>
+                            <p class="font-bold">ราคา: {item.price.toLocaleString()} บาท</p>
                             <div class="rating mb-2">
                                 <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
                                 <input
@@ -93,7 +127,7 @@
                               </div>
                             <div class="card-actions justify-end">
                                 <button class="btn btn-neutral btn-active">
-                                    <a href={shop.Details} target="_blank">ดูรายละเอียด</a>
+                                    <a href={item.Details} target="_blank">ดูรายละเอียด</a>
                                 </button>
                             </div>
                         </div>

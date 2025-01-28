@@ -8,7 +8,7 @@ export const load = async ({ locals }) => {
 		const adminClient = await createAdminClient();
 		try {
 			// Fetch instances filtered by the current user's ID
-			const instances = await adminClient.collection('itemList').getFullList({ expand: 'Image' });
+			const instances = await adminClient.collection('itemList').getFullList({ expand: 'user' });
 			return serializeNonPOJOs(instances); // Serialize the instances
 		} catch (err) {
 			console.log('Error fetching user instances: ', err);
