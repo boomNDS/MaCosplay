@@ -10,7 +10,7 @@
 				MaCosplay คือแพลตฟอร์มที่สร้างขึ้นเพื่อเชื่อมโยงนักคอสเพลย์ที่ต้องการเช่าชุดกับเจ้าของชุดคอสเพลย์ทั่วประเทศ ด้วยฟีเจอร์ที่ใช้งานง่ายและปลอดภัย คุณสามารถลงประกาศให้เช่าชุดของคุณ หรือค้นหาชุดที่ตรงใจสำหรับงานอีเวนต์หรือการถ่ายรูปได้อย่างสะดวกสบาย
 			  </p>
 			<div class="flex flex-col sm:flex-row sm:space-x-2 mt-4">
-				<a href="/dashboard">
+				<a href="/manage-store">
 					<button class="btn btn-neutral btn-active w-full sm:w-auto">เปิดร้านค้า</button>
 				</a>
 				<a href="/shop">
@@ -32,9 +32,9 @@
 	<div class="container mx-auto p-6 sm:p-6 flex justify-center md:w-4/12">
 		<div class="mockup-phone">
 			<div class="camera"></div>
-			<div class="display">
-			  <div class="artboard artboard-demo phone-1 flex justify-center">
-				<img src="/images/" alt="Home" class="w-auto h-full object-cover" style="max-width: none;"/>
+			<div class="display items-center justify-center">
+			  <div class="artboard artboard-demo phone-1 items-center justify-center">
+				<img src="/images/Example/example01.jpg" alt="Home" class="w-full h-auto object-cover"/>
 			  </div>
 			</div>
 		  </div>
