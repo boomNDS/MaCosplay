@@ -1,28 +1,57 @@
-import { redirect } from "@sveltejs/kit";
+import { redirect } from '@sveltejs/kit';
+import PocketBase from 'pocketbase';
+import { serializeNonPOJOs } from '$lib/utils';
 
-export const GET = async ({ url, cookies, locals }) => {
-    const state = url.searchParams.get("state");
-    const code = url.searchParams.get("code");
+const adminClient = new PocketBase(import.meta.env.VITE_PB_URL);
 
-    if (!state || !code || state !== cookies.get("state")) {
-        return {
-            status: 400,
-            body: { error: "Invalid OAuth state or missing code." }
-        };
-    }
+export const GET = async ({ locals, url, cookies }) => {
+	console.log('OAUTH CALL');
 
-    try {
-        const { token } = await locals.pb.collection("users").authWithOAuth2Code("facebook", code, cookies.get("verifier"));
+	// Authenticate admin client
+	await adminClient.admins.authWithPassword(
+		import.meta.env.VITE_AUTH_ADMIN_NAME,
+		import.meta.env.VITE_AUTH_ADMIN_PASS
+	);
 
-        cookies.delete("state");
-        cookies.delete("verifier");
+	// Extract state and code from URL
+	const state = url.searchParams.get('state');
+	const code = url.searchParams.get('code');
 
-        throw redirect(303, "/"); // Redirect on successful login
-    } catch (err) {
-        console.error("OAuth login error:", err);
-        return {
-            status: 500,
-            body: { error: "Failed to authenticate with Facebook." }
-        };
-    }
+	const expectedState = cookies.get('state');
+	const expectedVerifier = cookies.get('verifier');
+
+	// Check if Facebook is an available provider
+	const authMethods = await locals.pb?.collection('users').listAuthMethods();
+	if (!authMethods?.authProviders) {
+		console.log('No Auth Providers');
+		throw redirect(303, '/login');
+	}
+
+	// Find the Facebook OAuth provider
+	const provider = authMethods.authProviders.find(p => p.name === "facebook");
+	if (!provider) {
+		console.log('Facebook Provider Not Found');
+		throw redirect(303, '/login');
+	}
+
+	// Ensure the returned state matches the stored state
+	if (expectedState !== state) {
+		console.log('Returned State Does not Match Expected', expectedState, state);
+		throw redirect(303, '/login');
+	}
+
+	try {
+		// Exchange authorization code for an access token
+		const authData = await locals.pb.collection('users').authWithOAuth2(
+			provider.name, code, expectedVerifier, `${url.origin}/oauth`
+		);
+
+		console.log('User Authenticated:', serializeNonPOJOs(authData));
+
+		// Redirect after successful authentication
+		throw redirect(303, '/dashboard');
+	} catch (err) {
+		console.error('Error Logging in with Facebook OAuth2:', err);
+		throw redirect(303, '/login?error=oauth_failed');
+	}
 };

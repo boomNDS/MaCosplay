@@ -36,8 +36,8 @@
 		if (response.ok) {
 			const data = await response.json();
 			console.log('Instance created:', data);
-			// Redirect to the dashboard on success
-			goto('/dashboard');
+			// Refresh the page on success
+			location.reload(); // This will refresh the current page
 		} else {
 			const errorData = await response.json();
 			errorMessage = errorData.error; // Set the error message

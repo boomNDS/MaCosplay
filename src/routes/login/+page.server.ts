@@ -37,34 +37,39 @@ export const actions = {
 			};
 		}
 	},
-
 	OAuth: async ({ cookies, url, locals }) => {
 		const authMethods = await locals.pb?.collection('users').listAuthMethods();
 		
 		if (!authMethods?.authProviders?.length) {
+			console.error("No authentication providers available.");
 			return {
 				status: 500,
 				body: { error: "No authentication providers available." }
 			};
 		}
 
-		const redirectURL = `${url.origin}/oauth`;
 		const FacebookAuthProvider = authMethods.authProviders.find(provider => provider.name === "facebook");
 
 		if (!FacebookAuthProvider) {
+			console.error("Facebook OAuth provider not found.");
 			return {
 				status: 400,
 				body: { error: "Facebook OAuth provider not found." }
 			};
 		}
 
-		const authProviderRedirect = `${FacebookAuthProvider.authUrl}?redirect_uri=${encodeURIComponent(redirectURL)}`;
 		const state = FacebookAuthProvider.state;
 		const verifier = FacebookAuthProvider.codeVerifier;
 
-		cookies.set('state', state, { path: '/', httpOnly: true, secure: true, maxAge: 600 });
-		cookies.set('verifier', verifier, { path: '/', httpOnly: true, secure: true, maxAge: 600 });
+		// Save state and verifier in cookies
+		cookies.set('state', state, { path: '/', httpOnly: true, secure: url.origin.startsWith("https"), maxAge: 600 });
+		cookies.set('verifier', verifier, { path: '/', httpOnly: true, secure: url.origin.startsWith("https"), maxAge: 600 });
 
+		const redirectURL = "http://localhost:5173/oauth"; // Ensure this matches your app's settings
+		const authProviderRedirect = `${FacebookAuthProvider.authUrl}&redirect_uri=${encodeURIComponent(redirectURL)}`;
+
+
+		console.log("Redirecting to:", authProviderRedirect);
 		throw redirect(302, authProviderRedirect);
 	}
 };
