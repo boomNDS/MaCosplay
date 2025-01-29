@@ -19,7 +19,7 @@
 		form.append('password', password);
 
 		try {
-			const response = await fetch('/login', {
+			const response = await fetch('/login?/login', {
 				method: 'POST',
 				headers: {
 					'Accept': 'application/json',
@@ -46,6 +46,10 @@
 			loading = false;
 		}
 	}
+
+	const redirectToFacebook = () => {
+		window.location.href = `${import.meta.env.VITE_PB_URL}/api/collections/users/auth/facebook`;
+	};
 </script>
 
 <div class="flex items-center justify-center min-h-screen">
@@ -103,6 +107,13 @@
 				<a href="/" class="link text-sm text-blue-500 hover:underline"> ลืมรหัสผ่าน </a>
 				<a href="/register" class="link text-sm text-blue-500 hover:underline"> ลงทะเบียน </a>
 			</div>
+			
+			
+		</form>
+		<form class="flex flex-col items-center space-y-6 w-full max-w-sm pt-6" method="post" action="?/OAuth">
+			<button type="submit" class="btn btn-secondary mb-4">
+				Login with Facebook
+			</button>
 		</form>
 	</div>
 </div>
