@@ -49,7 +49,7 @@ export const GET = async ({ locals, url, cookies }) => {
 		console.log('User Authenticated:', serializeNonPOJOs(authData));
 
 		// Redirect after successful authentication
-		throw redirect(303, '/dashboard');
+		throw redirect(303, '/manage-store');
 	} catch (err) {
 		console.error('Error Logging in with Facebook OAuth2:', err);
 		throw redirect(303, '/login?error=oauth_failed');

@@ -65,7 +65,7 @@ export const actions = {
 		cookies.set('state', state, { path: '/', httpOnly: true, secure: url.origin.startsWith("https"), maxAge: 600 });
 		cookies.set('verifier', verifier, { path: '/', httpOnly: true, secure: url.origin.startsWith("https"), maxAge: 600 });
 
-		const redirectURL = "http://localhost:5173/oauth"; // Ensure this matches your app's settings
+		const redirectURL = `${url.origin}/oauth`; // Ensure this matches your app's settings
 		const authProviderRedirect = `${FacebookAuthProvider.authUrl}&redirect_uri=${encodeURIComponent(redirectURL)}`;
 
 
