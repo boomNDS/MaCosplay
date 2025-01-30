@@ -41,6 +41,10 @@ export const GET = async ({ locals, url, cookies }) => {
 	}
 
 	try {
+		const resultList = await adminClient.collection('users').getList(1, 1, { sort: '-created' });
+		console.log(serializeNonPOJOs(resultList?.items[0].UserNumber));
+		const UserNumAdd = resultList?.items[0].UserNumber + 1;
+		let UserNumber = UserNumAdd;
 		// Exchange authorization code for an access token
 		const authData = await locals.pb.collection('users').authWithOAuth2(
 			provider.name, code, expectedVerifier, `${url.origin}/oauth`
@@ -66,7 +70,10 @@ export const GET = async ({ locals, url, cookies }) => {
 		// Update user profile in PocketBase
 		await adminClient.collection('users').update(authData.record.id, {
 			avatar: avatarFile, // Pass the avatar as a File
-			email: userEmail
+			email: userEmail,
+			UserNumber: UserNumber,
+			MaxShop: 1,
+			VerifyShop: "ยังไม่ได้ยืนยันร้านค้า"
 		});
 
 		// Redirect after successful authentication

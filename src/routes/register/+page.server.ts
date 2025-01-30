@@ -28,7 +28,7 @@ export const actions = {
 		/* let packages = 'eq0tudgxce90g0o' */
 		try {
 			console.log('success');
-			await adminClient.collection('users').create({ username, ...formData, UserNumber });
+			await adminClient.collection('users').create({ username, ...formData, UserNumber, MaxShop: 1, VerifyShop: "ยังไม่ได้ยืนยันร้านค้า" });
 			await adminClient.collection('users').requestVerification(formData.email);
 		
 			console.log('create new user');
