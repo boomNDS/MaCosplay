@@ -29,7 +29,7 @@
 		</div>
 		
 	</div>
-	<div class="container mx-auto p-6 sm:p-6 flex justify-center md:w-4/12">
+	<div class="z-0 container mx-auto p-6 sm:p-6 flex justify-center md:w-4/12">
 		<div class="mockup-phone">
 			<div class="camera"></div>
 			<div class="display items-center justify-center">
