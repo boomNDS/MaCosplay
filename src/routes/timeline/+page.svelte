@@ -1,75 +1,126 @@
-<div class="timeline">
-    <div class="timeline-item">
-        <div class="timeline-year">1 มกราคม 2025</div>
-        <div class="timeline-content">
-            <h3>เช่าชุด Ashi</h3>
-            <p>
-                ชุดเปื้อน
-            </p>
-        </div>
-    </div>
-    <div class="timeline-item">
-        <div class="timeline-year">1998</div>
-        <div class="timeline-content">
-            <h3>iMac</h3>
-            <p>
-                iMac is a family of all-in-one Mac desktop computers designed and built by Apple Inc. It has been the primary part of Apple's consumer desktop offerings since its debut in August 1998, and has evolved through seven distinct forms.
-            </p>
-        </div>
-    </div>
-    <div class="timeline-item">
-        <div class="timeline-year">2001</div>
-        <div class="timeline-content">
-            <h3>iPod</h3>
-            <p>
-                The iPod is a discontinued series of portable media players and multi-purpose mobile devices designed and marketed by Apple Inc.
-            </p>
-        </div>
-    </div>
-</div>
-<style>
-.timeline {
-    position: relative;
-    padding: 40px 0; /* Increased top and bottom padding */
-    margin: 0 auto;
-    max-width: 600px; /* Adjust as needed */
-}
-
-.timeline-item {
-    position: relative;
-    margin: 60px 0; /* Increased margin for better spacing between items */
-    padding-left: 60px; /* Space for the year */
-}
-
-.timeline-year {
-    position: absolute;
-    left: 0;
-    top: 0;
-    font-weight: bold;
-    font-size: 1.5em; /* Adjust font size */
-    padding-bottom: 50px; /* Increased space below the year */
-}
-
-.timeline-content {
-    background: #f9f9f9; /* Background color for the content */
-    border-radius: 5px;
-    padding: 50px; /* Increased padding for content */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-top: 10px; /* Space between year and content */
-}
-
-.timeline-content h3 {
-    margin: 0 0 10px; /* Space below the title */
-    font-size: 1.3em; /* Title font size */
-}
-
-.timeline-item::before {
-    content: '';
-    position: absolute;
-    left: 20px; /* Adjust as needed */
-    top: 20px; /* Adjust to fit the timeline */
-    height: calc(100% - 20px); /* Adjust to fit the timeline */
-    width: 2px; /* Line width */
-    background: #ccc; /* Line color */
-}
-</style>
+<ul class="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
+    <li>
+      <div class="timeline-middle">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="h-5 w-5">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+            clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="timeline-start mb-10 md:text-end">
+        <time class="font-mono italic">วันแรก</time>
+        <div class="text-lg font-black">สั่งเช่าชุด</div>
+        ลูกค้าทำการสั่งเช่าชุดคอสเพลย์สำหรับงาน Maruya ที่จะมาถึง ผู้ขายได้รับคำสั่งซื้อและเริ่มดำเนินการตรวจสอบความพร้อมของชุดและเตรียมการจัดส่ง
+      </div>
+      <hr />
+    </li>
+    <li>
+      <hr />
+      <div class="timeline-middle">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="h-5 w-5">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+            clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="timeline-end md:mb-10">
+        <time class="font-mono italic">วันที่สอง</time>
+        <div class="text-lg font-black">ยืนยันคำสั่งซื้อ</div>
+        ผู้ขายยืนยันคำสั่งซื้อและให้หมายเลขติดตามพัสดุแก่ลูกค้า ชุดถูกบรรจุอย่างระมัดระวังเพื่อให้มั่นใจว่าจะถึงมือลูกค้าในสภาพสมบูรณ์
+      </div>
+      <hr />
+    </li>
+    <li>
+      <hr />
+      <div class="timeline-middle">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="h-5 w-5">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+            clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="timeline-start mb-10 md:text-end">
+        <time class="font-mono italic">วันที่สาม</time>
+        <div class="text-lg font-black">จัดส่ง</div>
+        ชุดถูกจัดส่งไปยังที่อยู่ของลูกค้า ลูกค้าสามารถติดตามสถานะการจัดส่งได้จากหมายเลขติดตามที่ได้รับ
+      </div>
+      <hr />
+    </li>
+    <li>
+      <hr />
+      <div class="timeline-middle">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="h-5 w-5">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+            clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="timeline-end md:mb-10">
+        <time class="font-mono italic">วันที่สี่</time>
+        <div class="text-lg font-black">ได้รับสินค้า</div>
+        ชุดมาถึงที่อยู่ของลูกค้า ลูกค้าตรวจสอบชุดเพื่อให้แน่ใจว่าอยู่ในสภาพที่ดีและพอดีสำหรับงาน
+      </div>
+      <hr />
+    </li>
+    <li>
+      <hr />
+      <div class="timeline-middle">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="h-5 w-5">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+            clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="timeline-start mb-10 md:text-end">
+        <time class="font-mono italic">วันที่ห้า</time>
+        <div class="text-lg font-black">วันงาน</div>
+        ลูกค้าสวมชุดคอสเพลย์ไปงาน Maruya สนุกกับประสบการณ์และได้รับคำชม หลังจากงานเสร็จสิ้น ลูกค้าเตรียมชุดเพื่อส่งคืน
+      </div>
+    </li>
+    <li>
+      <hr />
+      <div class="timeline-middle">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="h-5 w-5">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+            clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="timeline-end md:mb-10">
+        <time class="font-mono italic">วันที่หก</time>
+        <div class="text-lg font-black">ส่งคืนชุด</div>
+        ลูกค้าส่งคืนชุดให้ผู้ขายโดยใช้ป้ายส่งคืนที่ได้รับ ผู้ขายได้รับชุด ตรวจสอบความเสียหาย และดำเนินการเสร็จสิ้นการเช่า
+      </div>
+      <hr />
+    </li>
+  </ul>
