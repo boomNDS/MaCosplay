@@ -2,6 +2,7 @@
     export let data: { itemList: any[] }; // Define data type
     let selectedProvince = ''; // State to hold the selected province
     let selectedSize = ''; // State to hold the selected size
+    let fullImage = null;
 
 
     // Function to filter items based on the selected province and size
@@ -85,7 +86,8 @@
                             <img 
                                 src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`} 
                                 alt="{item.Name} Thumbnail" 
-                                class="w-full h-auto max-h-48 object-cover" 
+                                class="w-full h-auto max-h-48 object-cover cursor-pointer" 
+                                on:click={() => fullImage = `https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`}
                             />
                         </figure>
                         <div class="card-body">
@@ -144,4 +146,17 @@
         </div>
     </div>
 </section>
+
+<!-- Full Image Modal -->
+{#if fullImage}
+    <div class="modal modal-open">
+        <div class="modal-box">
+            <div class="modal-action mb-3">
+                <button class="btn" on:click={() => fullImage = null}>X ปิด</button>
+            </div>
+            <img src={fullImage} alt="Full Image" class="w-full h-auto object-cover" />
+            
+        </div>
+    </div>
+{/if}
 
