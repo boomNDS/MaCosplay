@@ -1,53 +1,49 @@
 import { json } from '@sveltejs/kit';
-import { createAdminClient } from '$lib/pocketbase/index';
+import { createAdminClient } from '$lib/pocketbase';
 import { serializeNonPOJOs } from '$lib/utils';
 
-
-
-export async function POST({ locals, request }) {
-    const { Name, Details, clothingSize, selectedRegion } = await request.json(); // Get the username from the request body
-    
-    // Create the admin client for PocketBase
+export const POST = async ({ locals, request }) => {
     const adminClient = await createAdminClient();
-    const record = serializeNonPOJOs(await locals.pb.collection('users').getOne(locals.user.id));
+    
     try {
+        const formData = await request.formData();
+        
+        // Extract all necessary fields
+        const image = formData.get('image');
+        const name = formData.get('name');
+        const details = formData.get('details');
+        const price = formData.get('price');
+        const size = formData.get('size');
+        const status = formData.get('status');
+        const province = formData.get('province');
 
+        // Validate required fields
+        if (!name || !price || !size || !status || !province) {
+            return json({ error: 'Missing required fields' }, { status: 400 });
+        }
 
-        // Step 1: Create the instance via your backend
-        /* const response = await fetch('https://i18jk.saas.in.th/create-instance', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, port, version}),
-        });
-
-        if (!response.ok) {
-            const errorBody = await response.text(); // Get the error response body
-            throw new Error(`Error: ${response.statusText} - ${errorBody}`);
-        } */
-
-        /* const instanceData = await response.json(); // Parse the response data
-         */
-        // Step 2: Save instance data to PocketBase
-        const records = await adminClient.collection('itemList').create({
-            Name: Name,
+        // Prepare item data
+        const itemData = {
+            Name: name,
+            Details: details,
+            price: parseFloat(price),
+            Size: size,
+            Status: status,
+            Province: province,
             user: locals.user.id,
-            Details: Details,
-            Size: clothingSize,
-            Province: selectedRegion,
-        });
+            Image: image instanceof File ? image : null
+        };
 
+        // Create the item in PocketBase
+        const record = await adminClient.collection('itemList').create(itemData);
 
-        console.log('Item create:', record);
-
-        // Step 4: Return the combined response data
         return json({
-            message: 'Store created and stored successfully',
-            cosplayStore: records,
-        });
+            message: 'Item created successfully',
+            item: serializeNonPOJOs(record)
+        }, { status: 201 });
+
     } catch (error) {
-        console.error('Error creating instance or saving to PocketBase:', error);
-        return json({ error: error.message }, { status: 500 }); // Return an error response
+        console.error('Error creating item:', error);
+        return json({ error: error.message }, { status: error.status || 500 });
     }
-}
+};

@@ -9,6 +9,36 @@
 	let clothingSize = ''; // New variable for clothing size
 	let selectedRegion = ''; // Variable to hold the selected province
 	let searchQuery = ''; // Variable to hold the search input
+    let editingItem = null;
+    let fullImage = null;
+    let pricingOption = 'price_only'; // Initialize with a default value
+
+    function openEditModal(item) {
+        editingItem = { ...item }; // Create a copy of the item
+        editImagePreview = ''; // Reset preview when opening modal
+    }
+
+    async function handleEditSubmit(event) {
+        const formData = new FormData(event.target);
+        try {
+            const response = await fetch('/api/update-item', {
+                method: 'PUT',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to update item');
+            }
+
+            editingItem = null;
+            // Optionally refresh the item list
+        } catch (error) {
+            console.error('Error updating item:', error);
+            errorMessage = error.message;
+            showAlert = true;
+        }
+    }
 	const provinces = [
 		"กรุงเทพมหานคร",
 		"เชียงใหม่",
@@ -24,25 +54,25 @@
 		// Add more provinces as needed
 	];
 
-	async function createInstance() {
-		const response = await fetch('../api/create-item', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ Name, Details, clothingSize, selectedRegion })
-		});
+	async function createInstance(event) {
+		const formData = new FormData(event.target);
+		try {
+			const response = await fetch('/api/create-item', {
+				method: 'POST',
+				body: formData
+			});
 
-		if (response.ok) {
-			const data = await response.json();
-			console.log('Instance created:', data);
-			// Refresh the page on success
-			location.reload(); // This will refresh the current page
-		} else {
-			const errorData = await response.json();
-			errorMessage = errorData.error; // Set the error message
-			showAlert = true; // Show the alert on error
-			console.error('Error creating instance:', errorMessage);
+			if (response.ok) {
+				location.reload();
+			} else {
+				const errorData = await response.json();
+				errorMessage = errorData.error;
+				showAlert = true;
+			}
+		} catch (error) {
+			console.error('Error creating instance:', error);
+			errorMessage = error.message;
+			showAlert = true;
 		}
 	}
     export let data: { StoreDetails: any[], itemList: any[] }; // Define data type
@@ -67,6 +97,30 @@
         return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
     };
     console.log(data?.StoreDetails)
+
+    let createImagePreview = '';
+    let editImagePreview = '';
+
+    function previewImage(event, type) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (type === 'create') {
+                    createImagePreview = e.target.result;
+                } else {
+                    editImagePreview = e.target.result;
+                }
+            };
+            reader.readAsDataURL(file);
+        } else {
+            if (type === 'create') {
+                createImagePreview = '';
+            } else {
+                editImagePreview = '';
+            }
+        }
+    }
 </script>
 
 	
@@ -104,94 +158,177 @@
                     <article class="prose">
                         <h1>เพิ่มสินค้า</h1>
                     </article>
-                    <div class="mb-4">
-                        <label for="username" class="mb-2 block text-sm font-bold">ชื่อสินค้า</label>
-                        <input
-                            type="text"
-                            id="Name"
-                            bind:value={Name}
-                            class="input input-bordered w-full"
-                            required
-                        />
-                    </div>
-                    <div class="mb-4">
-                        <label for="username" class="mb-2 block text-sm font-bold">รายละเอียดร้านค้า</label>
-                        <input
-                            type="text"
-                            id="Details"
-                            bind:value={Details}
-                            class="input input-bordered w-full"
-                            required
-                        />
-                    </div>
-    
-                    <!-- New Select for Clothing Size -->
-                    <div class="mb-4">
-                        <label for="clothingSize" class="mb-2 block text-sm font-bold">ขนาดเสื้อผ้า</label>
-                        <select
-                            id="clothingSize"
-                            bind:value={clothingSize}
-                            class="input input-bordered w-full"
-                            required
-                        >
-                            <option value="">เลือกขนาด</option>
-                            <option value="S">S</option>
-                            <option value="M">M</option>
-                            <option value="L">L</option>
-                            <option value="XL">XL</option>
-                            <option value="XXL">XXL</option>
-                            <!-- Add more sizes as needed -->
-                        </select>
-                    </div>
-    
-                    <div class="mb-4">
-                        <label for="region" class="mb-2 block text-sm font-bold">จังหวัด</label>
-                        <div class="dropdown">
+                    <form class="mt-6" on:submit|preventDefault={createInstance} enctype="multipart/form-data">
+                        <!-- Product Name -->
+                        <div class="mb-4">
+                            <label for="name" class="mb-2 block text-sm font-bold">ชื่อสินค้า</label>
                             <input
                                 type="text"
-                                placeholder="ค้นหาจังหวัด"
-                                class="input input-bordered w-full mb-2 dropdown-toggle"
-                                bind:value={searchQuery}
-                                on:focus={() => { document.getElementById('dropdown-menu').classList.remove('hidden'); }}
-                                on:blur={() => { setTimeout(() => { document.getElementById('dropdown-menu').classList.add('hidden'); }, 200); }} 
+                                id="name"
+                                name="name"
+                                class="input input-bordered w-full"
+                                required
                             />
-                            <ul id="dropdown-menu" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full hidden">
-                                {#each provinces.filter(province => province.includes(searchQuery)) as province}
-                                    <li>
-                                        <a 
-                                            href="#" 
-                                            on:click={() => { selectedRegion = province; searchQuery = province; }}
-                                        >
-                                            {province}
-                                        </a>
-                                    </li>
-                                {/each}
-                            </ul>
                         </div>
-                    </div>
-    
-                    <form class="mt-6" on:submit|preventDefault={createInstance}>
-                        <button type="submit" class="btn btn-primary">เพิ่มสินค้า</button>
+
+                        <!-- Product Details -->
                         <div class="mb-4">
-                        {#if showAlert}
-                            <div role="alert" class="alert alert-error">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-6 w-6 shrink-0 stroke-current"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            <label for="details" class="mb-2 block text-sm font-bold">รายละเอียดสินค้า</label>
+                            <input
+                                type="text"
+                                id="details"
+                                name="details"
+                                class="input input-bordered w-full"
+                                required
+                            />
+                        </div>
+
+                        <!-- Clothing Size -->
+                        <div class="mb-4">
+                            <label for="size" class="mb-2 block text-sm font-bold">ขนาดเสื้อผ้า</label>
+                            <select
+                                id="size"
+                                name="size"
+                                class="input input-bordered w-full"
+                                required
+                            >
+                                <option value="">เลือกขนาด</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                            </select>
+                        </div>
+
+                        <!-- Province -->
+                        <div class="mb-4">
+                            <label for="province" class="mb-2 block text-sm font-bold">จังหวัด</label>
+                            <select
+                                id="province"
+                                name="province"
+                                class="input input-bordered w-full"
+                                required
+                            >
+                                <option value="">เลือกจังหวัด</option>
+                                <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                                <option value="เชียงใหม่">เชียงใหม่</option>
+                                <option value="ภูเก็ต">ภูเก็ต</option>
+                                <option value="ชลบุรี">ชลบุรี</option>
+                                <option value="นครราชสีมา">นครราชสีมา</option>
+                                <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
+                                <option value="เชียงราย">เชียงราย</option>
+                                <option value="ขอนแก่น">ขอนแก่น</option>
+                                <option value="สงขลา">สงขลา</option>
+                                <option value="นครปฐม">นครปฐม</option>
+                                <option value="อุดรธานี">อุดรธานี</option>
+                                <!-- Add more provinces as needed -->
+                            </select>
+                        </div>
+
+
+                        <!-- Status -->
+                        <div class="mb-4">
+                            <label for="status" class="mb-2 block text-sm font-bold">สถานะ</label>
+                            <select
+                                id="status"
+                                name="status"
+                                class="input input-bordered w-full"
+                                required
+                            >
+                                <option value="">เลือกสถานะ</option>
+                                <option value="พร้อมให้เช่า">พร้อมให้เช่า</option>
+                                <option value="กำลังถูกเช่า">กำลังถูกเช่า</option>
+                                <option value="ยังไม่พร้อม">ยังไม่พร้อม</option>
+                            </select>
+                        </div>
+
+                        <!-- Image -->
+                        <div class="mb-4">
+                            <label for="image" class="mb-2 block text-sm font-bold">รูปภาพ</label>
+                            <input
+                                type="file"
+                                id="image"
+                                name="image"
+                                accept="image/*"
+                                class="file-input file-input-bordered w-full"
+                                on:change={(e) => previewImage(e, 'create')}
+                            />
+                            {#if createImagePreview}
+                                <div class="mt-4">
+                                    <img src={createImagePreview} alt="Image Preview" class="w-48 h-48 object-cover rounded-lg" />
+                                </div>
+                            {/if}
+                        </div>
+
+                        <!-- Pricing Option Selection -->
+                        <div class="mb-4">
+                            <label class="mb-2 block text-sm font-bold">เลือกตัวเลือกการตั้งราคา</label>
+                            <div class="flex items-center space-x-4">
+                                <label class="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="pricing_option"
+                                        value="price_only"
+                                        bind:group={pricingOption}
+                                        class="radio radio-primary"
                                     />
-                                </svg>
-                                <span>{errorMessage || 'Error! Task failed successfully.'}</span>
+                                    <span class="ml-2">ใช้ราคาเท่านั้น</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="pricing_option"
+                                        value="price_pri_test"
+                                        bind:group={pricingOption}
+                                        class="radio radio-primary"
+                                    />
+                                    <span class="ml-2">ใช้ราคา Pri และ Test</span>
+                                </label>
                             </div>
+                        </div>
+
+                        <!-- Price -->
+                        {#if pricingOption === 'price_only'}
+                        <div class="mb-4">
+                            <label for="price" class="mb-2 block text-sm font-bold">ราคา</label>
+                            <input
+                                type="number"
+                                id="price"
+                                name="price"
+                                class="input input-bordered w-full"
+                                required
+                            />
+                        </div>
                         {/if}
-                    </div>
+
+                        <!-- Price Pri and Price Test -->
+                        {#if pricingOption === 'price_pri_test'}
+                        <div class="mb-4">
+                            <label for="price_pri" class="mb-2 block text-sm font-bold">ราคา Pri</label>
+                            <input
+                                type="number"
+                                id="price_pri"
+                                name="price_pri"
+                                class="input input-bordered w-full"
+                                required
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="price_test" class="mb-2 block text-sm font-bold">ราคา Test</label>
+                            <input
+                                type="number"
+                                id="price_test"
+                                name="price_test"
+                                class="input input-bordered w-full"
+                                required
+                            />
+                        </div>
+                        {/if}
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary">เพิ่มสินค้า</button>
                     </form>
                 </div>
             </div>
@@ -206,7 +343,7 @@
     <div class="container mx-auto p-4 sm:p-6">
         <!-- Pocketbase Rental Card -->
         <section class="mb-6">
-            <h2 class="mb-2 text-2xl font-semibold">ตามหาชุดเช่าได้ที่นี่เลย</h2>
+            <h2 class="mb-2 text-2xl font-semibold">จัดการสินค้า</h2>
         </section>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[48rem] overflow-y-auto"> <!-- Limit to 4 rows -->
             {#if filteredItems().length > 0}
@@ -216,25 +353,27 @@
                             <img 
                                 src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`} 
                                 alt="{item.Name} Thumbnail" 
-                                class="w-full h-auto max-h-48 object-cover" 
+                                class="w-full h-auto max-h-48 object-cover cursor-pointer" 
+                                on:click={() => fullImage = `https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`}
                             />
                         </figure>
                         <div class="card-body">
                             <div class="flex justify-between items-center">
-                                <div class="avatar mb-2">
+                                <!-- <div class="avatar mb-2">
                                     <div class="w-8 h-8 rounded-full overflow-hidden">
-                                        {#if item.user && item.expand?.user?.avatar}
+                                        {#if item.expand?.user?.avatar}
                                             <img src={`https://macosplay.saas.in.th/api/files/_pb_users_auth_/${item.expand?.user?.id}/${item.expand?.user?.avatar}`} alt="Avatar" class="w-full h-full object-cover" />
                                         {:else}
                                             <img src="/path/to/fallback-avatar.png" alt="Fallback Avatar" class="w-full h-full object-cover" />
                                         {/if}
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="badge {item.expand?.user?.VerifyShop === 'ยืนยันร้านค้าแล้ว' ? 'badge-primary badge-outline' : item.expand?.user?.VerifyShop === 'ยังไม่ได้ยืนยันร้านค้า'} gap-2">
                                     
                                     {item.expand?.user?.VerifyShop}
                                 </div>
                             </div>
+                            <h2 class="card-title">{limitText(item.Name, 33)}</h2>
                             
                             <div class="badge badge-neutral">{item.Province}</div>
                             <div class="badge badge-outline">Size: {item.Size}</div>
@@ -242,7 +381,7 @@
                                 
                                 {item.Status}
                             </div>
-                            <h2 class="card-title">{limitText(item.Name, 33)}</h2>
+                            
                             <p>{item.Details}</p>
                             <p class="font-bold">ราคา: {item.price.toLocaleString()} บาท</p>
                             <div class="rating mb-2">
@@ -257,6 +396,9 @@
                                 <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
                               </div>
                             <div class="card-actions justify-end">
+                                <button class="btn btn-neutral btn-active" on:click={() => openEditModal(item)}>
+                                    แก้ไข
+                                </button>
                                 <button class="btn btn-neutral btn-active">
                                     <a href={item.Details} target="_blank">ดูรายละเอียด</a>
                                 </button>
@@ -275,4 +417,179 @@
         </div>
     </div>
 </section>
+
+<!-- Edit Modal -->
+{#if editingItem}
+    <div class="modal modal-open">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">แก้ไขรายการ</h3>
+            <form on:submit|preventDefault={handleEditSubmit} enctype="multipart/form-data">
+                <input type="hidden" name="id" bind:value={editingItem.id} />
+                
+                <!-- Name -->
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">ชื่อสินค้า</span>
+                    </label>
+                    <input type="text" name="name" bind:value={editingItem.Name} class="input input-bordered" required />
+                </div>
+
+                <!-- Details -->
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">รายละเอียดสินค้า</span>
+                    </label>
+                    <textarea name="details" bind:value={editingItem.Details} class="textarea textarea-bordered" required></textarea>
+                </div>
+
+                <!-- Size -->
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">ขนาดเสื้อผ้า</span>
+                    </label>
+                    <select name="size" bind:value={editingItem.Size} class="select select-bordered w-full" required>
+                        <option value="">เลือกขนาด</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
+                    </select>
+                </div>
+
+                <!-- Province -->
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">จังหวัด</span>
+                    </label>
+                    <select name="province" bind:value={editingItem.Province} class="select select-bordered w-full" required>
+                        <option value="">เลือกจังหวัด</option>
+                        <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                        <option value="เชียงใหม่">เชียงใหม่</option>
+                        <option value="ภูเก็ต">ภูเก็ต</option>
+                        <option value="ชลบุรี">ชลบุรี</option>
+                        <option value="นครราชสีมา">นครราชสีมา</option>
+                        <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
+                        <option value="เชียงราย">เชียงราย</option>
+                        <option value="ขอนแก่น">ขอนแก่น</option>
+                        <option value="สงขลา">สงขลา</option>
+                        <option value="นครปฐม">นครปฐม</option>
+                        <option value="อุดรธานี">อุดรธานี</option>
+                    </select>
+                </div>
+
+                <!-- Pricing Option Selection -->
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">เลือกตัวเลือกการตั้งราคา</span>
+                    </label>
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center">
+                            <input
+                                type="radio"
+                                name="pricing_option"
+                                value="price_only"
+                                bind:group={pricingOption}
+                                class="radio radio-primary"
+                            />
+                            <span class="ml-2">ใช้ราคาเท่านั้น</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input
+                                type="radio"
+                                name="pricing_option"
+                                value="price_pri_test"
+                                bind:group={pricingOption}
+                                class="radio radio-primary"
+                            />
+                            <span class="ml-2">ใช้ราคา Pri และ Test</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Price -->
+                {#if pricingOption === 'price_only'}
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">ราคา</span>
+                    </label>
+                    <input type="number" name="price" bind:value={editingItem.price} class="input input-bordered" required />
+                </div>
+                {/if}
+
+                <!-- Price Pri and Price Test -->
+                {#if pricingOption === 'price_pri_test'}
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">ราคา Pri</span>
+                    </label>
+                    <input type="number" name="price_pri" bind:value={editingItem.price_pri} class="input input-bordered" required />
+                </div>
+
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">ราคา Test</span>
+                    </label>
+                    <input type="number" name="price_test" bind:value={editingItem.price_test} class="input input-bordered" required />
+                </div>
+                {/if}
+
+                <!-- Status -->
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">สถานะ</span>
+                    </label>
+                    <select name="status" bind:value={editingItem.Status} class="select select-bordered w-full" required>
+                        <option value="">เลือกสถานะ</option>
+                        <option value="พร้อมให้เช่า">พร้อมให้เช่า</option>
+                        <option value="กำลังถูกเช่า">กำลังถูกเช่า</option>
+                        <option value="ยังไม่พร้อม">ยังไม่พร้อม</option>
+                    </select>
+                </div>
+
+                <!-- Image -->
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">รูปภาพ</span>
+                    </label>
+                    <input
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        class="file-input file-input-bordered w-full"
+                        on:change={(e) => previewImage(e, 'edit')}
+                    />
+                    <div class="mt-4">
+                        {#if editImagePreview}
+                            <img src={editImagePreview} alt="Image Preview" class="w-48 h-48 object-cover rounded-lg" />
+                        {:else if editingItem.Image}
+                            <img src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${editingItem.id}/${editingItem.Image}`} 
+                                 alt="Current Image" 
+                                 class="w-48 h-48 object-cover rounded-lg" />
+                        {/if}
+                    </div>
+                </div>
+
+                <div class="modal-action">
+                    <button type="button" class="btn" on:click={() => editingItem = null}>ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{/if}
+
+<!-- Full Image Modal -->
+{#if fullImage}
+    <div class="modal modal-open">
+        <div class="modal-box">
+            <div class="modal-action">
+                <button class="btn" on:click={() => fullImage = null}>X ปิดภาพ</button>
+            </div>
+            <img src={fullImage} alt="Full Image" class="w-full h-auto object-cover" />
+            
+        </div>
+    </div>
+{/if}
+
 
