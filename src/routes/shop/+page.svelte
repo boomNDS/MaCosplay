@@ -1,16 +1,28 @@
 <script lang="ts">
-    export let data: { itemList: any[] }; // Define data type
-    let selectedProvince = ''; // State to hold the selected province
-    let selectedSize = ''; // State to hold the selected size
+    export let data: { itemList: { items: any[], totalPages: number, currentPage: number } };
+    let selectedProvince = '';
+    let selectedSize = '';
     let fullImage = null;
+    let searchQuery = '';
 
+    function handleSearch() {
+        const params = new URLSearchParams(window.location.search);
+        params.set('search', searchQuery);
+        params.set('page', '1'); // Reset to first page on new search
+        window.location.search = params.toString();
+    }
 
-    // Function to filter items based on the selected province and size
+    function changePage(newPage: number) {
+        const params = new URLSearchParams(window.location.search);
+        params.set('page', newPage.toString());
+        window.location.search = params.toString();
+    }
+
     const filteredItems = () => {
-        return data.itemList.filter(item => {
+        return data.itemList.items.filter(item => {
             const matchesProvince = !selectedProvince || item.Province === selectedProvince;
             const matchesSize = !selectedSize || item.Size === selectedSize;
-            return matchesProvince && matchesSize; // Return items that match both filters
+            return matchesProvince && matchesSize;
         });
     };
 
@@ -26,17 +38,19 @@
 <section id="filter" class="pt-12 sm:pt-12 md:pt-14">
     <div class="flex container mx-auto p-4 sm:p-6">
         <label class="input input-bordered flex items-center gap-2">
-            <input type="text" class="grow" placeholder="ค้นหา" />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              class="h-4 w-4 opacity-70">
-              <path
-                fill-rule="evenodd"
-                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                clip-rule="evenodd" />
-            </svg>
+            <input type="text" class="grow" placeholder="ค้นหา" bind:value={searchQuery} />
+            <button on:click={handleSearch}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  class="h-4 w-4 opacity-70">
+                  <path
+                    fill-rule="evenodd"
+                    d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                    clip-rule="evenodd" />
+                </svg>
+            </button>
         </label>
     
         <!-- ตัวกรองจังหวัดใหม่ -->
@@ -146,6 +160,12 @@
         </div>
     </div>
 </section>
+
+<div class="join">
+    <button class="join-item btn" on:click={() => changePage(data.itemList.currentPage - 1)} disabled={data.itemList.currentPage === 1}>«</button>
+    <span class="join-item btn">Page {data.itemList.currentPage} of {data.itemList.totalPages}</span>
+    <button class="join-item btn" on:click={() => changePage(data.itemList.currentPage + 1)} disabled={data.itemList.currentPage === data.itemList.totalPages}>»</button>
+</div>
 
 <!-- Full Image Modal -->
 {#if fullImage}

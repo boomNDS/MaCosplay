@@ -2,14 +2,24 @@ import { error } from "@sveltejs/kit";
 import { serializeNonPOJOs } from "$lib/utils";
 import { createAdminClient } from '$lib/pocketbase';
 
-export const load = async ({ locals }) => {
+export const load = async ({ locals, url }) => {
+	const searchQuery = url.searchParams.get('search') || '';
+	const page = parseInt(url.searchParams.get('page') || '1', 3); // Get the current page from query params
+	const perPage = 3; // Define how many items per page
 
 	const getItemList = async () => {
 		const adminClient = await createAdminClient();
 		try {
-			// Fetch instances filtered by the current user's ID
-			const instances = await adminClient.collection('itemList').getFullList({ expand: 'user' });
-			return serializeNonPOJOs(instances); // Serialize the instances
+			// Fetch paginated instances filtered by the current user's ID
+			const response = await adminClient.collection('itemList').getList(page, perPage, {
+				filter: searchQuery ? `Name ~ "${searchQuery}"` : '',
+				expand: 'user'
+			});
+			return {
+				items: serializeNonPOJOs(response.items), // Serialize the items
+				totalPages: response.totalPages,
+				currentPage: response.page
+			};
 		} catch (err) {
 			console.log('Error fetching user instances: ', err);
 			throw error(err.status, err.message);
