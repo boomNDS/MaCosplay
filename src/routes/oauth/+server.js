@@ -48,6 +48,16 @@ export const GET = async ({ locals, url, cookies }) => {
 
 		console.log('User Authenticated:', serializeNonPOJOs(authData));
 
+		// Fetch user profile and email
+		const userProfile = await fetchUserProfile(authData.accessToken);
+		const userEmail = userProfile.email;
+
+		// Update user profile in PocketBase
+		await locals.pb.collection('users').update(authData.user.id, {
+			avatar: userProfile,
+			email: userEmail
+		});
+
 		// Redirect after successful authentication
 		throw redirect(303, '/manage-store');
 	} catch (err) {
@@ -55,3 +65,12 @@ export const GET = async ({ locals, url, cookies }) => {
 		throw redirect(303, '/login?error=oauth_failed');
 	}
 };
+
+// Function to fetch user profile using access token
+async function fetchUserProfile(accessToken) {
+	const response = await fetch('https://graph.facebook.com/me?fields=id,name,email&access_token=' + accessToken);
+	if (!response.ok) {
+		throw new Error('Failed to fetch user profile');
+	}
+	return await response.json();
+}
