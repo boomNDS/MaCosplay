@@ -46,29 +46,41 @@ export const GET = async ({ locals, url, cookies }) => {
 			provider.name, code, expectedVerifier, `${url.origin}/oauth`
 		);
 
-		console.log('User Authenticated:', serializeNonPOJOs(authData));
+		// Log the entire authData object
+		console.log('Auth Data:', serializeNonPOJOs(authData));
 
-		// Fetch user profile and email
-		const userProfile = await fetchUserProfile(authData.accessToken);
-		const userEmail = userProfile.email;
+		// Extract email and avatar URL from authData
+		const userEmail = authData.meta.email;
+		const userAvatarUrl = authData.meta.avatarUrl;
+
+		// Log the extracted values
+		console.log('Extracted Email:', userEmail);
+		console.log('Extracted Avatar URL:', userAvatarUrl);
+
+		// Fetch the avatar image as a Blob
+		const avatarResponse = await fetch(userAvatarUrl);
+		const avatarBlob = await avatarResponse.blob();
+		const avatarFile = new File([avatarBlob], 'avatar.jpg', { type: avatarBlob.type });
+
 
 		// Update user profile in PocketBase
-		await locals.pb.collection('users').update(authData.user.id, {
-			avatar: userProfile,
+		await adminClient.collection('users').update(authData.record.id, {
+			avatar: avatarFile, // Pass the avatar as a File
 			email: userEmail
 		});
 
 		// Redirect after successful authentication
-		throw redirect(303, '/manage-store');
+		
 	} catch (err) {
 		console.error('Error Logging in with Facebook OAuth2:', err);
 		throw redirect(303, '/login?error=oauth_failed');
 	}
+	throw redirect(303, '/manage-store');
 };
 
 // Function to fetch user profile using access token
 async function fetchUserProfile(accessToken) {
-	const response = await fetch('https://graph.facebook.com/me?fields=id,name,email&access_token=' + accessToken);
+	const response = await fetch('https://graph.facebook.com/me?fields=id,name,email,picture&access_token=' + accessToken);
 	if (!response.ok) {
 		throw new Error('Failed to fetch user profile');
 	}
