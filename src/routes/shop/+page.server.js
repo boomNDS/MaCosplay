@@ -12,7 +12,7 @@ export const load = async ({ locals, url }) => {
 		try {
 			// Fetch paginated instances filtered by the current user's ID
 			const response = await adminClient.collection('itemList').getList(page, perPage, {
-				filter: searchQuery ? `Name ~ "${searchQuery}"` : '',
+				filter: `public=True${searchQuery ? ` && Name ~ "${searchQuery}"` : ''}`,
 				expand: 'user'
 			});
 			return {

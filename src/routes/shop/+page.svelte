@@ -126,7 +126,7 @@
     <div class="container mx-auto p-4 sm:p-6">
         <!-- Pocketbase Rental Card -->
         <section class="mb-6">
-            <h2 class="mb-2 text-2xl font-semibold">ตามหาชุดเช่าได้ที่นี่เลย</h2>
+            <h2 class="mb-2 text-2xl font-semibold">ตามหาชุด/วิกเช่าได้ที่นี่เลย</h2>
         </section>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[48rem] overflow-y-auto"> <!-- Limit to 4 rows -->
             {#if filteredItems().length > 0}
@@ -166,7 +166,7 @@
                             <h2 class="card-title">{limitText(item.Name, 33)}</h2>
                             <p>{item.Details}</p>
                             <p class="font-bold">ราคา: {item.price.toLocaleString()} บาท</p>
-                            <div class="rating mb-2">
+                           <!--  <div class="rating mb-2">
                                 <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
                                 <input
                                   type="radio"
@@ -176,7 +176,7 @@
                                 <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
                                 <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
                                 <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
-                              </div>
+                              </div> -->
                             <div class="card-actions justify-end">
                                 <button class="btn btn-neutral btn-active">
                                     <a href={item.Details} target="_blank">ดูรายละเอียด</a>
