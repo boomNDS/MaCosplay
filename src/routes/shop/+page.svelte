@@ -1,15 +1,48 @@
 <script lang="ts">
+    import PocketBase from 'pocketbase';
+    import { onMount } from 'svelte';
     export let data: { itemList: { items: any[], totalPages: number, currentPage: number } };
     let selectedProvince = '';
     let selectedSize = '';
     let fullImage = null;
     let searchQuery = '';
+    let items = data.itemList.items;
+
+    const pb = new PocketBase('https://macosplay.saas.in.th');
+
+    onMount(() => {
+        if (typeof EventSource !== 'undefined') {
+            pb.collection('itemList').subscribe('*', (e) => {
+                console.log(e.action, e.record);
+                if (e.action === 'create') {
+                    items = [...items, e.record];
+                } else if (e.action === 'update') {
+                    items = items.map(item => item.id === e.record.id ? e.record : item);
+                } else if (e.action === 'delete') {
+                    items = items.filter(item => item.id !== e.record.id);
+                }
+            });
+
+            return () => {
+                pb.collection('itemList').unsubscribe('*');
+            };
+        } else {
+            console.error('EventSource is not supported in this environment.');
+        }
+    });
 
     function handleSearch() {
         const params = new URLSearchParams(window.location.search);
         params.set('search', searchQuery);
-        params.set('page', '1'); // Reset to first page on new search
+        params.set('page', '1');
         window.location.search = params.toString();
+    }
+
+    function resetFilters() {
+        selectedProvince = '';
+        selectedSize = '';
+        searchQuery = '';
+        handleSearch(); // Optionally, reset the search results
     }
 
     function changePage(newPage: number) {
@@ -19,10 +52,11 @@
     }
 
     const filteredItems = () => {
-        return data.itemList.items.filter(item => {
+        return items.filter(item => {
             const matchesProvince = !selectedProvince || item.Province === selectedProvince;
             const matchesSize = !selectedSize || item.Size === selectedSize;
-            return matchesProvince && matchesSize;
+            const matchesSearch = !searchQuery || item.Name.toLowerCase().includes(searchQuery.toLowerCase());
+            return matchesProvince && matchesSize && matchesSearch;
         });
     };
 
@@ -36,8 +70,8 @@
 
 
 <section id="filter" class="pt-12 sm:pt-12 md:pt-14">
-    <div class="flex container mx-auto p-4 sm:p-6">
-        <label class="input input-bordered flex items-center gap-2">
+    <div class="flex flex-col sm:flex-row container mx-auto p-4 sm:p-6 gap-4">
+        <label class="input input-bordered flex items-center gap-2 w-full sm:w-auto">
             <input type="text" class="grow" placeholder="ค้นหา" bind:value={searchQuery} />
             <button on:click={handleSearch}>
                 <svg
@@ -54,7 +88,7 @@
         </label>
     
         <!-- ตัวกรองจังหวัดใหม่ -->
-        <label class="input input-bordered flex items-center gap-2">
+        <label class="input input-bordered flex items-center gap-2 w-full sm:w-auto">
             <select class="grow" bind:value={selectedProvince}>
                 <option value="">เลือกจังหวัด</option>
                 <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
@@ -70,7 +104,7 @@
         </label>
 
         <!-- ตัวกรองขนาดใหม่ -->
-        <label class="input input-bordered flex items-center gap-2">
+        <label class="input input-bordered flex items-center gap-2 w-full sm:w-auto">
             <select class="grow" bind:value={selectedSize}>
                 <option value="">เลือกขนาด</option>
                 <option value="S">S</option>
@@ -81,6 +115,8 @@
                 <!-- เพิ่มขนาดเพิ่มเติมตามต้องการ -->
             </select>
         </label>
+        <button class="btn btn-primary" on:click={handleSearch}>ค้นหา</button>
+        <button class="btn btn-secondary" on:click={resetFilters}>Reset</button>
     </div>
     
 </section>
