@@ -2,7 +2,6 @@
 	import '../app.css';
 	import "tailwindcss/tailwind.css";
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
 	let { children, data } = $props();
 
 	// Function to save theme preference
