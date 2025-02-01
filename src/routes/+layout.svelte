@@ -124,69 +124,7 @@
 	}
 </script>
 
-<!-- Profile Modal -->
-<dialog id="profile_modal" class="modal modal-bottom sm:modal-middle">
-	<div class="modal-box">
-		<h3 class="font-bold text-lg">ตั้งค่าโปรไฟล์</h3>
-		<form on:submit|preventDefault={handleProfileSubmit} enctype="multipart/form-data">
-			<!-- Name -->
-			<div class="form-control mb-4">
-	
-				<label class="label">
-					<span class="label-text">ชื่อ</span>
-				</label>
-				<input type="text" name="name" bind:value={currentName} class="input input-bordered" required />
-			</div>
 
-			<!-- Avatar -->
-			<div class="form-control mb-4">
-				<label class="label">
-					<span class="label-text">อวาตาร์</span>
-				</label>
-				<input
-					type="file"
-					name="avatar"
-					accept="image/*"
-					class="file-input file-input-bordered w-full"
-					on:change={previewProfileImage}
-				/>
-				{#if profileImagePreview}
-					<div class="mt-4">
-						<img src={profileImagePreview} alt="Avatar Preview" class="w-48 h-48 object-cover rounded-lg" />
-					</div>
-				{/if}
-			</div>
-
-			<!-- Overall Body Size -->
-			<!-- <div class="form-control mb-4">
-				<label class="label">
-					<span class="label-text">ขนาดร่างกาย</span>
-				</label>
-				<select name="size" bind:value={profileSize} class="select select-bordered w-full" required>
-					<option value="">เลือกขนาด</option>
-					<option value="S">S</option>
-					<option value="M">M</option>
-					<option value="L">L</option>
-					<option value="XL">XL</option>
-					<option value="XXL">XXL</option>
-				</select>
-			</div> -->
-
-			<!-- Facebook Profile URL -->
-			<div class="form-control mb-4">
-				<label class="label">
-					<span class="label-text">Facebook Profile URL</span>
-				</label>
-				<input type="url" name="fbProfile" bind:value={currentFbProfile} class="input input-bordered" placeholder="https://www.facebook.com/yourprofile" />
-			</div>
-
-			<div class="modal-action">
-				<button type="button" class="btn" on:click={() => document.getElementById('profile_modal').close()}>ยกเลิก</button>
-				<button type="submit" class="btn btn-primary">บันทึก</button>
-			</div>
-		</form>
-	</div>
-</dialog>
 
 
 <div class="max-w-6xl mx-auto">
