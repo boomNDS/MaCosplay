@@ -175,7 +175,7 @@
 				<label class="label">
 					<span class="label-text">Facebook Profile URL</span>
 				</label>
-				<input type="url" name="fbProfile" bind:value={data.user.fbProfile} class="input input-bordered" placeholder="https://www.facebook.com/yourprofile" />
+				<input type="url" name="fbProfile" bind:value={userData.fbProfile} class="input input-bordered" placeholder="https://www.facebook.com/yourprofile" />
 			</div>
 
 			<div class="modal-action">
