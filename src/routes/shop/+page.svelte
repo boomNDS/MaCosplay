@@ -115,8 +115,8 @@
                 <!-- เพิ่มขนาดเพิ่มเติมตามต้องการ -->
             </select>
         </label>
-        <button class="btn btn-primary" on:click={handleSearch}>ค้นหา</button>
-        <button class="btn btn-secondary" on:click={resetFilters}>Reset</button>
+        <button class="btn btn-outline" on:click={handleSearch}>ค้นหาทั้งหมด</button>
+        <button class="btn btn-outline btn-primary" on:click={resetFilters}>Reset</button>
     </div>
     
 </section>

@@ -16,7 +16,7 @@ export const POST = async ({ locals, request }) => {
         const size = formData.get('size');
         const status = formData.get('status');
         const province = formData.get('province');
-
+        const isPublic = formData.get('isPublic') === 'on';
         // Validate required fields
         if (!name || !price || !size || !status || !province) {
             return json({ error: 'Missing required fields' }, { status: 400 });
@@ -31,8 +31,10 @@ export const POST = async ({ locals, request }) => {
             Status: status,
             Province: province,
             user: locals.user.id,
-            Image: image instanceof File ? image : null
+            Image: image instanceof File ? image : null,
+            public: isPublic
         };
+
 
         // Create the item in PocketBase
         const record = await adminClient.collection('itemList').create(itemData);

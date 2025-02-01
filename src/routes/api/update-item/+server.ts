@@ -14,6 +14,7 @@ export const PUT = async ({ request }) => {
         const size = formData.get('size');
         const status = formData.get('status');
         const province = formData.get('province');
+        const isPublic = formData.get('isPublic') === 'on';
 
         if (!id) {
             return json({ error: 'Item ID is required' }, { status: 400 });
@@ -30,7 +31,10 @@ export const PUT = async ({ request }) => {
             Size: size,
             Status: status,
             Province: province,
+            public: isPublic
         };
+
+        console.log(updateData)
 
         // Include image if it's a File and not null
         if (image instanceof File && image.size > 0) {

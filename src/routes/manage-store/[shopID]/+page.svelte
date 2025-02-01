@@ -12,24 +12,34 @@
     let editingItem = null;
     let fullImage = null;
     let pricingOption = 'price_only'; // Initialize with a default value
+    let isPublic = true; // Default value for the public switch
 
     function openEditModal(item) {
         editingItem = { ...item }; // Create a copy of the item
         editImagePreview = ''; // Reset preview when opening modal
+        isPublic = item.public; // Set the public status for editing
+        console.log('Edit modal opened, public status:', editingItem.public); // Debugging: Check initial state
+    }
+
+    function handleCheckboxChange() {
+        console.log('Checkbox changed, new public status:', editingItem.public); // Debugging: Track changes
     }
 
     async function handleEditSubmit(event) {
         const formData = new FormData(event.target);
+        console.log('Before submit:', editingItem.public); // Debugging: Check value before submission
         try {
             const response = await fetch('/api/update-item', {
                 method: 'PUT',
                 body: formData
             });
-
-            if (!response.ok) {
+            if (response.ok) {
+				location.reload();
+			} else {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to update item');
             }
+
 
             editingItem = null;
             // Optionally refresh the item list
@@ -126,7 +136,7 @@
 	
 
 
-<section id="home" class="flex items-center justify-center min-h-screen">
+<section id="home" class="flex items-center justify-center">
 	<div class="container mx-auto w-full p-4 sm:p-6 flex flex-col items-center">
         <div class="flex flex-col sm:flex-row sm:space-x-2 w-full items-center justify-center">
            
@@ -344,7 +354,7 @@
                                         bind:group={pricingOption}
                                         class="radio radio-primary"
                                     />
-                                    <span class="ml-2">ใช้ราคา Pri และ Test</span>
+                                    <span class="ml-2">ใช้ราคาไพรหรือเทส</span>
                                 </label>
                             </div>
                         </div>
@@ -366,7 +376,7 @@
                         <!-- Price Pri and Price Test -->
                         {#if pricingOption === 'price_pri_test'}
                         <div class="mb-4">
-                            <label for="price_pri" class="mb-2 block text-sm font-bold">ราคา Pri</label>
+                            <label for="price_pri" class="mb-2 block text-sm font-bold">ราคาไพร</label>
                             <input
                                 type="number"
                                 id="price_pri"
@@ -377,7 +387,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="price_test" class="mb-2 block text-sm font-bold">ราคา Test</label>
+                            <label for="price_test" class="mb-2 block text-sm font-bold">ราคาเทส</label>
                             <input
                                 type="number"
                                 id="price_test"
@@ -387,6 +397,17 @@
                             />
                         </div>
                         {/if}
+
+                        <!-- Public Switch -->
+                        <div class="mb-4">
+                            <label class="mb-2 block text-sm font-bold">เปิดให้ผู้อื่นมองเห็นสินค้า</label>
+                            <input
+                                type="checkbox"
+                                name="isPublic"
+                                class="toggle"
+                                bind:checked={isPublic}
+                            />
+                        </div>
 
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary">เพิ่มสินค้า</button>
@@ -457,8 +478,9 @@
                                 <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
                               </div>
                             <div class="card-actions justify-end">
+                             
                                 <button class="btn btn-neutral btn-active" on:click={() => openEditModal(item)}>
-                                    แก้ไข
+                                    เผยแพร่หรือแก้ไข  
                                 </button>
                                 <button class="btn btn-neutral btn-active">
                                     <a href={item.Details} target="_blank">ดูรายละเอียด</a>
@@ -486,7 +508,19 @@
             <h3 class="font-bold text-lg">แก้ไขรายการ</h3>
             <form on:submit|preventDefault={handleEditSubmit} enctype="multipart/form-data">
                 <input type="hidden" name="id" bind:value={editingItem.id} />
-                
+                <!-- Public Switch -->
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">เปิดให้ผู้อื่นมองเห็นสินค้า</span>
+                    </label>
+                    <input
+                        type="checkbox"
+                        name="isPublic"
+                        class="toggle"
+                        bind:checked={editingItem.public}
+                        on:change={handleCheckboxChange}
+                    />
+                </div>
                 <!-- Name -->
                 <div class="form-control mb-4">
                     <label class="label">
@@ -500,7 +534,7 @@
                     <label class="label">
                         <span class="label-text">รายละเอียดสินค้า</span>
                     </label>
-                    <textarea name="details" bind:value={editingItem.Details} class="textarea textarea-bordered" required></textarea>
+                    <textarea name="details" bind:value={editingItem.Details} class="textarea textarea-bordered"></textarea>
                 </div>
 
                 <!-- Size -->
@@ -630,6 +664,8 @@
                         {/if}
                     </div>
                 </div>
+
+                
 
                 <div class="modal-action">
                     <button type="button" class="btn" on:click={() => editingItem = null}>ยกเลิก</button>

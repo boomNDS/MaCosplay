@@ -57,15 +57,21 @@ export const GET = async ({ locals, url, cookies }) => {
 		const userEmail = authData.meta.email;
 		const userAvatarUrl = authData.meta.avatarUrl;
 
+		// Extract the Facebook ID from the authData
+		const facebookId = authData.meta.id;
+
+		// Construct the Facebook profile URL using the ID
+		const facebookProfileUrl = `https://www.facebook.com/${facebookId}`;
+
 		// Log the extracted values
 		console.log('Extracted Email:', userEmail);
 		console.log('Extracted Avatar URL:', userAvatarUrl);
+		console.log('Facebook Profile URL:', facebookProfileUrl);
 
 		// Fetch the avatar image as a Blob
 		const avatarResponse = await fetch(userAvatarUrl);
 		const avatarBlob = await avatarResponse.blob();
 		const avatarFile = new File([avatarBlob], 'avatar.jpg', { type: avatarBlob.type });
-
 
 		// Update user profile in PocketBase
 		await adminClient.collection('users').update(authData.record.id, {
@@ -73,7 +79,8 @@ export const GET = async ({ locals, url, cookies }) => {
 			email: userEmail,
 			UserNumber: UserNumber,
 			MaxShop: 1,
-			VerifyShop: "ยังไม่ได้ยืนยันร้านค้า"
+			VerifyShop: "ยังไม่ได้ยืนยันร้านค้า",
+			fbProfile: facebookProfileUrl // Add the Facebook profile URL
 		});
 
 		// Redirect after successful authentication

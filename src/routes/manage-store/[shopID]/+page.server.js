@@ -1,9 +1,9 @@
-import { error } from "@sveltejs/kit";
+import { error, json } from "@sveltejs/kit";
 import { serializeNonPOJOs } from "$lib/utils";
 import { createAdminClient } from '$lib/pocketbase';
 
 export const load = async ({ locals, params }) => {
-
+	
 	const getItemList = async () => {
 		const adminClient = await createAdminClient();
 		try {
@@ -42,4 +42,20 @@ export const load = async ({ locals, params }) => {
 		StoreDetails: await getStoreDetails(params.shopID), // Pass shopID to the function
 		itemList: await getItemList(),
 	};
+};
+
+export const actions = {
+	togglePublic: async ({ request, locals }) => {
+		const adminClient = await createAdminClient();
+		const { isPublic } = await request.json();
+		const id = locals.user.id;
+		try {
+			// Update the item in the database
+			await adminClient.collection('itemList').update(id, { public: isPublic });
+			return json({ success: true });
+		} catch (error) {
+			console.error('Error updating item:', error);
+			return json({ error: 'Failed to update item' }, { status: 500 });
+		}
+	}
 };
