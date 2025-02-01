@@ -45,8 +45,8 @@
 	let editingItem = null;
 	let editImagePreview = '';
 
-	let currentName = '';
-	let currentFbProfile = '';
+	let currentName = data?.user?.name;
+	let currentFbProfile = data?.user?.fbProfile;
 
 
 
@@ -124,6 +124,7 @@
 
 <!-- Profile Modal -->
 <dialog id="profile_modal" class="modal modal-bottom sm:modal-middle">
+	{#if data.user}
 	<div class="modal-box">
 		<h3 class="font-bold text-lg">ตั้งค่าโปรไฟล์</h3>
 		<form on:submit|preventDefault={handleProfileSubmit} enctype="multipart/form-data">
@@ -184,6 +185,9 @@
 			</div>
 		</form>
 	</div>
+
+	{/if}
+	
 </dialog>
 
 
