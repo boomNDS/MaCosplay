@@ -1,7 +1,6 @@
 <script lang="ts">
 	import '../app.css';
 	import "tailwindcss/tailwind.css";
-	import { onMount } from 'svelte';
 	let { children, data } = $props();
 
 	// Function to save theme preference
@@ -32,100 +31,7 @@
 		document.documentElement.setAttribute('data-theme', theme);
 		saveThemePreference(theme);
 	}
-
-	let profileName = '';
-	let profileAvatar = null;
-	let profileSize = '';
-	let fbProfileUrl = '';
-	let profileImagePreview = '';
-	let errorMessage = '';
-	let showAlert = false;
-
-	let editingItem = null;
-	let editImagePreview = '';
-	let userData = data?.user;
-
-	
-
-	// Remove the onMount logic related to profile data
-	onMount(() => {
-		// Other onMount logic if needed
-	});
-
-
-	function previewProfileImage(event) {
-		const file = event.target.files[0];
-		if (file) {
-			const reader = new FileReader();
-			reader.onload = (e) => {
-				profileImagePreview = e.target.result;
-			};
-			reader.readAsDataURL(file);
-		} else {
-			profileImagePreview = '';
-		}
-	}
-
-	async function handleProfileSubmit(event) {
-		event.preventDefault();
-		const formData = new FormData(event.target);
-		try {
-			const response = await fetch('/api/update-profile', {
-				method: 'PUT',
-				body: formData
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.error || 'Failed to update profile');
-			}
-
-			console.log('Profile updated successfully');
-			showAlert = false;
-			document.getElementById('profile_modal').close();
-		} catch (error) {
-			console.error('Error updating profile:', error);
-			errorMessage = error.message;
-			showAlert = true;
-		}
-	}
-
-	function previewImage(event) {
-		const file = event.target.files[0];
-		if (file) {
-			const reader = new FileReader();
-			reader.onload = (e) => {
-				editImagePreview = e.target.result;
-			};
-			reader.readAsDataURL(file);
-		} else {
-			editImagePreview = '';
-		}
-	}
-
-	async function handleEditSubmit(event) {
-		event.preventDefault();
-		const formData = new FormData(event.target);
-		try {
-			const response = await fetch('/api/update-item', {
-				method: 'PUT',
-				body: formData
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.error || 'Failed to update item');
-			}
-
-			editingItem = null;
-			document.getElementById('edit_modal').close();
-		} catch (error) {
-			console.error('Error updating item:', error);
-		}
-	}
 </script>
-
-
 
 <div class="max-w-6xl mx-auto">
 	<div class="navbar bg-base-100 bg-opacity-90 backdrop-blur-sm sticky top-0 z-10">
@@ -173,8 +79,7 @@
 				</ul>
 			  </details>
 			</li>
-			<li><a>อัพเกรด</a></li>
-			
+			<li><a>Docs</a></li>
 		  </ul>
 		</div>
 		<div class="navbar-end">
@@ -189,11 +94,8 @@
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
 					</svg>
 				</button>
-			
 				<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-					<li><a href="#" on:click|preventDefault={() => document.getElementById('profile_modal').showModal()}>โปรไฟล์</a></li>
 					<li><a href="/manage-access">จัดการสิทธิการเข้าถึง</a></li>
-					
 					<!-- Add more settings options here if needed -->
 				</ul>
 			</div>
