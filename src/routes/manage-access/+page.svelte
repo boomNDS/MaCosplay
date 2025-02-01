@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
     // Import necessary modules and define any state variables
     let accessPermissions = []; // Example state variable to hold permissions
     
@@ -39,4 +39,4 @@
     
     <style>
     /* Add any necessary styles here */
-    </style>
+    </style> -->

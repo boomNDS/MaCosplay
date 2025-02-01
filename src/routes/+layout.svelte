@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import "tailwindcss/tailwind.css";
+	import { onMount } from 'svelte';
 	let { children, data } = $props();
 
 	// Function to save theme preference
@@ -32,10 +33,25 @@
 		saveThemePreference(theme);
 	}
 
-	let profileName = ''; // Variable to hold the profile name
-	let profileAvatar = ''; // Variable to hold the profile avatar
-	let profileSize = ''; // Variable to hold the profile size
-	let profileImagePreview = ''; // Variable for avatar image preview
+	let profileName = '';
+	let profileAvatar = null;
+	let profileSize = '';
+	let fbProfileUrl = '';
+	let profileImagePreview = '';
+	let errorMessage = '';
+	let showAlert = false;
+
+	let editingItem = null;
+	let editImagePreview = '';
+	let userData = data?.user;
+
+	
+
+	// Remove the onMount logic related to profile data
+	onMount(() => {
+		// Other onMount logic if needed
+	});
+
 
 	function previewProfileImage(event) {
 		const file = event.target.files[0];
@@ -64,11 +80,47 @@
 				throw new Error(errorData.error || 'Failed to update profile');
 			}
 
-			// Optionally refresh the profile data
+			console.log('Profile updated successfully');
+			showAlert = false;
+			document.getElementById('profile_modal').close();
 		} catch (error) {
 			console.error('Error updating profile:', error);
 			errorMessage = error.message;
 			showAlert = true;
+		}
+	}
+
+	function previewImage(event) {
+		const file = event.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				editImagePreview = e.target.result;
+			};
+			reader.readAsDataURL(file);
+		} else {
+			editImagePreview = '';
+		}
+	}
+
+	async function handleEditSubmit(event) {
+		event.preventDefault();
+		const formData = new FormData(event.target);
+		try {
+			const response = await fetch('/api/update-item', {
+				method: 'PUT',
+				body: formData
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || 'Failed to update item');
+			}
+
+			editingItem = null;
+			document.getElementById('edit_modal').close();
+		} catch (error) {
+			console.error('Error updating item:', error);
 		}
 	}
 </script>
@@ -81,9 +133,13 @@
 			<!-- Name -->
 			<div class="form-control mb-4">
 				<label class="label">
+					<span class="label-text">username: {userData.username}</span>
+					<span class="label-text">username: {userData.name}</span>
+				</label>
+				<label class="label">
 					<span class="label-text">ชื่อ</span>
 				</label>
-				<input type="text" name="name" bind:value={profileName} class="input input-bordered" required />
+				<input type="text" name="name" bind:value={userData.name} class="input input-bordered" required />
 			</div>
 
 			<!-- Avatar -->
@@ -106,7 +162,7 @@
 			</div>
 
 			<!-- Overall Body Size -->
-			<div class="form-control mb-4">
+			<!-- <div class="form-control mb-4">
 				<label class="label">
 					<span class="label-text">ขนาดร่างกาย</span>
 				</label>
@@ -118,12 +174,66 @@
 					<option value="XL">XL</option>
 					<option value="XXL">XXL</option>
 				</select>
+			</div> -->
+
+			<!-- Facebook Profile URL -->
+			<div class="form-control mb-4">
+				<label class="label">
+					<span class="label-text">Facebook Profile URL</span>
+				</label>
+				<input type="url" name="fbProfile" bind:value={data.user.fbProfile} class="input input-bordered" placeholder="https://www.facebook.com/yourprofile" />
 			</div>
 
 			<div class="modal-action">
 				<button type="button" class="btn" on:click={() => document.getElementById('profile_modal').close()}>ยกเลิก</button>
 				<button type="submit" class="btn btn-primary">บันทึก</button>
 			</div>
+		</form>
+	</div>
+</dialog>
+
+<!-- dadit Modal -->
+<dialog id="edit_modal" class="modal modal-bottom sm:modal-middle">
+	<div class="modal-box">
+		<h3 class="font-bold text-lg">แก้ไขรายการ</h3>
+		<form on:submit|preventDefault={handleEditSubmit} enctype="multipart/form-data">
+			{#if editingItem}
+				<input type="hidden" name="id" bind:value={editingItem.id} />
+
+				<!-- Name -->
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text">ชื่อสินค้า</span>
+					</label>
+					<input type="text" name="name" bind:value={editingItem.Name} class="input input-bordered" required />
+				</div>
+
+				<!-- Image -->
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text">รูปภาพ</span>
+					</label>
+					<input
+						type="file"
+						name="image"
+						accept="image/*"
+						class="file-input file-input-bordered w-full"
+						on:change={previewImage}
+					/>
+					<div class="mt-4">
+						{#if editImagePreview}
+							<img src={editImagePreview} alt="Image Preview" class="w-48 h-48 object-cover rounded-lg" />
+						{:else if editingItem.Image}
+							<img src={`path/to/image/${editingItem.Image}`} alt="Current Image" class="w-48 h-48 object-cover rounded-lg" />
+						{/if}
+					</div>
+				</div>
+
+				<div class="modal-action">
+					<button type="button" class="btn" on:click={() => editingItem = null}>ยกเลิก</button>
+					<button type="submit" class="btn btn-primary">บันทึก</button>
+				</div>
+			{/if}
 		</form>
 	</div>
 </dialog>
@@ -174,7 +284,7 @@
 				</ul>
 			  </details>
 			</li>
-			<li><a>Docs</a></li>
+			<li><a>อัพเกรด</a></li>
 			
 		  </ul>
 		</div>
