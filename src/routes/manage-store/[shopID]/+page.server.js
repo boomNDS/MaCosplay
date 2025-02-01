@@ -43,19 +43,3 @@ export const load = async ({ locals, params }) => {
 		itemList: await getItemList(),
 	};
 };
-
-export const actions = {
-	togglePublic: async ({ request, locals }) => {
-		const adminClient = await createAdminClient();
-		const { isPublic } = await request.json();
-		const id = locals.user.id;
-		try {
-			// Update the item in the database
-			await adminClient.collection('itemList').update(id, { public: isPublic });
-			return json({ success: true });
-		} catch (error) {
-			console.error('Error updating item:', error);
-			return json({ error: 'Failed to update item' }, { status: 500 });
-		}
-	}
-};
