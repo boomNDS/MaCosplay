@@ -188,51 +188,6 @@
 	</div>
 </dialog>
 
-<!-- dadit Modal -->
-<dialog id="edit_modal" class="modal modal-bottom sm:modal-middle">
-	<div class="modal-box">
-		<h3 class="font-bold text-lg">แก้ไขรายการ</h3>
-		<form on:submit|preventDefault={handleEditSubmit} enctype="multipart/form-data">
-			{#if editingItem}
-				<input type="hidden" name="id" bind:value={editingItem.id} />
-
-				<!-- Name -->
-				<div class="form-control mb-4">
-					<label class="label">
-						<span class="label-text">ชื่อสินค้า</span>
-					</label>
-					<input type="text" name="name" bind:value={editingItem.Name} class="input input-bordered" required />
-				</div>
-
-				<!-- Image -->
-				<div class="form-control mb-4">
-					<label class="label">
-						<span class="label-text">รูปภาพ</span>
-					</label>
-					<input
-						type="file"
-						name="image"
-						accept="image/*"
-						class="file-input file-input-bordered w-full"
-						on:change={previewImage}
-					/>
-					<div class="mt-4">
-						{#if editImagePreview}
-							<img src={editImagePreview} alt="Image Preview" class="w-48 h-48 object-cover rounded-lg" />
-						{:else if editingItem.Image}
-							<img src={`path/to/image/${editingItem.Image}`} alt="Current Image" class="w-48 h-48 object-cover rounded-lg" />
-						{/if}
-					</div>
-				</div>
-
-				<div class="modal-action">
-					<button type="button" class="btn" on:click={() => editingItem = null}>ยกเลิก</button>
-					<button type="submit" class="btn btn-primary">บันทึก</button>
-				</div>
-			{/if}
-		</form>
-	</div>
-</dialog>
 
 <div class="max-w-6xl mx-auto">
 	<div class="navbar bg-base-100 bg-opacity-90 backdrop-blur-sm sticky top-0 z-10">
