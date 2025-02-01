@@ -43,6 +43,7 @@
 
 	let editingItem = null;
 	let editImagePreview = '';
+	let userData = data?.user;
 
 	function openProfileEditModal() {
 		if (data.user) {
@@ -147,13 +148,13 @@
 			<!-- Name -->
 			<div class="form-control mb-4">
 				<label class="label">
-					<span class="label-text">username: {data.user.username}</span>
-					<span class="label-text">username: {data.user.name}</span>
+					<span class="label-text">username: {userData.username}</span>
+					<span class="label-text">username: {userData.name}</span>
 				</label>
 				<label class="label">
 					<span class="label-text">ชื่อ</span>
 				</label>
-				<input type="text" name="name" bind:value={data.user.name} class="input input-bordered" required />
+				<input type="text" name="name" bind:value={userData.name} class="input input-bordered" required />
 			</div>
 
 			<!-- Avatar -->
