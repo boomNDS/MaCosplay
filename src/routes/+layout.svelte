@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import "tailwindcss/tailwind.css";
+
 	let { children, data } = $props();
 
 	// Function to save theme preference
@@ -31,7 +32,205 @@
 		document.documentElement.setAttribute('data-theme', theme);
 		saveThemePreference(theme);
 	}
+
+	let profileName = '';
+	let profileAvatar = null;
+	let profileSize = '';
+	let fbProfileUrl = '';
+	let profileImagePreview = '';
+	let errorMessage = '';
+	let showAlert = false;
+
+	let editingItem = null;
+	let editImagePreview = '';
+	let userData = data?.user;
+
+
+
+	function previewProfileImage(event) {
+		const file = event.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				profileImagePreview = e.target.result;
+			};
+			reader.readAsDataURL(file);
+		} else {
+			profileImagePreview = '';
+		}
+	}
+
+	async function handleProfileSubmit(event) {
+		event.preventDefault();
+		const formData = new FormData(event.target);
+		try {
+			const response = await fetch('/api/update-profile', {
+				method: 'PUT',
+				body: formData
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || 'Failed to update profile');
+			}
+
+			console.log('Profile updated successfully');
+			showAlert = false;
+			document.getElementById('profile_modal').close();
+		} catch (error) {
+			console.error('Error updating profile:', error);
+			errorMessage = error.message;
+			showAlert = true;
+		}
+	}
+
+	function previewImage(event) {
+		const file = event.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				editImagePreview = e.target.result;
+			};
+			reader.readAsDataURL(file);
+		} else {
+			editImagePreview = '';
+		}
+	}
+
+	async function handleEditSubmit(event) {
+		event.preventDefault();
+		const formData = new FormData(event.target);
+		try {
+			const response = await fetch('/api/update-item', {
+				method: 'PUT',
+				body: formData
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || 'Failed to update item');
+			}
+
+			editingItem = null;
+			document.getElementById('edit_modal').close();
+		} catch (error) {
+			console.error('Error updating item:', error);
+		}
+	}
 </script>
+
+<!-- Profile Modal -->
+<dialog id="profile_modal" class="modal modal-bottom sm:modal-middle">
+	<div class="modal-box">
+		<h3 class="font-bold text-lg">ตั้งค่าโปรไฟล์</h3>
+		<form on:submit|preventDefault={handleProfileSubmit} enctype="multipart/form-data">
+			<!-- Name -->
+			<div class="form-control mb-4">
+				<label class="label">
+					<span class="label-text">username: {userData.username}</span>
+					<span class="label-text">username: {userData.name}</span>
+				</label>
+				<label class="label">
+					<span class="label-text">ชื่อ</span>
+				</label>
+				<input type="text" name="name" bind:value={userData.name} class="input input-bordered" required />
+			</div>
+
+			<!-- Avatar -->
+			<div class="form-control mb-4">
+				<label class="label">
+					<span class="label-text">อวาตาร์</span>
+				</label>
+				<input
+					type="file"
+					name="avatar"
+					accept="image/*"
+					class="file-input file-input-bordered w-full"
+					on:change={previewProfileImage}
+				/>
+				{#if profileImagePreview}
+					<div class="mt-4">
+						<img src={profileImagePreview} alt="Avatar Preview" class="w-48 h-48 object-cover rounded-lg" />
+					</div>
+				{/if}
+			</div>
+
+			<!-- Overall Body Size -->
+			<!-- <div class="form-control mb-4">
+				<label class="label">
+					<span class="label-text">ขนาดร่างกาย</span>
+				</label>
+				<select name="size" bind:value={profileSize} class="select select-bordered w-full" required>
+					<option value="">เลือกขนาด</option>
+					<option value="S">S</option>
+					<option value="M">M</option>
+					<option value="L">L</option>
+					<option value="XL">XL</option>
+					<option value="XXL">XXL</option>
+				</select>
+			</div> -->
+
+			<!-- Facebook Profile URL -->
+			<div class="form-control mb-4">
+				<label class="label">
+					<span class="label-text">Facebook Profile URL</span>
+				</label>
+				<input type="url" name="fbProfile" bind:value={data.user.fbProfile} class="input input-bordered" placeholder="https://www.facebook.com/yourprofile" />
+			</div>
+
+			<div class="modal-action">
+				<button type="button" class="btn" on:click={() => document.getElementById('profile_modal').close()}>ยกเลิก</button>
+				<button type="submit" class="btn btn-primary">บันทึก</button>
+			</div>
+		</form>
+	</div>
+</dialog>
+
+<!-- dadit Modal -->
+<dialog id="edit_modal" class="modal modal-bottom sm:modal-middle">
+	<div class="modal-box">
+		<h3 class="font-bold text-lg">แก้ไขรายการ</h3>
+		<form on:submit|preventDefault={handleEditSubmit} enctype="multipart/form-data">
+			{#if editingItem}
+				<input type="hidden" name="id" bind:value={editingItem.id} />
+
+				<!-- Name -->
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text">ชื่อสินค้า</span>
+					</label>
+					<input type="text" name="name" bind:value={editingItem.Name} class="input input-bordered" required />
+				</div>
+
+				<!-- Image -->
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text">รูปภาพ</span>
+					</label>
+					<input
+						type="file"
+						name="image"
+						accept="image/*"
+						class="file-input file-input-bordered w-full"
+						on:change={previewImage}
+					/>
+					<div class="mt-4">
+						{#if editImagePreview}
+							<img src={editImagePreview} alt="Image Preview" class="w-48 h-48 object-cover rounded-lg" />
+						{:else if editingItem.Image}
+							<img src={`path/to/image/${editingItem.Image}`} alt="Current Image" class="w-48 h-48 object-cover rounded-lg" />
+						{/if}
+					</div>
+				</div>
+
+				<div class="modal-action">
+					<button type="button" class="btn" on:click={() => editingItem = null}>ยกเลิก</button>
+					<button type="submit" class="btn btn-primary">บันทึก</button>
+				</div>
+			{/if}
+		</form>
+	</div>
+</dialog>
 
 <div class="max-w-6xl mx-auto">
 	<div class="navbar bg-base-100 bg-opacity-90 backdrop-blur-sm sticky top-0 z-10">
@@ -79,7 +278,8 @@
 				</ul>
 			  </details>
 			</li>
-			<li><a>Docs</a></li>
+			<li><a>อัพเกรด</a></li>
+			
 		  </ul>
 		</div>
 		<div class="navbar-end">
@@ -94,8 +294,11 @@
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
 					</svg>
 				</button>
+			
 				<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+					<li><a href="#" on:click|preventDefault={() => document.getElementById('profile_modal').showModal()}>โปรไฟล์</a></li>
 					<li><a href="/manage-access">จัดการสิทธิการเข้าถึง</a></li>
+					
 					<!-- Add more settings options here if needed -->
 				</ul>
 			</div>

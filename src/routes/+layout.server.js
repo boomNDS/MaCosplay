@@ -27,6 +27,5 @@ export const load = async ({ locals }) => {
 
 	return {
 		user: undefined, // Default to an empty array if user is not logged in
-		userStore: await getUserInstances(),
 	};
 };
