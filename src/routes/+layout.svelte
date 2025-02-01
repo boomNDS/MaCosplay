@@ -131,10 +131,7 @@
 		<form on:submit|preventDefault={handleProfileSubmit} enctype="multipart/form-data">
 			<!-- Name -->
 			<div class="form-control mb-4">
-				<label class="label">
-					<span class="label-text">username: {currentUsername}</span>
-					<span class="label-text">username: {currentName}</span>
-				</label>
+	
 				<label class="label">
 					<span class="label-text">ชื่อ</span>
 				</label>
