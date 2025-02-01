@@ -133,13 +133,13 @@
 			<!-- Name -->
 			<div class="form-control mb-4">
 				<label class="label">
-					<span class="label-text">username: {userData?.username}</span>
-					<span class="label-text">username: {userData?.name}</span>
+					<span class="label-text">username: {userData.username}</span>
+					<span class="label-text">username: {userData.name}</span>
 				</label>
 				<label class="label">
 					<span class="label-text">ชื่อ</span>
 				</label>
-				<input type="text" name="name" bind:value={userData?.name} class="input input-bordered" required />
+				<input type="text" name="name" bind:value={userData.name} class="input input-bordered" required />
 			</div>
 
 			<!-- Avatar -->
