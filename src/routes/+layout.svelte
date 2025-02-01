@@ -44,10 +44,10 @@
 	let editingItem = null;
 	let editImagePreview = '';
 
-	let currentUsername = data.user.username;
-	let currentName = data.user.name;
-	let currentAvatar = data.user.avatar;
-	let currentFbProfile = data.user.fbProfile;
+	let currentUsername = data?.user.username;
+	let currentName = data?.user.name;
+	let currentAvatar = data?.user.avatar;
+	let currentFbProfile = data?.user.fbProfile;
 
 
 
