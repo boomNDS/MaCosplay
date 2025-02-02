@@ -6,6 +6,20 @@
 	<div class="container mx-auto p-4 sm:p-6 md:w-6/12">
 		<article class="prose w-full">
 			<h1 class="text-5xl sm:text-5xl">ยินดีต้อนรับสู่ MaCosplay</h1>
+			<div class="badge badge-warning gap-2">
+				<svg
+				  xmlns="http://www.w3.org/2000/svg"
+				  fill="none"
+				  viewBox="0 0 24 24"
+				  class="inline-block h-4 w-4 stroke-current">
+				  <path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M6 18L18 6M6 6l12 12"></path>
+				</svg>
+				อยู่ในระหว่างการพัฒนา
+			  </div>
 			<p class="text-base sm:text-lg">
 				MaCosplay คือแพลตฟอร์มที่สร้างขึ้นเพื่อเชื่อมโยงนักคอสเพลย์ที่ต้องการเช่าชุดกับเจ้าของชุดคอสเพลย์ทั่วประเทศ ด้วยฟีเจอร์ที่ใช้งานง่ายและปลอดภัย คุณสามารถลงประกาศให้เช่าชุดของคุณ หรือค้นหาชุดที่ตรงใจสำหรับงานอีเวนต์หรือการถ่ายรูปได้อย่างสะดวกสบาย
 			  </p>

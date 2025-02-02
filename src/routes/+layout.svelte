@@ -237,7 +237,7 @@
 				</ul>
 			  </details>
 			</li>
-			<li><a>อัพเกรด</a></li>
+			<li><a href="/pricing">อัพเกรด</a></li>
 			
 		  </ul>
 		</div>
