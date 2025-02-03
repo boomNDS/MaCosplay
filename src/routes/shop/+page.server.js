@@ -13,7 +13,8 @@ export const load = async ({ locals, url }) => {
 			// Fetch paginated instances filtered by the current user's ID
 			const response = await adminClient.collection('itemList').getList(page, perPage, {
 				filter: `public=True${searchQuery ? ` && Name ~ "${searchQuery}"` : ''}`,
-				expand: 'user'
+				expand: 'user,userStore',
+				sort: '-created'
 			});
 			return {
 				items: serializeNonPOJOs(response.items), // Serialize the items

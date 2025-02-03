@@ -17,10 +17,18 @@ export const POST = async ({ locals, request }) => {
         const status = formData.get('status');
         const province = formData.get('province');
         const isPublic = formData.get('isPublic') === 'on';
+        const userStore = formData.get('userStore');
+        const price_pri = formData.get('price_pri');
+        const price_test = formData.get('price_test');
+        const isPriTest = formData.get('isPriTest') === 'price_pri_test';
+        console.log(formData.get('isPriTest'))
         // Validate required fields
         if (!name || !price || !size || !status || !province) {
             return json({ error: 'Missing required fields' }, { status: 400 });
         }
+
+
+
 
         // Prepare item data
         const itemData = {
@@ -32,8 +40,14 @@ export const POST = async ({ locals, request }) => {
             Province: province,
             user: locals.user.id,
             Image: image instanceof File ? image : null,
-            public: isPublic
+            public: isPublic,
+            userStore: userStore,
+            price_pri: parseFloat(price_pri),
+            price_test: parseFloat(price_test),
+            isPriTest: isPriTest
         };
+
+
 
 
         // Create the item in PocketBase

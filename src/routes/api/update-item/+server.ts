@@ -15,6 +15,12 @@ export const PUT = async ({ request }) => {
         const status = formData.get('status');
         const province = formData.get('province');
         const isPublic = formData.get('isPublic') === 'on';
+        const price_pri = formData.get('price_pri');
+        const price_test = formData.get('price_test');
+        const isPriTest = formData.get('isPriTest') === 'price_pri_test';
+        console.log(formData.get('isPriTest'))
+
+
 
         if (!id) {
             return json({ error: 'Item ID is required' }, { status: 400 });
@@ -31,8 +37,13 @@ export const PUT = async ({ request }) => {
             Size: size,
             Status: status,
             Province: province,
-            public: isPublic
+            public: isPublic,
+            price_pri: parseFloat(price_pri),
+            price_test: parseFloat(price_test),
+            isPriTest: isPriTest
         };
+
+
 
         console.log(updateData)
 

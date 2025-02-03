@@ -28,6 +28,16 @@
     async function handleEditSubmit(event) {
         const formData = new FormData(event.target);
         console.log('Before submit:', editingItem.public); // Debugging: Check value before submission
+
+        // Set isPriTest based on pricingOption
+        formData.append('isPriTest', pricingOption);
+        console.log('pricingOption:', pricingOption); // Debugging: Log the pricingOption value
+        // Add price_pri and price_test if pricingOption is 'price_pri_test'
+        if (pricingOption === 'price_pri_test') {
+            formData.append('price_pri', event.target.price_pri.value);
+            formData.append('price_test', event.target.price_test.value);
+        }
+
         try {
             const response = await fetch('/api/update-item', {
                 method: 'PUT',
@@ -66,6 +76,19 @@
 
 	async function createInstance(event) {
 		const formData = new FormData(event.target);
+
+        formData.append('userStore', data.StoreDetails.id);
+
+        // Set isPriTest based on pricingOption
+        formData.append('isPriTest', pricingOption === 'price_pri_test');
+        console.log('pricingOption:', pricingOption); // Debugging: Log the pricingOption value
+
+        // Add price_pri and price_test if pricingOption is 'price_pri_test'
+        if (pricingOption === 'price_pri_test') {
+            formData.append('price_pri', event.target.price_pri.value);
+            formData.append('price_test', event.target.price_test.value);
+        }
+
 		try {
 			const response = await fetch('/api/create-item', {
 				method: 'POST',
@@ -131,6 +154,8 @@
             }
         }
     }
+
+    $: console.log('Current pricingOption:', pricingOption);
 </script>
 
 	
@@ -465,7 +490,14 @@
                             </div>
                             
                             <p>{item.Details}</p>
-                            <p class="font-bold">ราคา: {item.price.toLocaleString()} บาท</p>
+                            <p class="font-bold">
+                                
+                                {#if item.isPriTest}
+                                ราคา: {item.price_pri.toLocaleString()} (ไพร) / {item.price_test.toLocaleString()} (เทส) บาท
+                                {:else}
+                                ราคา: {item.price.toLocaleString()} บาท
+                                {/if}
+                            </p>
                             <div class="rating mb-2">
                                 <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
                                 <input
@@ -597,7 +629,7 @@
                                 bind:group={pricingOption}
                                 class="radio radio-primary"
                             />
-                            <span class="ml-2">ใช้ราคา Pri และ Test</span>
+                            <span class="ml-2">ใช้ราคาไพร และ เทส</span>
                         </label>
                     </div>
                 </div>
@@ -616,14 +648,14 @@
                 {#if pricingOption === 'price_pri_test'}
                 <div class="form-control mb-4">
                     <label class="label">
-                        <span class="label-text">ราคา Pri</span>
+                        <span class="label-text">ราคาไพร</span>
                     </label>
                     <input type="number" name="price_pri" bind:value={editingItem.price_pri} class="input input-bordered" required />
                 </div>
 
                 <div class="form-control mb-4">
                     <label class="label">
-                        <span class="label-text">ราคา Test</span>
+                        <span class="label-text">ราคาเทส</span>
                     </label>
                     <input type="number" name="price_test" bind:value={editingItem.price_test} class="input input-bordered" required />
                 </div>
