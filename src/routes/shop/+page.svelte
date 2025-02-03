@@ -7,6 +7,7 @@
 	let fullImage = null;
 	let searchQuery = '';
 	let items = data.itemList.items;
+	let detailItem = null;
 
 	const pb = new PocketBase('https://macosplay.saas.in.th');
 
@@ -67,6 +68,10 @@
 	const limitText = (text: string, maxLength: number) => {
 		return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
 	};
+
+	function openDetailModal(item) {
+		detailItem = item;
+	}
 </script>
 
 <section id="filter" class="pt-12 sm:pt-12 md:pt-14">
@@ -223,7 +228,11 @@
                                 <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
                                 <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
                               </div> -->
-							<div class="card-actions justify-end">
+                       
+							<div class="card-actions justify-end mt-12">
+                                <button class="btn btn-neutral btn-active" on:click={() => openDetailModal(item)}>
+									ดูรายละเอียด
+								</button>
 								<button class="btn btn-neutral btn-active">
 									<a href={item.expand.user.fbProfile} target="_blank">ติดต่อร้านค้า</a>
 								</button>
@@ -265,6 +274,19 @@
 				<button class="btn" on:click={() => (fullImage = null)}>X ปิด</button>
 			</div>
 			<img src={fullImage} alt="Full Image" class="h-auto w-full object-cover" />
+		</div>
+	</div>
+{/if}
+
+<!-- Detail Modal -->
+{#if detailItem}
+	<div class="modal modal-open">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg">รายละเอียดสินค้า</h3>
+			<p style="white-space: pre-wrap;">{detailItem.Desc}</p>
+			<div class="modal-action">
+				<button class="btn" on:click={() => detailItem = null}>ปิด</button>
+			</div>
 		</div>
 	</div>
 {/if}

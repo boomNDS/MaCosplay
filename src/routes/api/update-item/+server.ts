@@ -9,7 +9,7 @@ export const PUT = async ({ request }) => {
         const id = formData.get('id');
         const image = formData.get('image');
         const name = formData.get('name');
-        const details = formData.get('details');
+        const desc = formData.get('details');
         const price = formData.get('price');
         const size = formData.get('size');
         const status = formData.get('status');
@@ -32,7 +32,7 @@ export const PUT = async ({ request }) => {
         // Prepare update data
         const updateData = {
             Name: name,
-            Details: details,
+            Desc: desc,
             price: parseFloat(price),
             Size: size,
             Status: status,

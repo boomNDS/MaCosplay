@@ -11,7 +11,7 @@ export const POST = async ({ locals, request }) => {
         // Extract all necessary fields
         const image = formData.get('image');
         const name = formData.get('name');
-        const details = formData.get('details');
+        const desc = formData.get('details');
         const price = formData.get('price');
         const size = formData.get('size');
         const status = formData.get('status');
@@ -33,13 +33,14 @@ export const POST = async ({ locals, request }) => {
         // Prepare item data
         const itemData = {
             Name: name,
-            Details: details,
+            Desc: desc,
             price: parseFloat(price),
             Size: size,
             Status: status,
             Province: province,
             user: locals.user.id,
             Image: image instanceof File ? image : null,
+
             public: isPublic,
             userStore: userStore,
             price_pri: parseFloat(price_pri),

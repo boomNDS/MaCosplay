@@ -566,7 +566,12 @@
                     <label class="label">
                         <span class="label-text">รายละเอียดสินค้า</span>
                     </label>
-                    <textarea name="details" bind:value={editingItem.Details} class="textarea textarea-bordered"></textarea>
+                    <textarea 
+                        name="details" 
+                        bind:value={editingItem.Desc} 
+                        class="textarea textarea-bordered" 
+                        rows="6"
+                    ></textarea>
                 </div>
 
                 <!-- Size -->
