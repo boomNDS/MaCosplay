@@ -45,6 +45,7 @@ export const GET = async ({ locals, url, cookies }) => {
 		console.log(serializeNonPOJOs(resultList?.items[0].UserNumber));
 		const UserNumAdd = resultList?.items[0].UserNumber + 1;
 		let UserNumber = UserNumAdd;
+
 		// Exchange authorization code for an access token
 		const authData = await locals.pb.collection('users').authWithOAuth2(
 			provider.name, code, expectedVerifier, `${url.origin}/oauth`
@@ -53,15 +54,19 @@ export const GET = async ({ locals, url, cookies }) => {
 		// Log the entire authData object
 		console.log('Auth Data:', serializeNonPOJOs(authData));
 
-		// Extract email and avatar URL from authData
-		const userEmail = authData.meta.email;
-		const userAvatarUrl = authData.meta.avatarUrl;
+		// Use fetchUserProfile to get user profile data
+		const userProfile = await fetchUserProfile(authData.meta.accessToken);
+		console.log('User Profile:', userProfile);
 
-		// Extract the Facebook ID from the authData
-		const facebookId = authData.meta.id;
+		// Extract email and avatar URL from userProfile
+		const userEmail = userProfile.email;
+		const userAvatarUrl = userProfile.picture.data.url;
+
+		// Extract the Facebook ID from the userProfile
+		const facebookId = userProfile.id;
 
 		// Construct the Facebook profile URL using the ID
-		const facebookProfileUrl = `https://www.facebook.com/${facebookId}`;
+		const facebookProfileUrl = userProfile.link;
 
 		// Log the extracted values
 		console.log('Extracted Email:', userEmail);
@@ -83,8 +88,6 @@ export const GET = async ({ locals, url, cookies }) => {
 			fbProfile: facebookProfileUrl // Add the Facebook profile URL
 		});
 
-		// Redirect after successful authentication
-		
 	} catch (err) {
 		console.error('Error Logging in with Facebook OAuth2:', err);
 		throw redirect(303, '/login?error=oauth_failed');
@@ -94,9 +97,11 @@ export const GET = async ({ locals, url, cookies }) => {
 
 // Function to fetch user profile using access token
 async function fetchUserProfile(accessToken) {
-	const response = await fetch('https://graph.facebook.com/me?fields=id,name,email,picture&access_token=' + accessToken);
+	const response = await fetch('https://graph.facebook.com/v19.0/me?fields=id,name,email,picture,link&access_token=' + accessToken);
 	if (!response.ok) {
 		throw new Error('Failed to fetch user profile');
 	}
 	return await response.json();
 }
+
+
