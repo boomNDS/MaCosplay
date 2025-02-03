@@ -21,6 +21,7 @@ export const POST: RequestHandler = async ({ locals, request, cookies }) => {
     const data = await request.json();
     const items = data.items;
     const userId = locals.user?.id || 'null' ;
+    const userEmail = locals.user?.email || '';
     
     /*
         we have: [ { id: "1", quantity: 6 }, { id: "2", quantity: 3 } ]
@@ -39,6 +40,7 @@ export const POST: RequestHandler = async ({ locals, request, cookies }) => {
         metadata: {
             user_id: userId,
         },
+        customer_email: userEmail,
         success_url: `${baseURL}/success`,
         cancel_url: `${baseURL}/cancel`,
     });
