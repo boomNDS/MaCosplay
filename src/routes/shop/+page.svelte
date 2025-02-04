@@ -4,6 +4,7 @@
 	export let data: { itemList: { items: any[]; totalPages: number; currentPage: number } };
 	let selectedProvince = '';
 	let selectedSize = '';
+	let selectedStatus = '';
 	let fullImage = null;
 	let searchQuery = '';
 	let items = data.itemList.items;
@@ -12,29 +13,19 @@
 	const pb = new PocketBase('https://macosplay.saas.in.th');
 
 	onMount(() => {
-		if (typeof EventSource !== 'undefined') {
-			pb.collection('itemList').subscribe('*', (e) => {
-				console.log(e.action, e.record);
-				if (e.action === 'create') {
-					items = [...items, e.record];
-				} else if (e.action === 'update') {
-					items = items.map((item) => (item.id === e.record.id ? e.record : item));
-				} else if (e.action === 'delete') {
-					items = items.filter((item) => item.id !== e.record.id);
-				}
-			});
-
-			return () => {
-				pb.collection('itemList').unsubscribe('*');
-			};
-		} else {
-			console.error('EventSource is not supported in this environment.');
-		}
+		const params = new URLSearchParams(window.location.search);
+		searchQuery = params.get('search') || '';
+		selectedStatus = params.get('status') || '';
+		selectedProvince = params.get('province') || '';
+		selectedSize = params.get('size') || '';
 	});
 
 	function handleSearch() {
 		const params = new URLSearchParams(window.location.search);
 		params.set('search', searchQuery);
+		params.set('status', selectedStatus);
+		params.set('province', selectedProvince);
+		params.set('size', selectedSize);
 		params.set('page', '1');
 		window.location.search = params.toString();
 	}
@@ -42,8 +33,9 @@
 	function resetFilters() {
 		selectedProvince = '';
 		selectedSize = '';
+		selectedStatus = '';
 		searchQuery = '';
-		handleSearch(); // Optionally, reset the search results
+		handleSearch();
 	}
 
 	function changePage(newPage: number) {
@@ -56,9 +48,11 @@
 		return items.filter((item) => {
 			const matchesProvince = !selectedProvince || item.Province === selectedProvince;
 			const matchesSize = !selectedSize || item.Size === selectedSize;
+			const matchesStatus = !selectedStatus || item.Status === selectedStatus;
 			const matchesSearch =
-				!searchQuery || item.Name.toLowerCase().includes(searchQuery.toLowerCase());
-			return matchesProvince && matchesSize && matchesSearch;
+				!searchQuery || item.Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				item.expand?.userStore?.Name.toLowerCase().includes(searchQuery.toLowerCase());
+			return matchesProvince && matchesSize && matchesStatus && matchesSearch;
 		});
 	};
 
@@ -72,41 +66,106 @@
 	function openDetailModal(item) {
 		detailItem = item;
 	}
+
+	// Debounce function to limit the rate of handleSearch calls
+	function debounce(func, wait) {
+		let timeout;
+		return function(...args) {
+			clearTimeout(timeout);
+			timeout = setTimeout(() => func.apply(this, args), wait);
+		};
+	}
+
+	// Create a debounced version of handleSearch
+	const debouncedHandleSearch = debounce(handleSearch, 300);
 </script>
 
 <section id="filter" class="pt-12 sm:pt-12 md:pt-14">
 	<div class="container mx-auto flex flex-col gap-4 p-4 sm:flex-row sm:p-6">
 		<label class="input input-bordered flex w-full items-center gap-2 sm:w-auto">
 			<input type="text" class="grow" placeholder="ค้นหา" bind:value={searchQuery} />
-			<button on:click={handleSearch}>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 16 16"
-					fill="currentColor"
-					class="h-4 w-4 opacity-70"
-				>
-					<path
-						fill-rule="evenodd"
-						d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-						clip-rule="evenodd"
-					/>
-				</svg>
-			</button>
 		</label>
 
 		<!-- ตัวกรองจังหวัดใหม่ -->
 		<label class="input input-bordered flex w-full items-center gap-2 sm:w-auto">
 			<select class="grow" bind:value={selectedProvince}>
 				<option value="">เลือกจังหวัด</option>
-				<option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
-				<option value="เชียงใหม่">เชียงใหม่</option>
-				<option value="ภูเก็ต">ภูเก็ต</option>
-				<option value="กระบี่">กระบี่</option>
-				<option value="ชลบุรี">ชลบุรี</option>
-				<option value="นครราชสีมา">นครราชสีมา</option>
-				<option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
-				<option value="พัทยา">พัทยา</option>
-				<!-- เพิ่มจังหวัดเพิ่มเติมตามต้องการ -->
+							<option value="กระบี่">กระบี่</option>
+							<option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+							<option value="กาญจนบุรี">กาญจนบุรี</option>
+							<option value="กาฬสินธุ์">กาฬสินธุ์</option>
+							<option value="กำแพงเพชร">กำแพงเพชร</option>
+							<option value="ขอนแก่น">ขอนแก่น</option>
+							<option value="จันทบุรี">จันทบุรี</option>
+							<option value="ฉะเชิงเทรา">ฉะเชิงเทรา</option>
+							<option value="ชลบุรี">ชลบุรี</option>
+							<option value="ชัยนาท">ชัยนาท</option>
+							<option value="ชัยภูมิ">ชัยภูมิ</option>
+							<option value="ชุมพร">ชุมพร</option>
+							<option value="เชียงราย">เชียงราย</option>
+							<option value="เชียงใหม่">เชียงใหม่</option>
+							<option value="ตรัง">ตรัง</option>
+							<option value="ตราด">ตราด</option>
+							<option value="ตาก">ตาก</option>
+							<option value="นครนายก">นครนายก</option>
+							<option value="นครปฐม">นครปฐม</option>
+							<option value="นครพนม">นครพนม</option>
+							<option value="นครราชสีมา">นครราชสีมา</option>
+							<option value="นครศรีธรรมราช">นครศรีธรรมราช</option>
+							<option value="นครสวรรค์">นครสวรรค์</option>
+							<option value="นนทบุรี">นนทบุรี</option>
+							<option value="นราธิวาส">นราธิวาส</option>
+							<option value="น่าน">น่าน</option>
+							<option value="บึงกาฬ">บึงกาฬ</option>
+							<option value="บุรีรัมย์">บุรีรัมย์</option>
+							<option value="ปทุมธานี">ปทุมธานี</option>
+							<option value="ประจวบคีรีขันธ์">ประจวบคีรีขันธ์</option>
+							<option value="ปราจีนบุรี">ปราจีนบุรี</option>
+							<option value="ปัตตานี">ปัตตานี</option>
+							<option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
+							<option value="พังงา">พังงา</option>
+							<option value="พัทลุง">พัทลุง</option>
+							<option value="พิจิตร">พิจิตร</option>
+							<option value="พิษณุโลก">พิษณุโลก</option>
+							<option value="เพชรบุรี">เพชรบุรี</option>
+							<option value="เพชรบูรณ์">เพชรบูรณ์</option>
+							<option value="แพร่">แพร่</option>
+							<option value="ภูเก็ต">ภูเก็ต</option>
+							<option value="มหาสารคาม">มหาสารคาม</option>
+							<option value="มุกดาหาร">มุกดาหาร</option>
+							<option value="แม่ฮ่องสอน">แม่ฮ่องสอน</option>
+							<option value="ยโสธร">ยโสธร</option>
+							<option value="ยะลา">ยะลา</option>
+							<option value="ร้อยเอ็ด">ร้อยเอ็ด</option>
+							<option value="ระนอง">ระนอง</option>
+							<option value="ระยอง">ระยอง</option>
+							<option value="ราชบุรี">ราชบุรี</option>
+							<option value="ลพบุรี">ลพบุรี</option>
+							<option value="ลำปาง">ลำปาง</option>
+							<option value="ลำพูน">ลำพูน</option>
+							<option value="เลย">เลย</option>
+							<option value="ศรีสะเกษ">ศรีสะเกษ</option>
+							<option value="สกลนคร">สกลนคร</option>
+							<option value="สงขลา">สงขลา</option>
+							<option value="สตูล">สตูล</option>
+							<option value="สมุทรปราการ">สมุทรปราการ</option>
+							<option value="สมุทรสงคราม">สมุทรสงคราม</option>
+							<option value="สมุทรสาคร">สมุทรสาคร</option>
+							<option value="สระแก้ว">สระแก้ว</option>
+							<option value="สระบุรี">สระบุรี</option>
+							<option value="สิงห์บุรี">สิงห์บุรี</option>
+							<option value="สุโขทัย">สุโขทัย</option>
+							<option value="สุพรรณบุรี">สุพรรณบุรี</option>
+							<option value="สุราษฎร์ธานี">สุราษฎร์ธานี</option>
+							<option value="สุรินทร์">สุรินทร์</option>
+							<option value="หนองคาย">หนองคาย</option>
+							<option value="หนองบัวลำภู">หนองบัวลำภู</option>
+							<option value="อ่างทอง">อ่างทอง</option>
+							<option value="อำนาจเจริญ">อำนาจเจริญ</option>
+							<option value="อุดรธานี">อุดรธานี</option>
+							<option value="อุตรดิตถ์">อุตรดิตถ์</option>
+							<option value="อุทัยธานี">อุทัยธานี</option>
+							<option value="อุบลราชธานี">อุบลราชธานี</option>
 			</select>
 		</label>
 
@@ -122,7 +181,15 @@
 				<!-- เพิ่มขนาดเพิ่มเติมตามต้องการ -->
 			</select>
 		</label>
-		<button class="btn btn-outline" on:click={handleSearch}>ค้นหาทั้งหมด</button>
+		<label class="input input-bordered flex w-full items-center gap-2 sm:w-auto">
+			<select class="grow" bind:value={selectedStatus}>
+				<option value="">เลือกสถานะ</option>
+				<option value="พร้อมให้เช่า">พร้อมให้เช่า</option>
+				<option value="กำลังถูกเช่า">กำลังถูกเช่า</option>
+				<option value="ยังไม่พร้อม">ยังไม่พร้อม</option>
+			</select>
+		</label>
+		<button class="btn btn-outline" on:click={debouncedHandleSearch}>ค้นหาทั้งหมด</button>
 		<button class="btn btn-outline btn-primary" on:click={resetFilters}>Reset</button>
 	</div>
 </section>
@@ -139,17 +206,29 @@
 				{#each filteredItems() as item}
 					<div class="card bg-base-100 shadow-xl">
 						<figure>
+							{#if item.Image}
 							<img
 								src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`}
 								alt="{item.Name} Thumbnail"
-								class="h-auto max-h-48 w-full cursor-pointer object-cover"
+								class="h-44 max-h-48 w-full cursor-pointer object-cover"
 								on:click={() =>
 									(fullImage = `https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`)}
 							/>
+
+							{:else}
+							<img
+								src="/images/Example/Macosplay.png"
+								alt="{item.Name} Thumbnail"
+								class="h-44 max-h-48 w-full cursor-pointer object-cover"
+								
+							/>
+
+							{/if}
+							
 						</figure>
 						<div class="card-body">
 							<div class="flex items-center justify-between">
-								<div class="avatar mb-2">
+								<div class="avatar mb-2 flex items-center">
 									<div class="h-8 w-8 overflow-hidden rounded-full">
 										{#if item.user && item.expand?.user?.avatar}
 											<img
@@ -159,12 +238,13 @@
 											/>
 										{:else}
 											<img
-												src="/path/to/fallback-avatar.png"
+												src="/images/Example/Macosplay.png"
 												alt="Fallback Avatar"
 												class="h-full w-full object-cover"
 											/>
 										{/if}
 									</div>
+									<span class="ml-2">{limitText((item.expand?.user?.name || ''), 10)}</span>
 								</div>
                                 
 								<div
@@ -191,7 +271,7 @@
 									{item.expand?.user?.VerifyShop}
 								</div>
 							</div>
-                            <p>ชื่อร้านค้า: {limitText((item.expand?.userStore?.Name || ''), 20)}</p>
+                            <p>ร้านค้า: {limitText((item.expand?.userStore?.Name || ''), 20)}</p>
 
                             <h2 class="card-title">{limitText(item.Name, 33)}</h2>
 							<div class="badge badge-neutral">{item.Province}</div>
