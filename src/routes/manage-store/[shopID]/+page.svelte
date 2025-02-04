@@ -124,14 +124,16 @@
 
     let selectedProvince = ''; // State to hold the selected province
     let selectedSize = ''; // State to hold the selected size
+    let selectedStatus = '';
 
-
-    // Function to filter items based on the selected province and size
+    // Function to filter items based on search and selected filters
     const filteredItems = () => {
         return data.itemList.filter(item => {
+            const matchesSearch = item.Name.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesProvince = !selectedProvince || item.Province === selectedProvince;
             const matchesSize = !selectedSize || item.Size === selectedSize;
-            return matchesProvince && matchesSize; // Return items that match both filters
+            const matchesStatus = !selectedStatus || item.Status === selectedStatus;
+            return matchesSearch && matchesProvince && matchesSize && matchesStatus;
         });
     };
 
@@ -168,6 +170,12 @@
     }
 
     $: console.log('Current pricingOption:', pricingOption);
+
+    function shareToFacebook(item) {
+        const imageUrl = `https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`;
+        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(imageUrl)}`;
+        window.open(shareUrl, '_blank');
+    }
 </script>
 
 	
@@ -176,9 +184,13 @@
 <section id="home" class="flex items-center justify-center">
 	<div class="container mx-auto w-full p-4 sm:p-6 flex flex-col items-center">
         <div class="flex flex-col sm:flex-row sm:space-x-2 w-full items-center justify-center">
-           
-                <img src={`https://macosplay.saas.in.th/api/files/nrxs44dis9q1tgb/${data?.StoreDetails.id}/${data?.StoreDetails.banner}`}  alt="cosshop" class="w-full h-auto object-cover">
-
+            <img 
+                src={data?.StoreDetails.banner 
+                    ? `https://macosplay.saas.in.th/api/files/nrxs44dis9q1tgb/${data.StoreDetails.id}/${data.StoreDetails.banner}` 
+                    : '/images/Example/Cosshop.png'} 
+                alt="cosshop" 
+                class="w-full h-auto object-cover"
+            >
         </div>
         <div class="flex flex-col items-center justify-center">
             
@@ -397,7 +409,7 @@
                                         bind:group={pricingOption}
                                         class="radio radio-primary"
                                     />
-                                    <span class="ml-2">ใช้ราคาไพรหรือเทส</span>
+                                    <span class="ml-2">ใช้ราคาไพร และ เทส</span>
                                 </label>
                             </div>
                         </div>
@@ -470,6 +482,110 @@
         <section class="mb-6">
             <h2 class="mb-2 text-2xl font-semibold">จัดการสินค้า</h2>
         </section>
+        <div class="search-filter-container flex flex-wrap gap-4 mb-4">
+            <input 
+                type="text" 
+                placeholder="Search..." 
+                bind:value={searchQuery} 
+                class="input input-bordered flex-grow"
+            />
+
+            <select bind:value={selectedProvince} class="select select-bordered flex-grow">
+                <option value="">เลือกจังหวัด</option>
+                <option value="กระบี่">กระบี่</option>
+                <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                <option value="กาญจนบุรี">กาญจนบุรี</option>
+                <option value="กาฬสินธุ์">กาฬสินธุ์</option>
+                <option value="กำแพงเพชร">กำแพงเพชร</option>
+                <option value="ขอนแก่น">ขอนแก่น</option>
+                <option value="จันทบุรี">จันทบุรี</option>
+                <option value="ฉะเชิงเทรา">ฉะเชิงเทรา</option>
+                <option value="ชลบุรี">ชลบุรี</option>
+                <option value="ชัยนาท">ชัยนาท</option>
+                <option value="ชัยภูมิ">ชัยภูมิ</option>
+                <option value="ชุมพร">ชุมพร</option>
+                <option value="เชียงราย">เชียงราย</option>
+                <option value="เชียงใหม่">เชียงใหม่</option>
+                <option value="ตรัง">ตรัง</option>
+                <option value="ตราด">ตราด</option>
+                <option value="ตาก">ตาก</option>
+                <option value="นครนายก">นครนายก</option>
+                <option value="นครปฐม">นครปฐม</option>
+                <option value="นครพนม">นครพนม</option>
+                <option value="นครราชสีมา">นครราชสีมา</option>
+                <option value="นครศรีธรรมราช">นครศรีธรรมราช</option>
+                <option value="นครสวรรค์">นครสวรรค์</option>
+                <option value="นนทบุรี">นนทบุรี</option>
+                <option value="นราธิวาส">นราธิวาส</option>
+                <option value="น่าน">น่าน</option>
+                <option value="บึงกาฬ">บึงกาฬ</option>
+                <option value="บุรีรัมย์">บุรีรัมย์</option>
+                <option value="ปทุมธานี">ปทุมธานี</option>
+                <option value="ประจวบคีรีขันธ์">ประจวบคีรีขันธ์</option>
+                <option value="ปราจีนบุรี">ปราจีนบุรี</option>
+                <option value="ปัตตานี">ปัตตานี</option>
+                <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
+                <option value="พังงา">พังงา</option>
+                <option value="พัทลุง">พัทลุง</option>
+                <option value="พิจิตร">พิจิตร</option>
+                <option value="พิษณุโลก">พิษณุโลก</option>
+                <option value="เพชรบุรี">เพชรบุรี</option>
+                <option value="เพชรบูรณ์">เพชรบูรณ์</option>
+                <option value="แพร่">แพร่</option>
+                <option value="ภูเก็ต">ภูเก็ต</option>
+                <option value="มหาสารคาม">มหาสารคาม</option>
+                <option value="มุกดาหาร">มุกดาหาร</option>
+                <option value="แม่ฮ่องสอน">แม่ฮ่องสอน</option>
+                <option value="ยโสธร">ยโสธร</option>
+                <option value="ยะลา">ยะลา</option>
+                <option value="ร้อยเอ็ด">ร้อยเอ็ด</option>
+                <option value="ระนอง">ระนอง</option>
+                <option value="ระยอง">ระยอง</option>
+                <option value="ราชบุรี">ราชบุรี</option>
+                <option value="ลพบุรี">ลพบุรี</option>
+                <option value="ลำปาง">ลำปาง</option>
+                <option value="ลำพูน">ลำพูน</option>
+                <option value="เลย">เลย</option>
+                <option value="ศรีสะเกษ">ศรีสะเกษ</option>
+                <option value="สกลนคร">สกลนคร</option>
+                <option value="สงขลา">สงขลา</option>
+                <option value="สตูล">สตูล</option>
+                <option value="สมุทรปราการ">สมุทรปราการ</option>
+                <option value="สมุทรสงคราม">สมุทรสงคราม</option>
+                <option value="สมุทรสาคร">สมุทรสาคร</option>
+                <option value="สระแก้ว">สระแก้ว</option>
+                <option value="สระบุรี">สระบุรี</option>
+                <option value="สิงห์บุรี">สิงห์บุรี</option>
+                <option value="สุโขทัย">สุโขทัย</option>
+                <option value="สุพรรณบุรี">สุพรรณบุรี</option>
+                <option value="สุราษฎร์ธานี">สุราษฎร์ธานี</option>
+                <option value="สุรินทร์">สุรินทร์</option>
+                <option value="หนองคาย">หนองคาย</option>
+                <option value="หนองบัวลำภู">หนองบัวลำภู</option>
+                <option value="อ่างทอง">อ่างทอง</option>
+                <option value="อำนาจเจริญ">อำนาจเจริญ</option>
+                <option value="อุดรธานี">อุดรธานี</option>
+                <option value="อุตรดิตถ์">อุตรดิตถ์</option>
+                <option value="อุทัยธานี">อุทัยธานี</option>
+                <option value="อุบลราชธานี">อุบลราชธานี</option>
+            </select>
+
+            <select bind:value={selectedSize} class="select select-bordered flex-grow">
+                <option value="">เลือกขนาด</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <!-- Add more sizes as needed -->
+            </select>
+
+            <select bind:value={selectedStatus} class="select select-bordered flex-grow">
+                <option value="">สถานะ</option>
+                <option value="พร้อมให้เช่า">พร้อมให้เช่า</option>
+                <option value="กำลังถูกเช่า">กำลังถูกเช่า</option>
+                <option value="ยังไม่พร้อม">ยังไม่พร้อม</option>
+                <!-- Add more statuses as needed -->
+            </select>
+        </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[48rem] overflow-y-auto"> <!-- Limit to 4 rows -->
             {#if filteredItems().length > 0}
                 {#each filteredItems() as item}
@@ -527,13 +643,19 @@
                                 <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
                                 <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
                               </div>
-                            <div class="card-actions justify-end">
-                             
-                                <button class="btn btn-neutral btn-active" on:click={() => openEditModal(item)}>
+                            <div class="card-actions justify-end flex space-x-2">
+                                <button class="w-auto btn btn-neutral btn-active" on:click={() => openEditModal(item)}>
                                     เผยแพร่หรือแก้ไข  
                                 </button>
-                                <button class="btn btn-neutral btn-active">
-                                    <a href={item.Details} target="_blank">ดูรายละเอียด</a>
+                                <a href={item.Details} target="_blank" class="w-auto btn btn-neutral btn-active">
+                                    ดูรายละเอียด
+                                </a>
+                                <!-- Facebook Share Button -->
+                                <button class="w-full btn-facebook" on:click={() => shareToFacebook(item)}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-2">
+                                        <path d="M22.675 0h-21.35C.597 0 0 .597 0 1.326v21.348C0 23.403.597 24 1.326 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.794.143v3.24l-1.918.001c-1.504 0-1.794.715-1.794 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.729 0 1.326-.597 1.326-1.326V1.326C24 .597 23.403 0 22.675 0z"/>
+                                    </svg>
+                                    แชร์ไปยัง Facebook
                                 </button>
                             </div>
                         </div>
@@ -747,6 +869,44 @@
 <style>
     .file-input {
         margin-top: 1rem;
+    }
+    .search-filter-container {
+        margin-bottom: 1rem;
+    }
+    .item-card {
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    .btn-facebook {
+        background-color: #3b5998; /* Facebook blue */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-facebook:hover {
+        background-color: #2d4373; /* Darker blue on hover */
+    }
+
+    .btn-facebook:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 89, 152, 0.5);
+    }
+
+    .w-6 {
+        width: 24px;
+        height: 24px;
+    }
+
+    .mr-2 {
+        margin-right: 8px;
     }
 </style>
 

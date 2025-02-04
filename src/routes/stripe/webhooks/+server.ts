@@ -75,10 +75,18 @@ export const POST: RequestHandler = async ({ request, response }) => {
 				console.log("Success")
 				const record = await adminClient.collection('users').getOne(userId)
 				const Upgrade = 1 //record.Tokens
-				await adminClient.collection('users').update( userId, { Upgrade }); // Update Subscription Stuff
+				await adminClient.collection('users').update(userId, { Upgrade }); // Update Subscription Stuff
+			} else if(priceId === "price_1QovizEImwkNVTjXwRx78j4O") { // New PriceID
+				console.log("Another Success")
+				// Add logic for this specific priceId
+				const record = await adminClient.collection('users').getOne(userId)
+				const Upgrade = 2 // Different upgrade logic
+				await adminClient.collection('users').update(userId, { Upgrade }); // Update Subscription Stuff
 			} else {
                 console.log("Fail")
 			}
+
+			price_1QovizEImwkNVTjXwRx78j4O
 			
 			
 			/* await locals.pb.collection('users').update(locals.user.id, { Subscription }); */

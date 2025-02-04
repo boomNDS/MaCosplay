@@ -3,9 +3,18 @@ import { serializeNonPOJOs } from "$lib/utils";
 import { createAdminClient } from '$lib/pocketbase';
 
 export const load = async ({ locals }) => {
+	const adminClient = await createAdminClient();
+	const user = await adminClient.collection('users').getOne(locals.user.id);
+	if(user.Upgrade === 1){
+		adminClient.collection('users').update(locals.user.id, {
+			VerifyShop: "ยืนยันร้านค้าแล้ว"
+		});
+	}
+
 
 	const getUserInstances = async () => {
 		const adminClient = await createAdminClient();
+
 		try {
 			// Fetch instances filtered by the current user's ID
 			const instances = await adminClient.collection('userStore').getFullList({
