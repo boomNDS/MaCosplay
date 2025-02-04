@@ -72,7 +72,7 @@
 
 	<div class="w-full my-8">
 		<PricingModule callToAction="Get Started" highlightedPlanId="pro" data={data}/>
-		<h1 class="text-2xl font-bold text-center mt-24">Pricing FAQ</h1>
+		<!-- <h1 class="text-2xl font-bold text-center mt-24">Pricing FAQ</h1>
 		<div class="flex place-content-center">
 			<div class="join join-vertical max-w-xl py-6 mx-auto">
 				<div class="collapse collapse-arrow join-item border border-primary">
@@ -196,6 +196,6 @@
 					{/each}
 				</tbody>
 			</table>
-		</div>
+		</div> -->
 	</div>
 </div>
