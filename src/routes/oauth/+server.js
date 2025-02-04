@@ -41,6 +41,7 @@ export const GET = async ({ locals, url, cookies }) => {
 	}
 
 	try {
+		
 		const resultList = await adminClient.collection('users').getList(1, 1, { sort: '-created' });
 		console.log(serializeNonPOJOs(resultList?.items[0].UserNumber));
 		const UserNumAdd = resultList?.items[0].UserNumber + 1;
@@ -57,6 +58,10 @@ export const GET = async ({ locals, url, cookies }) => {
 		// Use fetchUserProfile to get user profile data
 		const userProfile = await fetchUserProfile(authData.meta.accessToken);
 		console.log('User Profile:', userProfile);
+
+		// Fetch user's fan pages
+		const userPages = await fetchUserPages(authData.meta.accessToken);
+		console.log('User Pages:', userPages);
 
 		// Extract email and avatar URL from userProfile
 		const userEmail = userProfile.email;
@@ -78,15 +83,23 @@ export const GET = async ({ locals, url, cookies }) => {
 		const avatarBlob = await avatarResponse.blob();
 		const avatarFile = new File([avatarBlob], 'avatar.jpg', { type: avatarBlob.type });
 
-		// Update user profile in PocketBase
-		await adminClient.collection('users').update(authData.record.id, {
-			avatar: avatarFile, // Pass the avatar as a File
-			email: userEmail,
-			UserNumber: UserNumber,
-			MaxShop: 1,
-			VerifyShop: "ยังไม่ได้ยืนยันร้านค้า",
-			fbProfile: facebookProfileUrl // Add the Facebook profile URL
-		});
+		// Fetch the user record to check the current UserNumber
+		const userRecord = await adminClient.collection('users').getOne(authData.record.id);
+
+		// Check if UserNumber is greater than 0
+		if (userRecord.UserNumber > 0) {
+			console.log('UserNumber already set:', userRecord.UserNumber);
+		} else {
+			// Update user profile in PocketBase
+			await adminClient.collection('users').update(authData.record.id, {
+				avatar: avatarFile, // Pass the avatar as a File
+				email: userEmail,
+				UserNumber: UserNumber,
+				MaxShop: 1,
+				VerifyShop: "ยังไม่ได้ยืนยันร้านค้า",
+				fbProfile: facebookProfileUrl // Add the Facebook profile URL
+			});
+		}
 
 	} catch (err) {
 		console.error('Error Logging in with Facebook OAuth2:', err);
@@ -100,6 +113,15 @@ async function fetchUserProfile(accessToken) {
 	const response = await fetch('https://graph.facebook.com/v19.0/me?fields=id,name,email,picture,link&access_token=' + accessToken);
 	if (!response.ok) {
 		throw new Error('Failed to fetch user profile');
+	}
+	return await response.json();
+}
+
+// Function to fetch user pages using access token
+async function fetchUserPages(accessToken) {
+	const response = await fetch('https://graph.facebook.com/v19.0/me/accounts?access_token=' + accessToken);
+	if (!response.ok) {
+		throw new Error('Failed to fetch user pages');
 	}
 	return await response.json();
 }
