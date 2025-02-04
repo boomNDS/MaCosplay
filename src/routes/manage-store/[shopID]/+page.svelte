@@ -26,17 +26,8 @@
     }
 
     async function handleEditSubmit(event) {
-        const formData = new FormData(event.target);
-        console.log('Before submit:', editingItem.public); // Debugging: Check value before submission
-
-        // Set isPriTest based on pricingOption
-        formData.append('isPriTest', pricingOption);
-        console.log('pricingOption:', pricingOption); // Debugging: Log the pricingOption value
-        // Add price_pri and price_test if pricingOption is 'price_pri_test'
-        if (pricingOption === 'price_pri_test') {
-            formData.append('price_pri', event.target.price_pri.value);
-            formData.append('price_test', event.target.price_test.value);
-        }
+        const formData = new FormData();
+        formData.append('file', event.target.files[0]); // Append the file to formData
 
         try {
             const response = await fetch('/api/update-item', {
@@ -44,21 +35,42 @@
                 body: formData
             });
             if (response.ok) {
-				location.reload();
-			} else {
+                location.reload();
+            } else {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to update item');
             }
-
-
-            editingItem = null;
-            // Optionally refresh the item list
         } catch (error) {
             console.error('Error updating item:', error);
             errorMessage = error.message;
             showAlert = true;
         }
     }
+
+    async function handleBannerUpload(event) {
+        console.log('Banner upload triggered');
+        const formData = new FormData();
+        formData.append('banner', event.target.files[0]); // Append the file to formData
+        formData.append('shopId', data.StoreDetails.id); // Append the shop ID to formData
+
+        try {
+            const response = await fetch('/api/update-shop', {
+                method: 'PUT',
+                body: formData
+            });
+            if (response.ok) {
+                location.reload();
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to update banner');
+            }
+        } catch (error) {
+            console.error('Error updating banner:', error);
+            errorMessage = error.message;
+            showAlert = true;
+        }
+    }
+
 	const provinces = [
 		"กรุงเทพมหานคร",
 		"เชียงใหม่",
@@ -168,7 +180,12 @@
                 <img src={`https://macosplay.saas.in.th/api/files/nrxs44dis9q1tgb/${data?.StoreDetails.id}/${data?.StoreDetails.banner}`}  alt="cosshop" class="w-full h-auto object-cover">
 
         </div>
-        
+        <div class="flex flex-col items-center justify-center">
+            
+        </div>
+        <p class="mt-4 text-center text-sm sm:text-base">เปลี่ยนรูปภาพหน้าร้าน</p>
+        <input type="file" class="file-input file-input-bordered w-full max-w-xs" on:change={handleBannerUpload} />
+
 
         <h2 class="text-center mt-4 text-lg sm:text-xl">{data?.StoreDetails.Name}</h2>
         <p class="text-center text-sm sm:text-base">Example shop</p>
@@ -726,5 +743,11 @@
         </div>
     </div>
 {/if}
+
+<style>
+    .file-input {
+        margin-top: 1rem;
+    }
+</style>
 
 

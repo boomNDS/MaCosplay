@@ -10,15 +10,16 @@ export const load = async ({ locals, params, url }) => {
 	const getItemList = async () => {
 		const adminClient = await createAdminClient();
 		try {
-			const response = await adminClient.collection('itemList').getList(page, perPage, {
-				filter: `user = "${locals.user.id}" && public=True${searchQuery ? ` && Name ~ "${searchQuery}"` : ''}`,
+			const response = await adminClient.collection('itemList').getFullList({
+				filter: `user = "${locals.user.id}" && public=True${searchQuery ? ` && Name ~ "${searchQuery}"` : ''} && userStore.slug="${params.shopID}"`,
 				expand: 'user,userStore',
 				sort: '-created'
 			});
+
 			return {
-				items: serializeNonPOJOs(response.items),
-				totalPages: response.totalPages,
-				currentPage: response.page
+				items: serializeNonPOJOs(response),
+				totalPages: Math.ceil(response.length / perPage),
+				currentPage: page
 			};
 		} catch (err) {
 			console.log('Error fetching user instances: ', err);

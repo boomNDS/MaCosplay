@@ -180,10 +180,9 @@
 	<div class="container mx-auto w-full p-4 sm:p-6 flex flex-col items-center">
         <div class="flex flex-col sm:flex-row sm:space-x-2 w-full items-center justify-center">
            
-                <img src="/images/Example/Cosshop.png" alt="cosshop" class="w-full h-auto object-cover">
+            <img src={`https://macosplay.saas.in.th/api/files/nrxs44dis9q1tgb/${data?.StoreDetails.id}/${data?.StoreDetails.banner}`}  alt="cosshop" class="w-full h-auto object-cover">
 
-        </div>
-        
+    </div>
         <h2 class="text-center mt-4 text-lg sm:text-xl">{data?.StoreDetails.Name}</h2>
         <p class="text-center text-sm sm:text-base">Example shop</p>
     </div>
@@ -254,14 +253,6 @@
 
 
 
-<section id="features">
-    <div class="container mx-auto p-4 sm:p-6">
-        <!-- Pocketbase Rental Card -->
-        <section class="mb-6">
-            <h2 class="mb-2 text-2xl font-semibold">รายการสินค้า</h2>
-        </section>
-    </div>
-</section>
 
 
 <section id="features" class="pt-12 sm:pt-12 md:pt-14">

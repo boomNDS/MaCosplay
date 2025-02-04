@@ -5,7 +5,7 @@ import { serializeNonPOJOs } from '$lib/utils';
 
 
 export async function POST({ locals, request }) {
-    const { shopName, shopDetails, region } = await request.json(); // Include region
+    const { shopName, shopDetails, region, slug } = await request.json(); // Include slug
     
     // Create the admin client for PocketBase
     const adminClient = await createAdminClient();
@@ -23,9 +23,22 @@ export async function POST({ locals, request }) {
             return responseToken;
         }
 
+        // Check if the slug is already in use
+        const existingSlugs = await adminClient.collection('userStore').getFullList({
+            filter: `slug="${slug}"`
+        });
+
+        if (existingSlugs.length > 0) {
+            return new Response(JSON.stringify({ error: 'Slug is already in use. Please choose another one.' }), {
+                status: 409,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            });
+        }
+
         const resultList = await adminClient.collection('userStore').getList(1, 1, { sort: '-created' });
-        console.log(serializeNonPOJOs(resultList?.items[0].Code));
-        const port = resultList?.items[0].Code + 1;
+
         // Step 1: Create the instance via your backend
         /* const response = await fetch('https://i18jk.saas.in.th/create-instance', {
             method: 'POST',
@@ -48,6 +61,7 @@ export async function POST({ locals, request }) {
             user: locals.user.id,
             Details: shopDetails,
             Province: region, // Save region
+            slug: slug // Save slug
         });
 
         if (record.MaxShop >= 1) {
