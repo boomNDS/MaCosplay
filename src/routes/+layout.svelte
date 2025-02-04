@@ -207,9 +207,6 @@
 		</div>
 		<div class="navbar-end">
 			{#if data.user}
-			<form action="/logout" method="POST">
-				<button class="btn" type="submit">Logout</button>
-			</form>
 			<div class="dropdown dropdown-end">
 				<button tabindex="0" class="btn btn-ghost flex items-center">
 					ตั้งค่า
@@ -231,6 +228,11 @@
 								<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
 							</svg>
 						</label>
+					</li>
+					<li>
+						<form action="/logout" method="POST">
+							<button class="btn w-full text-left">Logout</button>
+						</form>
 					</li>
 				</ul>
 			</div>
