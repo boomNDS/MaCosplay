@@ -76,7 +76,7 @@ export const POST: RequestHandler = async ({ request, response }) => {
 				const record = await adminClient.collection('users').getOne(userId)
 				const Upgrade = 1 //record.Tokens
 				await adminClient.collection('users').update(userId, { Upgrade }); // Update Subscription Stuff
-			} else if(priceId === "price_1QovizEImwkNVTjXwRx78j4O") { // New PriceID
+			} else if(priceId === "price_1QovvkEImwkNVTjXd8F3CZt7") { // New PriceID
 				console.log("Another Success")
 				// Add logic for this specific priceId
 				const record = await adminClient.collection('users').getOne(userId)
