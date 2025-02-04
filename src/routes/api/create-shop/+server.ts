@@ -5,7 +5,7 @@ import { serializeNonPOJOs } from '$lib/utils';
 
 
 export async function POST({ locals, request }) {
-    const { shopName, shopDetails } = await request.json(); // Get the username from the request body
+    const { shopName, shopDetails, region } = await request.json(); // Include region
     
     // Create the admin client for PocketBase
     const adminClient = await createAdminClient();
@@ -47,6 +47,7 @@ export async function POST({ locals, request }) {
             Name: shopName,
             user: locals.user.id,
             Details: shopDetails,
+            Province: region, // Save region
         });
 
         if (record.MaxShop >= 1) {

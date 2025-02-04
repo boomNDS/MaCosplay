@@ -16,8 +16,23 @@ export const load = async ({ locals, url }) => {
 				expand: 'user,userStore',
 				sort: '-created'
 			});
+
+			// Filter the expanded user data to include specific fields
+			const items = response.items.map(item => {
+				if (item.expand?.user) {
+					item.expand.user = {
+						id: item.expand.user.id,
+						name: item.expand.user.name,
+						fbProfile: item.expand.user.fbProfile,
+						VerifyShop: item.expand.user.VerifyShop,
+						avatar: item.expand.user.avatar
+					};
+				}
+				return item;
+			});
+
 			return {
-				items: serializeNonPOJOs(response.items), // Serialize the items
+				items: serializeNonPOJOs(items), // Serialize the items
 				totalPages: response.totalPages,
 				currentPage: response.page
 			};

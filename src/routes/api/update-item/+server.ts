@@ -1,7 +1,13 @@
 import { json } from '@sveltejs/kit';
 import { createAdminClient } from '$lib/pocketbase';
+import { redirect } from '@sveltejs/kit';
 
-export const PUT = async ({ request }) => {
+export const PUT = async ({ request, locals }) => {
+
+    if(!locals.user.id){
+        throw redirect(302, '/login');
+    }
+
     const adminClient = await createAdminClient();
     
     try {
@@ -60,8 +66,9 @@ export const PUT = async ({ request }) => {
         }
 
         // Update item
-        const updatedItem = await adminClient.collection('itemList').update(id, updateData);
+        const updatedItem = await locals.pb.collection('itemList').update(id, updateData);
         return json(updatedItem, { status: 200 });
+
 
     } catch (error) {
         console.error('Error updating item:', error);
