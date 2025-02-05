@@ -71,19 +71,17 @@ export const GET = async ({ locals, url, cookies }) => {
 		// Construct the Facebook profile URL using the ID
 		const facebookProfileUrl = userProfile.link;
 
-		// Log the extracted values
-		console.log('Extracted Email:', userEmail);
-		console.log('Extracted Avatar URL:', userAvatarUrl);
-		console.log('Facebook Profile URL:', facebookProfileUrl);
+
 
 		// Fetch the avatar image as a Blob
 		const avatarResponse = await fetch(userAvatarUrl);
 		const avatarBlob = await avatarResponse.blob();
 		const avatarFile = new File([avatarBlob], 'avatar.jpg', { type: avatarBlob.type });
 
+		console.log(authData.record.id);
 		// Fetch the user record to check the current UserNumber
 		const userRecord = await adminClient.collection('users').getOne(authData.record.id);
-
+		console.log(userRecord);
 		// Check if UserNumber is greater than 0
 		if (userRecord.UserNumber > 0) {
 			console.log('UserNumber already set:', userRecord.UserNumber);
