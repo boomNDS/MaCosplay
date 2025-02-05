@@ -66,13 +66,13 @@ export const GET = async ({ locals, url, cookies }) => {
 		console.log('User Profile:', userProfile);
 
 		// Extract email and avatar URL from userProfile
-		const userEmail = userProfile.email;
-		const userAvatarUrl = userProfile.picture.data.url;
+		const userEmail = authData.meta.email;
+		const userAvatarUrl = authData.meta.avatarUrl;
 
 
 
 		// Extract the Facebook ID from the userProfile
-		const facebookId = userProfile.id;
+		const facebookId = authData.meta.id;
 
 		// Construct the Facebook profile URL using the ID
 		const facebookProfileUrl = userProfile.link;
