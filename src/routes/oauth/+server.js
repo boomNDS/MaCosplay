@@ -96,7 +96,7 @@ export const GET = async ({ locals, url, cookies }) => {
 		} else {
 			// Update user profile in PocketBase
 			await locals.pb.collection('users').update(authData.record.id, {
-				avatar: avatarFile, // Pass the avatar as a File
+/* 				avatar: avatarFile, // Pass the avatar as a File */
 				email: userEmail,
 				UserNumber: UserNumber,
 				MaxShop: 1,
