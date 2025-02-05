@@ -96,12 +96,12 @@ export const GET = async ({ locals, url, cookies }) => {
 			// Update user profile in PocketBase
 
 			await adminClient.collection('users').update(userRecord.id, {
-				avatar: avatarFile, // Pass the avatar as a File
-				email: userEmail,
-				UserNumber: UserNumber,
+				avatar: 'avatarFile', // Pass the avatar as a File
+				email: 'dea@gmail.com',
+				UserNumber: 1,
 				MaxShop: 1,
 				VerifyShop: "ยังไม่ได้ยืนยันร้านค้า",
-				fbProfile: facebookProfileUrl // Add the Facebook profile URL
+				fbProfile: 'test' // Add the Facebook profile URL
 			});
 			console.log('User profile updated successfully');
 		}
