@@ -59,9 +59,7 @@ export const GET = async ({ locals, url, cookies }) => {
 		const userProfile = await fetchUserProfile(authData.meta.accessToken);
 		console.log('User Profile:', userProfile);
 
-		// Fetch user's fan pages
-		const userPages = await fetchUserPages(authData.meta.accessToken);
-		console.log('User Pages:', userPages);
+
 
 		// Extract email and avatar URL from userProfile
 		const userEmail = userProfile.email;
@@ -117,13 +115,5 @@ async function fetchUserProfile(accessToken) {
 	return await response.json();
 }
 
-// Function to fetch user pages using access token
-async function fetchUserPages(accessToken) {
-	const response = await fetch('https://graph.facebook.com/v19.0/me/accounts?access_token=' + accessToken);
-	if (!response.ok) {
-		throw new Error('Failed to fetch user pages');
-	}
-	return await response.json();
-}
 
 
