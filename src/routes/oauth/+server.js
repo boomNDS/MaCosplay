@@ -48,7 +48,7 @@ export const GET = async ({ locals, url, cookies }) => {
 
 		// Exchange authorization code for an access token
 		const authData = await locals.pb.collection('users').authWithOAuth2(
-			provider.name, code, expectedVerifier, `${url.origin}/oauth`
+			provider.name, code, expectedVerifier, `https://macosplay.com/oauth`
 		);
 
 		// Log the entire authData object
