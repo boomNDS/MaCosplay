@@ -2,10 +2,9 @@ import { redirect } from '@sveltejs/kit';
 import PocketBase from 'pocketbase';
 import { serializeNonPOJOs } from '$lib/utils';
 
-
+const adminClient = new PocketBase(import.meta.env.VITE_PB_URL);
 
 export const GET = async ({ locals, url, cookies }) => {
-	const adminClient = new PocketBase(import.meta.env.VITE_PB_URL);
 	console.log('OAUTH CALL');
 
 	// Authenticate admin client
@@ -42,7 +41,6 @@ export const GET = async ({ locals, url, cookies }) => {
 	}
 
 	try {
-		
 		const resultList = await adminClient.collection('users').getList(1, 1, { sort: '-created' });
 		console.log(serializeNonPOJOs(resultList?.items[0].UserNumber));
 		const UserNumAdd = resultList?.items[0].UserNumber + 1;
@@ -50,12 +48,8 @@ export const GET = async ({ locals, url, cookies }) => {
 
 		// Exchange authorization code for an access token
 		const authData = await locals.pb.collection('users').authWithOAuth2(
-			provider.name, code, expectedVerifier, `${url.origin}/oauth`,
-			{
-				UserNumber: 0
-			}
+			provider.name, code, expectedVerifier, `${url.origin}/oauth`
 		);
-
 
 		// Log the entire authData object
 		console.log('Auth Data:', serializeNonPOJOs(authData));
@@ -63,8 +57,6 @@ export const GET = async ({ locals, url, cookies }) => {
 		// Use fetchUserProfile to get user profile data
 		const userProfile = await fetchUserProfile(authData.meta.accessToken);
 		console.log('User Profile:', userProfile);
-
-
 
 		// Extract email and avatar URL from userProfile
 		const userEmail = userProfile.email;
@@ -76,35 +68,25 @@ export const GET = async ({ locals, url, cookies }) => {
 		// Construct the Facebook profile URL using the ID
 		const facebookProfileUrl = userProfile.link;
 
-
+		// Log the extracted values
+		console.log('Extracted Email:', userEmail);
+		console.log('Extracted Avatar URL:', userAvatarUrl);
+		console.log('Facebook Profile URL:', facebookProfileUrl);
 
 		// Fetch the avatar image as a Blob
 		const avatarResponse = await fetch(userAvatarUrl);
 		const avatarBlob = await avatarResponse.blob();
 		const avatarFile = new File([avatarBlob], 'avatar.jpg', { type: avatarBlob.type });
 
-		console.log(authData.record.id);
-		// Fetch the user record to check the current UserNumber
-		const userRecord = await adminClient.collection('users').getOne(authData.record.id);
-		console.log('Fetched User Record:', userRecord);
-		
-
-		// Check if UserNumber is greater than 0
-		if (userRecord.UserNumber > 0) {
-			console.log('UserNumber already set:', userRecord.UserNumber);
-		} else {
-			// Update user profile in PocketBase
-
-			await adminClient.collection('users').update(userRecord.id, {
-				avatar: 'avatarFile', // Pass the avatar as a File
-				email: 'dea@gmail.com',
-				UserNumber: 1,
-				MaxShop: 1,
-				VerifyShop: "ยังไม่ได้ยืนยันร้านค้า",
-				fbProfile: 'test' // Add the Facebook profile URL
-			});
-			console.log('User profile updated successfully');
-		}
+		// Update user profile in PocketBase
+		await adminClient.collection('users').update(authData.record.id, {
+			avatar: avatarFile, // Pass the avatar as a File
+			email: userEmail,
+			UserNumber: UserNumber,
+			MaxShop: 1,
+			VerifyShop: "ยังไม่ได้ยืนยันร้านค้า",
+			fbProfile: facebookProfileUrl // Add the Facebook profile URL
+		});
 
 	} catch (err) {
 		console.error('Error Logging in with Facebook OAuth2:', err);
@@ -121,6 +103,4 @@ async function fetchUserProfile(accessToken) {
 	}
 	return await response.json();
 }
-
-
 
