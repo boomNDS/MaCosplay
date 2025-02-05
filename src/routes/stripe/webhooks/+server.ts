@@ -76,7 +76,7 @@ export const POST: RequestHandler = async ({ request, response }) => {
 	
 				const Upgrade = 1 //record.Tokens
 				await adminClient.collection('users').update(userId, { Upgrade }); // Update Subscription Stuff
-			} else if(priceId === "price_1QovvkEImwkNVTjXd8F3CZt7") { // New PriceID
+			} else if(priceId === "price_1QovizEImwkNVTjXwRx78j4O") { // New PriceID
 				console.log("Another Success")
 				// Add logic for this specific priceId
 
@@ -86,8 +86,6 @@ export const POST: RequestHandler = async ({ request, response }) => {
                 console.log("Fail")
 			}
 
-			price_1QovizEImwkNVTjXwRx78j4O
-			
 			
 			/* await locals.pb.collection('users').update(locals.user.id, { Subscription }); */
 			// await locals.pb.collection('users').update(locals.user.id, { Token });
