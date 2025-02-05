@@ -64,6 +64,11 @@ export const GET = async ({ locals, url, cookies }) => {
 		const userEmail = userProfile.email;
 		const userAvatarUrl = userProfile.picture.data.url;
 
+		await locals.pb.collection('users').update(authData.record.id, {
+			email: userEmail,
+			// other fields...
+		});
+
 		// Extract the Facebook ID from the userProfile
 		const facebookId = userProfile.id;
 
