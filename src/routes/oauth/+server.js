@@ -41,6 +41,7 @@ export const GET = async ({ locals, url, cookies }) => {
 	}
 
 	try {
+		
 		const resultList = await adminClient.collection('users').getList(1, 1, { sort: '-created' });
 		console.log(serializeNonPOJOs(resultList?.items[0].UserNumber));
 		const UserNumAdd = resultList?.items[0].UserNumber + 1;
@@ -48,7 +49,7 @@ export const GET = async ({ locals, url, cookies }) => {
 
 		// Exchange authorization code for an access token
 		const authData = await locals.pb.collection('users').authWithOAuth2(
-			provider.name, code, expectedVerifier, `https://macosplay.com/oauth`
+			provider.name, code, expectedVerifier, `${url.origin}/oauth`
 		);
 
 		// Log the entire authData object
@@ -78,15 +79,23 @@ export const GET = async ({ locals, url, cookies }) => {
 		const avatarBlob = await avatarResponse.blob();
 		const avatarFile = new File([avatarBlob], 'avatar.jpg', { type: avatarBlob.type });
 
-		// Update user profile in PocketBase
-		await adminClient.collection('users').update(authData.record.id, {
-			avatar: avatarFile, // Pass the avatar as a File
-			email: userEmail,
-			UserNumber: UserNumber,
-			MaxShop: 1,
-			VerifyShop: "ยังไม่ได้ยืนยันร้านค้า",
-			fbProfile: facebookProfileUrl // Add the Facebook profile URL
-		});
+		// Fetch the user record to check the current UserNumber
+		const userRecord = await adminClient.collection('users').getOne(authData.record.id);
+
+		// Check if UserNumber is greater than 0
+		if (userRecord.UserNumber > 0) {
+			console.log('UserNumber already set:', userRecord.UserNumber);
+		} else {
+			// Update user profile in PocketBase
+			await adminClient.collection('users').update(authData.record.id, {
+				avatar: avatarFile, // Pass the avatar as a File
+				email: userEmail,
+				UserNumber: UserNumber,
+				MaxShop: 1,
+				VerifyShop: "ยังไม่ได้ยืนยันร้านค้า",
+				fbProfile: facebookProfileUrl // Add the Facebook profile URL
+			});
+		}
 
 	} catch (err) {
 		console.error('Error Logging in with Facebook OAuth2:', err);
@@ -103,4 +112,5 @@ async function fetchUserProfile(accessToken) {
 	}
 	return await response.json();
 }
+
 
