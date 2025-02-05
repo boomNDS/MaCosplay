@@ -66,8 +66,8 @@ export const GET = async ({ locals, url, cookies }) => {
 		console.log('User Profile:', userProfile);
 
 		// Extract email and avatar URL from userProfile
-		const userEmail = authData.meta.email;
-		const userAvatarUrl = authData.meta.avatarUrl;
+		const userEmail = userProfile?.email;
+		const userAvatarUrl = userProfile?.picture.data.url;
 		const userName = userProfile?.name;
 
 
