@@ -50,7 +50,12 @@ export const GET = async ({ locals, url, cookies }) => {
 
 		// Exchange authorization code for an access token
 		const authData = await locals.pb.collection('users').authWithOAuth2(
-			provider.name, code, expectedVerifier, `${url.origin}/oauth`
+			provider.name, code, expectedVerifier, `${url.origin}/oauth`,
+			{
+				MaxShop: 1,
+				UserNumber: 0,
+				VerifyShop: "ยังไม่ได้ยืนยันร้านค้า"
+			}
 		);
 
 		// Log the entire authData object
@@ -64,10 +69,7 @@ export const GET = async ({ locals, url, cookies }) => {
 		const userEmail = userProfile.email;
 		const userAvatarUrl = userProfile.picture.data.url;
 
-		await locals.pb.collection('users').update(authData.record.id, {
-			email: userEmail,
-			// other fields...
-		});
+
 
 		// Extract the Facebook ID from the userProfile
 		const facebookId = userProfile.id;
