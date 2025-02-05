@@ -31,9 +31,28 @@ export const load = async ({ locals, params, url }) => {
 		const adminClient = await createAdminClient();
 		try {
 			const instances = await adminClient.collection('userStore').getFullList({
-				filter: `slug = "${shopSlug}"`
+				filter: `slug = "${shopSlug}"`,
+				expand: 'user'
 			});
-			return serializeNonPOJOs(instances[0]);
+
+			// Map through the instances and select specific fields from the expanded user
+			const storeDetails = instances.map(instance => {
+				if (instance.expand?.user) {
+					instance.expand.user = {
+						id: instance.expand.user.id,
+						name: instance.expand.user.name,
+						// Add or remove fields as needed
+						fbProfile: instance.expand.user.fbProfile,
+						VerifyShop: instance.expand.user.VerifyShop,
+						avatar: instance.expand.user.avatar
+					};
+				}
+				return instance;
+			});
+
+
+
+			return serializeNonPOJOs(storeDetails[0]);
 		} catch (err) {
 			console.log('Error fetching store details: ', err);
 			throw error(err.status, err.message);

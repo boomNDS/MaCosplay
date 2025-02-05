@@ -120,19 +120,20 @@
     let items = data.itemList.items;
     let selectedProvince = ''; // State to hold the selected province
     let selectedSize = ''; // State to hold the selected size
+    let selectedStatus = '';
 
-
-    // Function to filter items based on the selected province and size
+    // Function to filter items based on the selected province, size, status, and search query
     const filteredItems = () => {
-		return items.filter((item) => {
-			const matchesProvince = !selectedProvince || item.Province === selectedProvince;
-			const matchesSize = !selectedSize || item.Size === selectedSize;
-			const matchesSearch =
-				!searchQuery || item.Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				item.expand?.userStore?.Name.toLowerCase().includes(searchQuery.toLowerCase());
-			return matchesProvince && matchesSize && matchesSearch;
-		});
-	};
+        return items.filter((item) => {
+            const matchesProvince = !selectedProvince || item.Province === selectedProvince;
+            const matchesSize = !selectedSize || item.Size === selectedSize;
+            const matchesStatus = !selectedStatus || item.Status === selectedStatus;
+            const matchesSearch =
+                !searchQuery || item.Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                item.expand?.userStore?.Name.toLowerCase().includes(searchQuery.toLowerCase());
+            return matchesProvince && matchesSize && matchesStatus && matchesSearch;
+        });
+    };
     
     console.log(data?.StoreDetails);
 
@@ -171,6 +172,8 @@
     function openDetailModal(item) {
         detailItem = item;
     }
+
+    
 </script>
 
 	
@@ -183,12 +186,59 @@
             <img src={`https://macosplay.saas.in.th/api/files/nrxs44dis9q1tgb/${data?.StoreDetails.id}/${data?.StoreDetails.banner}`}  alt="cosshop" class="w-full h-auto object-cover">
 
     </div>
-        <h2 class="text-center mt-4 text-lg sm:text-xl">{data?.StoreDetails.Name}</h2>
-        <p class="text-center text-sm sm:text-base">Example shop</p>
+    <div class="avatar mb-2 flex items-center">
+        <div class="h-8 w-8 overflow-hidden rounded-full mt-4">
+            {#if data?.StoreDetails.expand?.user}
+                <img
+                    src={`https://macosplay.saas.in.th/api/files/_pb_users_auth_/${data?.StoreDetails.expand?.user?.id}/${data?.StoreDetails.expand?.user?.avatar}`}
+                    alt="Avatar"
+                    class="h-full w-full object-cover"
+                />
+
+            {:else}
+                <img
+                    src="/images/Example/Macosplay.png"
+                    alt="Fallback Avatar"
+                    class="h-full w-full object-cover"
+                />
+            {/if}
+        </div>
+        <span class="ml-2">{limitText((data?.StoreDetails?.expand?.user?.name || ''), 10)}</span>
     </div>
+        <h2 class="text-center mt-4 text-lg sm:text-xl">{data?.StoreDetails.Name}</h2>
+        <p class="text-center text-sm sm:text-base">{data?.StoreDetails.Details}</p>
+        <label class="label">
+            <p class="text-center">ลิงค์ร้านค้า</p>
+        </label>
+
+        
+        <a href={`https://macosplay.com/store/${data?.StoreDetails.slug}`} class="link">{`https://macosplay.com/store/${data?.StoreDetails.slug}`} </a>
+        <a href={data?.StoreDetails.fbPage} class="link mt-4">
+            <button type="submit" class="btn btn-facebook mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-2">
+                    <path d="M22.675 0h-21.35C.597 0 0 .597 0 1.326v21.348C0 23.403.597 24 1.326 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.794.143v3.24l-1.918.001c-1.504 0-1.794.715-1.794 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.729 0 1.326-.597 1.326-1.326V1.326C24 .597 23.403 0 22.675 0z"/>
+                </svg>
+                ไปที่เพจร้านค้า Facebook
+            </button>
+
+        </a>
+        <a href={data?.StoreDetails.expand?.user?.fbProfile} class="link mt-4">
+            <button type="submit" class="btn btn-facebook mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-2">
+                    <path d="M22.675 0h-21.35C.597 0 0 .597 0 1.326v21.348C0 23.403.597 24 1.326 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.794.143v3.24l-1.918.001c-1.504 0-1.794.715-1.794 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.729 0 1.326-.597 1.326-1.326V1.326C24 .597 23.403 0 22.675 0z"/>
+                </svg>
+                ติดต่อผู้ขาย
+            </button>
+
+        </a>
+        
+    
+    </div>
+
+    
 </section>
 
-
+<!-- 
 <section id="stats" class="flex w-full items-center justify-center">
     <div class="stats shadow">
         <div class="stat">
@@ -249,7 +299,7 @@
         </div>
       </div>
 
-</section>
+</section> -->
 
 
 
@@ -257,85 +307,68 @@
 
 <section id="features" class="pt-12 sm:pt-12 md:pt-14">
     <div class="container mx-auto p-4 sm:p-6">
-        <!-- Pocketbase Rental Card -->
         <section class="mb-6">
-            <h2 class="mb-2 text-2xl font-semibold">รายการสินค้า</h2>
+            <h2 class="mb-2 text-2xl font-semibold">จัดการสินค้า</h2>
         </section>
-        <div class="grid max-h-[48rem] grid-cols-1 gap-4 overflow-y-auto sm:grid-cols-2 lg:grid-cols-3">
-            <!-- Limit to 4 rows -->
+        <div class="search-filter-container flex flex-wrap gap-4 mb-4">
+            <input 
+                type="text" 
+                placeholder="Search..." 
+                bind:value={searchQuery} 
+                class="input input-bordered flex-grow"
+            />
+
+            <select bind:value={selectedProvince} class="select select-bordered flex-grow">
+                <option value="">เลือกจังหวัด</option>
+                <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                <option value="เชียงใหม่">เชียงใหม่</option>
+                <option value="ภูเก็ต">ภูเก็ต</option>
+                <option value="ชลบุรี">ชลบุรี</option>
+                <option value="นครราชสีมา">นครราชสีมา</option>
+                <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
+                <option value="เชียงราย">เชียงราย</option>
+                <option value="ขอนแก่น">ขอนแก่น</option>
+                <option value="สงขลา">สงขลา</option>
+                <option value="นครปฐม">นครปฐม</option>
+                <option value="อุดรธานี">อุดรธานี</option>
+                <!-- Add more provinces as needed -->
+            </select>
+
+            <select bind:value={selectedSize} class="select select-bordered flex-grow">
+                <option value="">เลือกขนาด</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+            </select>
+
+            <select bind:value={selectedStatus} class="select select-bordered flex-grow">
+                <option value="">สถานะ</option>
+                <option value="พร้อมให้เช่า">พร้อมให้เช่า</option>
+                <option value="กำลังถูกเช่า">กำลังถูกเช่า</option>
+                <option value="ยังไม่พร้อม">ยังไม่พร้อม</option>
+            </select>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[48rem] overflow-y-auto">
             {#if filteredItems().length > 0}
                 {#each filteredItems() as item}
                     <div class="card bg-base-100 shadow-xl">
                         <figure>
-                            <img
-                                src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`}
-                                alt="{item.Name} Thumbnail"
-                                class="h-auto max-h-48 w-full cursor-pointer object-cover"
+                            <img 
+                                src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`} 
+                                alt="{item.Name} Thumbnail" 
+                                class="w-full h-auto max-h-48 object-cover cursor-pointer" 
                                 on:click={() => fullImage = `https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`}
                             />
                         </figure>
                         <div class="card-body">
-                            <div class="flex items-center justify-between">
-                                <div class="avatar mb-2 flex items-center">
-                                    <div class="h-8 w-8 overflow-hidden rounded-full">
-                                        {#if item.user && item.expand?.user?.avatar}
-                                            <img
-                                                src={`https://macosplay.saas.in.th/api/files/_pb_users_auth_/${item.expand?.user?.id}/${item.expand?.user?.avatar}`}
-                                                alt="Avatar"
-                                                class="h-full w-full object-cover"
-                                            />
-                                        {:else}
-                                            <img
-                                                src="/path/to/fallback-avatar.png"
-                                                alt="Fallback Avatar"
-                                                class="h-full w-full object-cover"
-                                            />
-                                        {/if}
-                                    </div>
-                                    <span class="ml-2">{limitText((item.expand?.user?.name || ''), 10)}</span>
-                                </div>
-                                
-                                <div
-                                    class="badge {item.expand?.user?.VerifyShop === 'ยืนยันร้านค้าแล้ว'
-                                        ? 'badge-primary badge-outline'
-                                        : item.expand?.user?.VerifyShop === 'ยังไม่ได้ยืนยันร้านค้า'} gap-2"
-                                >
-                                    {#if item.expand?.user?.VerifyShop === 'ยืนยันร้านค้าแล้ว'}
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            class="h-4 w-4 text-blue-500"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M5 13l4 4L19 7"
-                                            />
-                                        </svg>
-                                    {/if}
-                                    {item.expand?.user?.VerifyShop}
-                                </div>
-                            </div>
-                            <p>ร้านค้า: {limitText((item.expand?.userStore?.Name || ''), 20)}</p>
-
                             <h2 class="card-title">{limitText(item.Name, 33)}</h2>
                             <div class="badge badge-neutral">{item.Province}</div>
                             <div class="badge badge-outline">Size: {item.Size}</div>
-                            <div
-                                class="badge {item.Status === 'พร้อมให้เช่า'
-                                    ? 'badge-success'
-                                    : item.Status === 'กำลังถูกเช่า'
-                                        ? 'badge-warning'
-                                        : item.Status === 'อยู่ระหว่างการซ่อมบำรุง'
-                                            ? 'badge-error'
-                                            : ''} gap-2"
-                            >
+                            <div class="badge {item.Status === 'พร้อมให้เช่า' ? 'badge-success' : item.Status === 'กำลังถูกเช่า' ? 'badge-warning' : item.Status === 'อยู่ระหว่างการซ่อมบำรุง' ? 'badge-error' : ''} gap-2">
                                 {item.Status}
                             </div>
-                            
                             <p>{item.Details}</p>
                             <p class="font-bold">
                                 {#if item.isPriTest}
@@ -344,20 +377,24 @@
                                 ราคา: {item.price.toLocaleString()} บาท
                                 {/if}
                             </p>
-                            
-                            <div class="card-actions justify-end mt-12">
-                                <button class="btn btn-neutral btn-active" on:click={() => openDetailModal(item)}>
+                            <div class="card-actions justify-end flex space-x-2">
+                                
+                             
+                                <button class="w-auto btn btn-neutral btn-active" on:click={() => openDetailModal(item)}>
                                     ดูรายละเอียด
                                 </button>
-                                <button class="btn btn-neutral btn-active">
-                                    <a href={item.expand.user.fbProfile} target="_blank">ติดต่อร้านค้า</a>
-                                </button>
+                                <a href={data.StoreDetails.fbPage} target="_blank" class="w-auto btn btn-neutral btn-active">
+                                    <button class="w-auto btn btn-neutral btn-active">
+                                        ติดต่อร้านค้า
+                                    </button>
+                                </a>
+                               
                             </div>
                         </div>
                     </div>
                 {/each}
             {:else}
-                <div class="card w-full bg-base-100 shadow-xl sm:w-96">
+                <div class="card w-full sm:w-96 bg-base-100 shadow-xl">
                     <div class="card-body">
                         <h2 class="card-title">ไม่เจอร้านค้า</h2>
                         <p>ไม่พบข้อมูลชุดเช่าในขณะนี้</p>
@@ -574,3 +611,42 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+    .file-input {
+        margin-top: 1rem;
+    }
+    .search-filter-container {
+        margin-bottom: 1rem;
+    }
+    .btn-facebook {
+        background-color: #3b5998;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-facebook:hover {
+        background-color: #2d4373;
+    }
+
+    .btn-facebook:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 89, 152, 0.5);
+    }
+
+    .w-6 {
+        width: 24px;
+        height: 24px;
+    }
+
+    .mr-2 {
+        margin-right: 8px;
+    }
+</style>

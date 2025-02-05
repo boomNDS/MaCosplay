@@ -13,6 +13,7 @@
     let fullImage = null;
     let pricingOption = 'price_only'; // Initialize with a default value
     let isPublic = true; // Default value for the public switch
+    let fbPageUrl = ''; // Variable to hold the Facebook page URL
 
     function openEditModal(item) {
         editingItem = { ...item }; // Create a copy of the item
@@ -52,6 +53,7 @@
         const formData = new FormData();
         formData.append('banner', event.target.files[0]); // Append the file to formData
         formData.append('shopId', data.StoreDetails.id); // Append the shop ID to formData
+        formData.append('fbPage', data.StoreDetails.fbPage); // Append the fbPage to formData
 
         try {
             const response = await fetch('/api/update-shop', {
@@ -147,6 +149,7 @@
 
     let createImagePreview = '';
     let editImagePreview = '';
+    let detailItem = null;
 
     function previewImage(event, type) {
         const file = event.target.files[0];
@@ -176,6 +179,37 @@
         const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(imageUrl)}`;
         window.open(shareUrl, '_blank');
     }
+
+    function openDetailModal(item) {
+		detailItem = item;
+	}
+
+    async function updateFbPage() {
+        try {
+            const formData = new FormData();
+            formData.append('fbPage', fbPageUrl); // Append the Facebook page URL
+            formData.append('shopId', data.StoreDetails.id); // Append the shop ID
+
+            const response = await fetch('/api/update-shop', {
+                method: 'PUT',
+                body: formData
+            });
+
+            if (response.ok) {
+                // Optionally, update the local data to reflect the change
+                data.StoreDetails.fbPage = fbPageUrl;
+                console.log('Facebook page updated successfully');
+                location.reload(); // Refresh the page
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to update Facebook page');
+            }
+        } catch (error) {
+            console.error('Error updating Facebook page:', error);
+            errorMessage = error.message;
+            showAlert = true;
+        }
+    }
 </script>
 
 	
@@ -198,9 +232,36 @@
         <p class="mt-4 text-center text-sm sm:text-base">เปลี่ยนรูปภาพหน้าร้าน</p>
         <input type="file" class="file-input file-input-bordered w-full max-w-xs" on:change={handleBannerUpload} />
 
+        <!-- Facebook Profile URL -->
+			<div class="form-control mb-4 justify-center items-center text-center">
+				<label class="label">
+					<p class="text-center">ลิงค์ร้านค้า</p>
+				</label>
+
+				
+                <a href={`https://macosplay.com/store/${data?.StoreDetails.slug}`} class="link">{`https://macosplay.com/store/${data?.StoreDetails.slug}`} </a>
+			</div>
+
+            <div class="form-control mb-4 justify-center items-center text-center">
+				<label class="label">
+					<p class="text-center">ลิงค์เพจ Facebook</p>
+				</label>
+                <a href={data?.StoreDetails.fbPage} class="link mt-4">{data?.StoreDetails.fbPage} </a>
+				<input 
+
+					type="url" 
+					name="fbProfile" 
+					bind:value={fbPageUrl} 
+					class="input input-bordered text-gray-500 mt-4" 
+					placeholder={data?.StoreDetails.fbPage}
+				/>
+                
+                <button class="btn btn-outline mt-4" on:click={updateFbPage}>อัพเดท</button>
+			</div>
+
 
         <h2 class="text-center mt-4 text-lg sm:text-xl">{data?.StoreDetails.Name}</h2>
-        <p class="text-center text-sm sm:text-base">Example shop</p>
+        <p class="text-center text-sm sm:text-base">{data?.StoreDetails.Details}</p>
     </div>
 </section>
 
@@ -647,9 +708,9 @@
                                 <button class="w-auto btn btn-neutral btn-active" on:click={() => openEditModal(item)}>
                                     เผยแพร่หรือแก้ไข  
                                 </button>
-                                <a href={item.Details} target="_blank" class="w-auto btn btn-neutral btn-active">
-                                    ดูรายละเอียด
-                                </a>
+                                <button class="btn btn-neutral btn-active" on:click={() => openDetailModal(item)}>
+									ดูรายละเอียด
+								</button>
                                 <!-- Facebook Share Button -->
                                 <button class="w-full btn-facebook" on:click={() => shareToFacebook(item)}>
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-2">
@@ -861,7 +922,6 @@
                 <button class="btn" on:click={() => fullImage = null}>X ปิดภาพ</button>
             </div>
             <img src={fullImage} alt="Full Image" class="w-full h-auto object-cover" />
-            
         </div>
     </div>
 {/if}
@@ -911,3 +971,16 @@
 </style>
 
 
+
+<!-- Detail Modal -->
+{#if detailItem}
+	<div class="modal modal-open">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg">รายละเอียดสินค้า</h3>
+			<p style="white-space: pre-wrap;">{detailItem.Desc}</p>
+			<div class="modal-action">
+				<button class="btn" on:click={() => detailItem = null}>ปิด</button>
+			</div>
+		</div>
+	</div>
+{/if}

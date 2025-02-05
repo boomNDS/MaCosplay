@@ -67,6 +67,11 @@
 		detailItem = item;
 	}
 
+	function navigateToStore(item) {
+        const storeSlug = item.expand.userStore.slug;
+        goto(`/store/${storeSlug}`);
+    }
+
 	// Debounce function to limit the rate of handleSearch calls
 	function debounce(func, wait) {
 		let timeout;
@@ -210,7 +215,7 @@
 							<img
 								src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`}
 								alt="{item.Name} Thumbnail"
-								class="h-44 max-h-48 w-full cursor-pointer object-cover"
+								class="h-48 max-h-48 w-full cursor-pointer object-cover"
 								on:click={() =>
 									(fullImage = `https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`)}
 							/>
@@ -219,7 +224,7 @@
 							<img
 								src="/images/Example/Macosplay.png"
 								alt="{item.Name} Thumbnail"
-								class="h-44 max-h-48 w-full cursor-pointer object-cover"
+								class="h-48 max-h-48 w-full cursor-pointer object-cover"
 								
 							/>
 
@@ -310,12 +315,28 @@
                               </div> -->
                        
 							<div class="card-actions justify-end mt-12">
+								{#if item.expand?.userStore?.slug}
+									<a href={`/store/${item.expand.userStore.slug}`} class="w-auto btn btn-neutral btn-active">
+										ดูร้านค้า
+									</a>
+								{/if}
+
+								
+
+
                                 <button class="btn btn-neutral btn-active" on:click={() => openDetailModal(item)}>
 									ดูรายละเอียด
 								</button>
-								<button class="btn btn-neutral btn-active">
-									<a href={item.expand.user.fbProfile} target="_blank">ติดต่อร้านค้า</a>
-								</button>
+							
+								<a href={item?.expand?.userStore?.fbPage} target="_blank">
+									<button type="submit" class="btn btn-facebook mb-4">
+										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-2">
+											<path d="M22.675 0h-21.35C.597 0 0 .597 0 1.326v21.348C0 23.403.597 24 1.326 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.794.143v3.24l-1.918.001c-1.504 0-1.794.715-1.794 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.729 0 1.326-.597 1.326-1.326V1.326C24 .597 23.403 0 22.675 0z"/>
+										</svg>
+										ติดต่อ FB ร้านค้า
+									</button>
+								</a>
+								
 							</div>
 						</div>
 					</div>
@@ -370,3 +391,36 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+	.btn-facebook {
+        background-color: #3b5998;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-facebook:hover {
+        background-color: #2d4373;
+    }
+
+    .btn-facebook:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 89, 152, 0.5);
+    }
+
+
+	.join {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+    }
+	
+	
+</style>
