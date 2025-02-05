@@ -85,20 +85,22 @@ export const GET = async ({ locals, url, cookies }) => {
 		// Fetch the user record to check the current UserNumber
 		const userRecord = await adminClient.collection('users').getOne(authData.record.id);
 		console.log('Fetched User Record:', userRecord);
-
+		
+		await adminClient.collection('users').update(authData?.record?.id, {
+			avatar: avatarFile, // Pass the avatar as a File
+			email: userEmail,
+			UserNumber: UserNumber,
+			MaxShop: 1,
+			VerifyShop: "ยังไม่ได้ยืนยันร้านค้า",
+			fbProfile: facebookProfileUrl // Add the Facebook profile URL
+		});
+		
 		// Check if UserNumber is greater than 0
 		if (authData.record.UserNumber > 0) {
 			console.log('UserNumber already set:', userRecord.UserNumber);
 		} else {
 			// Update user profile in PocketBase
-			await adminClient.collection('users').update(authData?.record?.id, {
-				avatar: avatarFile, // Pass the avatar as a File
-				email: userEmail,
-				UserNumber: UserNumber,
-				MaxShop: 1,
-				VerifyShop: "ยังไม่ได้ยืนยันร้านค้า",
-				fbProfile: facebookProfileUrl // Add the Facebook profile URL
-			});
+			
 			console.log('User profile updated successfully');
 		}
 
