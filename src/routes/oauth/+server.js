@@ -116,7 +116,7 @@ export const GET = async ({ locals, url, cookies }) => {
 
 // Function to fetch user profile using access token
 async function fetchUserProfile(accessToken) {
-	const response = await fetch('https://graph.facebook.com/v22.0/me?fields=id,name,email,picture,link&access_token=' + accessToken);
+	const response = await fetch('https://graph.facebook.com/v17.0/me?fields=id,name,email,picture,link&access_token=' + accessToken);
 	if (!response.ok) {
 		throw new Error('Failed to fetch user profile');
 	}
