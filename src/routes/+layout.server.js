@@ -15,13 +15,20 @@ export const load = async ({ locals }) => {
 			autoRefreshThreshold: 30 * 60
 		}
 	);
+
+	if (!locals.user) {
+		console.log("User is not defined");
+		return {
+			user: undefined,
+		};
+	}
+
 	const user = await adminClient.collection('users').getOne(locals.user.id);
 	if(user.Upgrade === 1){
 		adminClient.collection('users').update(locals.user.id, {
 			VerifyShop: "ยืนยันร้านค้าแล้ว"
 		});
 	}
-
 
 	const getUserInstances = async () => {
 		const adminClient = await createAdminClient();
@@ -38,14 +45,8 @@ export const load = async ({ locals }) => {
 		}
 	};
 
-	if (locals.user) {
-		return {
-			user: locals.user,// Default to an empty array if undefined
-			userStore: await getUserInstances(),
-		};
-	}
-
 	return {
-		user: undefined, // Default to an empty array if user is not logged in
+		user: locals.user,
+		userStore: await getUserInstances(),
 	};
 };
