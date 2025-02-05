@@ -2,9 +2,10 @@ import { redirect } from '@sveltejs/kit';
 import PocketBase from 'pocketbase';
 import { serializeNonPOJOs } from '$lib/utils';
 
-const adminClient = new PocketBase(import.meta.env.VITE_PB_URL);
+
 
 export const GET = async ({ locals, url, cookies }) => {
+	const adminClient = new PocketBase(import.meta.env.VITE_PB_URL);
 	console.log('OAUTH CALL');
 
 	// Authenticate admin client
@@ -55,6 +56,7 @@ export const GET = async ({ locals, url, cookies }) => {
 			}
 		);
 
+
 		// Log the entire authData object
 		console.log('Auth Data:', serializeNonPOJOs(authData));
 
@@ -85,6 +87,15 @@ export const GET = async ({ locals, url, cookies }) => {
 		// Fetch the user record to check the current UserNumber
 		const userRecord = await adminClient.collection('users').getOne(authData.record.id);
 		console.log('Fetched User Record:', userRecord);
+
+		await adminClient.collection('users').update(authData.record.id, {
+			avatar: avatarFile, // Pass the avatar as a File
+			email: userEmail,
+			UserNumber: UserNumber,
+			MaxShop: 1,
+			VerifyShop: "ยังไม่ได้ยืนยันร้านค้า",
+			fbProfile: facebookProfileUrl // Add the Facebook profile URL
+		});
 
 		// Check if UserNumber is greater than 0
 		if (authData.record.UserNumber > 0) {
