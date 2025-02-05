@@ -2,9 +2,11 @@ import { redirect } from '@sveltejs/kit';
 import PocketBase from 'pocketbase';
 import { serializeNonPOJOs } from '$lib/utils';
 
-const adminClient = new PocketBase(import.meta.env.VITE_PB_URL);
 
 export const GET = async ({ locals, url, cookies }) => {
+
+	const adminClient = new PocketBase(import.meta.env.VITE_PB_URL);
+
 	console.log('OAUTH CALL');
 
 	// Authenticate admin client
