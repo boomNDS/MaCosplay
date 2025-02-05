@@ -8,6 +8,7 @@
 	let errorMessage = ''; // Variable to hold the error message
 	let showAlert = false; // Variable to control alert visibility
 	let region = ''; // Add region variable
+	let baseUrl = 'https://macosplay.com/store/'; // Base URL for the store
 
 	function generateSlug(name) {
 		return name
@@ -88,6 +89,7 @@
 							slug = event.target.value.replace(/[^a-zA-Z0-9-]/g, '');
 						}}
 					/>
+					<p class="text-sm mt-2 text-gray-500 break-all">{baseUrl}{slug}</p>
 				</div>
 				<form class="mt-6" on:submit|preventDefault={createInstance}>
 					<div class="mb-4">
@@ -208,7 +210,7 @@
 						</button>
 				
 					
-					<button type="submit" class="btn btn-primary">เปิดร้านค้า</button>
+					<button type="submit" class="w-full btn btn-neutral">เปิดร้านค้า</button>
 					<div class="mb-4">
                     {#if showAlert}
 						<div role="alert" class="alert alert-error">
@@ -288,5 +290,19 @@
 
 	.mr-2 {
 		margin-right: 8px;
+	}
+
+	.text-gray-500 {
+		color: #6b7280; /* Tailwind CSS gray-500 color */
+	}
+
+	.break-all {
+		word-break: break-all; /* Ensures long URLs wrap properly */
+	}
+
+	@media (max-width: 640px) {
+		.text-sm {
+			font-size: 0.875rem; /* Responsive font size for small screens */
+		}
 	}
 </style>

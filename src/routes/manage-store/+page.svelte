@@ -5,7 +5,7 @@
 <section class="p-6">
     <h1 class="text-2xl font-bold mb-4">ร้านค้า Cosplay Store ของคุณ</h1>
     <a href="/create-shop">
-        <button class="btn btn-primary mb-4">+ สร้างร้านค้า</button>
+        <button class="btn btn-neutral mb-4">+ สร้างร้านค้า</button>
     </a>
     
     <p class="mb-4">คุณมี {data.userStore.length} / 1 ร้านค้า</p>
@@ -19,7 +19,7 @@
                         <p>UserID: {shop.user || 'N/A'}</p>
                         <p>Created: {new Date(shop.created).toLocaleString()}</p>
                         <a href="/manage-store/{shop.id}">
-                            <button class="btn btn-secondary mb-4">จัดการร้านค้า</button>
+                            <button class="btn btn-outline mb-4">จัดการร้านค้า</button>
                         </a>
                     </div>
                 </div>
