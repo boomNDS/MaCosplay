@@ -7,6 +7,8 @@ export const GET = async ({ locals, url, cookies }) => {
 
 	const adminClient = new PocketBase(import.meta.env.VITE_PB_URL);
 
+	adminClient.authStore.clear()
+
 	console.log('OAUTH CALL');
 
 	// Authenticate admin client
@@ -15,6 +17,7 @@ export const GET = async ({ locals, url, cookies }) => {
 		import.meta.env.VITE_AUTH_ADMIN_PASS
 	);
 
+	
 	// Extract state and code from URL
 	const state = url.searchParams.get('state');
 	const code = url.searchParams.get('code');
