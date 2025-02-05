@@ -68,6 +68,7 @@ export const GET = async ({ locals, url, cookies }) => {
 		// Extract email and avatar URL from userProfile
 		const userEmail = authData.meta.email;
 		const userAvatarUrl = authData.meta.avatarUrl;
+		const userName = userProfile?.name;
 
 
 
@@ -75,7 +76,7 @@ export const GET = async ({ locals, url, cookies }) => {
 		const facebookId = authData.meta.id;
 
 		// Construct the Facebook profile URL using the ID
-		const facebookProfileUrl = userProfile.link;
+		const facebookProfileUrl = userProfile?.link;
 
 		// Log the extracted values
 		console.log('Extracted Email:', userEmail);
@@ -97,6 +98,7 @@ export const GET = async ({ locals, url, cookies }) => {
 			// Update user profile in PocketBase
 			await adminClient.collection('users').update(authData.record.id, {
 /* 				avatar: avatarFile, // Pass the avatar as a File */
+				name: userName,
 				email: userEmail,
 				UserNumber: UserNumber,
 				MaxShop: 1,
