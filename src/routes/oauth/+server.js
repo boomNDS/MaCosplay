@@ -45,15 +45,12 @@ export const GET = async ({ locals, url, cookies }) => {
 	try {
 		
 		const resultList = await adminClient.collection('users').getList(1, 1, { sort: '-created' });
-		const UserNumAdd = resultList?.items[0].UserNumber + 1;
+		const UserNumAdd = (resultList?.items[0]?.UserNumber || 0) + 1;
 		let UserNumber = UserNumAdd;
 
 		// Exchange authorization code for an access token
 		const authData = await locals.pb.collection('users').authWithOAuth2(
-			provider.name, code, expectedVerifier, `${url.origin}/oauth`,
-			{
-				UserNumber: UserNumber
-			}
+			provider.name, code, expectedVerifier, `${url.origin}/oauth`
 		);
 
 		// Log the entire authData object
