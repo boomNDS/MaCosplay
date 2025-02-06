@@ -30,7 +30,7 @@
 			const data = await response.json();
 			console.log('Instance created:', data);
 			// Redirect to the dashboard on success
-			goto('/dashboard');
+			goto('/manage-store');
 		} else {
 			const errorData = await response.json();
 			errorMessage = errorData.error; // Set the error message
