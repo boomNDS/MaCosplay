@@ -11,7 +11,7 @@ export const load = async ({ locals, params, url }) => {
 		const adminClient = await createAdminClient();
 		try {
 			const response = await adminClient.collection('itemList').getFullList({
-				filter: `user = "${locals.user.id}" && public=True${searchQuery ? ` && Name ~ "${searchQuery}"` : ''} && userStore.slug="${params.shopID}"`,
+				filter: `public=True${searchQuery ? ` && Name ~ "${searchQuery}"` : ''} && userStore.slug="${params.shopID}"`,
 				expand: 'user,userStore',
 				sort: '-created'
 			});
