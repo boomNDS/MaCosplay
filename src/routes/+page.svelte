@@ -98,6 +98,7 @@
 		</nav>
 		<nav>
 		  <h6 class="footer-title">Legal</h6>
+		  <a href="/privacy-policy">Privacy Policy</a>
 		
 		</nav>
 	  </footer>
