@@ -55,7 +55,7 @@
 <div class="flex items-center justify-center min-h-screen">
 	<div class="login-card rounded-lg shadow-lg p-8">
 		<h2 class="text-2xl font-bold text-center mb-6">เข้าสู่ระบบ</h2>
-		<form on:submit={handleLogin}>
+		<!-- <form on:submit={handleLogin}>
 			<div class="mb-4">
 				<label class="block text-gray-700 text-sm font-bold mb-2" for="email"> Email </label>
 				<input
@@ -109,7 +109,7 @@
 			</div>
 			
 			
-		</form>
+		</form> -->
 		<form class="flex flex-col items-center space-y-6 w-full max-w-sm pt-6" method="post" action="?/OAuth">
 			<button type="submit" class="btn btn-facebook mb-4">
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-2">
