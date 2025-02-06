@@ -30,8 +30,6 @@
 
     async function handleEditSubmit(event) {
         const formData = new FormData(event.target);
-        console.log('Before submit:', editingItem.public); // Debugging: Check value before submission
-
         // Set isPriTest based on pricingOption
         formData.append('isPriTest', pricingOption);
         console.log('pricingOption:', pricingOption); // Debugging: Log the pricingOption value
@@ -165,24 +163,24 @@
     let createImagePreview = '';
     let editImagePreview = '';
     let detailItem = null;
+    let editImageFile = null;
 
     function previewImage(event, type) {
         const file = event.target.files[0];
         if (file) {
+            console.log('Image file selected:', file); // Log the selected file
             const reader = new FileReader();
             reader.onload = (e) => {
-                if (type === 'create') {
-                    createImagePreview = e.target.result;
-                } else {
+                if (type === 'edit') {
                     editImagePreview = e.target.result;
+                    editImageFile = file; // Store the file for later use
                 }
             };
             reader.readAsDataURL(file);
         } else {
-            if (type === 'create') {
-                createImagePreview = '';
-            } else {
+            if (type === 'edit') {
                 editImagePreview = '';
+                editImageFile = null;
             }
         }
     }

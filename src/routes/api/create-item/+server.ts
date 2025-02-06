@@ -6,6 +6,7 @@ export const POST = async ({ locals, request }) => {
     const adminClient = await createAdminClient();
     
     try {
+        
         const formData = await request.formData();
         
         // Extract all necessary fields
