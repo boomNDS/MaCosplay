@@ -56,8 +56,8 @@
 						class="input input-bordered w-full"
 						required
 						on:input={event => {
-							// Allow letters, numbers, and spaces
-							shopName = event.target.value.replace(/[^a-zA-Z0-9 ]/g, '');
+							// Allow letters, numbers, spaces, and Thai characters
+							shopName = event.target.value.replace(/[^a-zA-Z0-9ก-๙ ]/g, '');
 							slug = generateSlug(shopName); // Generate slug from shop name
 						}}
 					/>

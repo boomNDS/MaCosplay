@@ -22,7 +22,6 @@ export const actions = {
 
 		let username = formData.name.split(' ').join('').toLowerCase();
 		const resultList = await adminClient.collection('users').getList(1, 1, { sort: '-created' });
-		console.log(serializeNonPOJOs(resultList?.items[0].UserNumber));
 		const UserNumAdd = resultList?.items[0].UserNumber + 1;
 		let UserNumber = UserNumAdd;
 		/* let packages = 'eq0tudgxce90g0o' */
