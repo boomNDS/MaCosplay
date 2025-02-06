@@ -14,6 +14,8 @@
     let pricingOption = 'price_only'; // Initialize with a default value
     let isPublic = true; // Default value for the public switch
     let fbPageUrl = ''; // Variable to hold the Facebook page URL
+    let itemToDelete = null; // Track the item to be deleted
+    let showDeleteConfirm = false; // Control the visibility of the delete confirmation modal
 
     function openEditModal(item) {
         editingItem = { ...item }; // Create a copy of the item
@@ -27,8 +29,17 @@
     }
 
     async function handleEditSubmit(event) {
-        const formData = new FormData();
-        formData.append('file', event.target.files[0]); // Append the file to formData
+        const formData = new FormData(event.target);
+        console.log('Before submit:', editingItem.public); // Debugging: Check value before submission
+
+        // Set isPriTest based on pricingOption
+        formData.append('isPriTest', pricingOption);
+        console.log('pricingOption:', pricingOption); // Debugging: Log the pricingOption value
+        // Add price_pri and price_test if pricingOption is 'price_pri_test'
+        if (pricingOption === 'price_pri_test') {
+            formData.append('price_pri', event.target.price_pri.value);
+            formData.append('price_test', event.target.price_test.value);
+        }
 
         try {
             const response = await fetch('/api/update-item', {
@@ -36,11 +47,15 @@
                 body: formData
             });
             if (response.ok) {
-                location.reload();
-            } else {
+				location.reload();
+			} else {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to update item');
             }
+
+
+            editingItem = null;
+            // Optionally refresh the item list
         } catch (error) {
             console.error('Error updating item:', error);
             errorMessage = error.message;
@@ -208,6 +223,37 @@
             console.error('Error updating Facebook page:', error);
             errorMessage = error.message;
             showAlert = true;
+        }
+    }
+
+    async function handleDeleteItem(itemId) {
+        try {
+            const formData = new FormData();
+            formData.append('id', itemId);
+
+            const response = await fetch('/api/delete-item', {
+                method: 'DELETE',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert('Item deleted successfully');
+                location.reload(); // Reload the page or update the UI to reflect the deletion
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to delete item');
+            }
+        } catch (error) {
+            console.error('Error deleting item:', error);
+            alert('Error deleting item: ' + error.message);
+        }
+    }
+
+    async function confirmDeleteItem() {
+        if (itemToDelete) {
+            await handleDeleteItem(itemToDelete.id);
+            showDeleteConfirm = false;
+            itemToDelete = null;
         }
     }
 </script>
@@ -776,6 +822,9 @@
                                 <button class="btn btn-neutral btn-active" on:click={() => openDetailModal(item)}>
 									ดูรายละเอียด
 								</button>
+                                <button class="btn btn-neutral btn-active" on:click={() => { itemToDelete = item; showDeleteConfirm = true; }}>
+									ลบสินค้า
+								</button>
                                 <!-- Facebook Share Button -->
                                 <button class="w-full btn-facebook" on:click={() => shareToFacebook(item)}>
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-2">
@@ -1113,4 +1162,17 @@
 			</div>
 		</div>
 	</div>
+{/if}
+
+{#if showDeleteConfirm}
+    <div class="modal modal-open">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">ยืนยันการลบสินค้า</h3>
+            <p>คุณแน่ใจหรือว่าต้องการลบสินค้านี้?</p>
+            <div class="modal-action">
+                <button class="btn" on:click={() => { showDeleteConfirm = false; itemToDelete = null; }}>ยกเลิก</button>
+                <button class="btn btn-error" on:click={confirmDeleteItem}>ยืนยัน</button>
+            </div>
+        </div>
+    </div>
 {/if}
