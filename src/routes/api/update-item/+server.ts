@@ -10,10 +10,7 @@ export const PUT = async ({ request, locals }) => {
 
     const adminClient = await createAdminClient();
     
-    
     try {
-
-        
         const formData = await request.formData();
         const id = formData.get('id');
         const image = formData.get('image');
@@ -42,14 +39,14 @@ export const PUT = async ({ request, locals }) => {
         const updateData = {
             Name: name,
             Desc: desc,
-            price: parseFloat(price),
+            price: price,
             Size: size,
             Status: status,
             Province: province,
             public: isPublic,
-            price_pri: parseFloat(price_pri),
-            price_test: parseFloat(price_test),
-            isPriTest: isPriTest,
+            price_pri: price_pri,
+            price_test: price_test,
+            isPriTest: isPriTest
         };
 
 

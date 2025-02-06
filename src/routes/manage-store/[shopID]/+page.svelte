@@ -14,8 +14,7 @@
     let pricingOption = 'price_only'; // Initialize with a default value
     let isPublic = true; // Default value for the public switch
     let fbPageUrl = ''; // Variable to hold the Facebook page URL
-    let itemToDelete = null; // Track the item to be deleted
-    let showDeleteConfirm = false; // Control the visibility of the delete confirmation modal
+    let editImageFile = null;
 
     function openEditModal(item) {
         editingItem = { ...item }; // Create a copy of the item
@@ -29,10 +28,25 @@
     }
 
     async function handleEditSubmit(event) {
+        event.preventDefault();
         const formData = new FormData(event.target);
+
+        // Append the image file if it exists
+        if (editImageFile) {
+            console.log('Appending image file to FormData:', editImageFile); // Log the file being appended
+            formData.append('image', editImageFile);
+        } else {
+            console.log('No image file to append'); // Log if no file is present
+        }
+
+        // Log all form data entries
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+        }
+
         // Set isPriTest based on pricingOption
         formData.append('isPriTest', pricingOption);
-        console.log('pricingOption:', pricingOption); // Debugging: Log the pricingOption value
+
         // Add price_pri and price_test if pricingOption is 'price_pri_test'
         if (pricingOption === 'price_pri_test') {
             formData.append('price_pri', event.target.price_pri.value);
@@ -44,16 +58,17 @@
                 method: 'PUT',
                 body: formData
             });
+
             if (response.ok) {
-				location.reload();
-			} else {
+                console.log('Item updated successfully'); // Log success
+                location.reload();
+            } else {
                 const errorData = await response.json();
+                console.error('Error response from server:', errorData); // Log server error
                 throw new Error(errorData.error || 'Failed to update item');
             }
 
-
             editingItem = null;
-            // Optionally refresh the item list
         } catch (error) {
             console.error('Error updating item:', error);
             errorMessage = error.message;
@@ -163,7 +178,6 @@
     let createImagePreview = '';
     let editImagePreview = '';
     let detailItem = null;
-    let editImageFile = null;
 
     function previewImage(event, type) {
         const file = event.target.files[0];
@@ -171,14 +185,18 @@
             console.log('Image file selected:', file); // Log the selected file
             const reader = new FileReader();
             reader.onload = (e) => {
-                if (type === 'edit') {
+                if (type === 'create') {
+                    createImagePreview = e.target.result;
+                } else {
                     editImagePreview = e.target.result;
                     editImageFile = file; // Store the file for later use
                 }
             };
             reader.readAsDataURL(file);
         } else {
-            if (type === 'edit') {
+            if (type === 'create') {
+                createImagePreview = '';
+            } else {
                 editImagePreview = '';
                 editImageFile = null;
             }
@@ -221,37 +239,6 @@
             console.error('Error updating Facebook page:', error);
             errorMessage = error.message;
             showAlert = true;
-        }
-    }
-
-    async function handleDeleteItem(itemId) {
-        try {
-            const formData = new FormData();
-            formData.append('id', itemId);
-
-            const response = await fetch('/api/delete-item', {
-                method: 'DELETE',
-                body: formData
-            });
-
-            if (response.ok) {
-                alert('Item deleted successfully');
-                location.reload(); // Reload the page or update the UI to reflect the deletion
-            } else {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to delete item');
-            }
-        } catch (error) {
-            console.error('Error deleting item:', error);
-            alert('Error deleting item: ' + error.message);
-        }
-    }
-
-    async function confirmDeleteItem() {
-        if (itemToDelete) {
-            await handleDeleteItem(itemToDelete.id);
-            showDeleteConfirm = false;
-            itemToDelete = null;
         }
     }
 </script>
@@ -441,83 +428,18 @@
                                 class="input input-bordered w-full"
                                 required
                             >
-                            <option value="">เลือกจังหวัด</option>
-                            <option value="กระบี่">กระบี่</option>
-                            <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
-                            <option value="กาญจนบุรี">กาญจนบุรี</option>
-                            <option value="กาฬสินธุ์">กาฬสินธุ์</option>
-                            <option value="กำแพงเพชร">กำแพงเพชร</option>
-                            <option value="ขอนแก่น">ขอนแก่น</option>
-                            <option value="จันทบุรี">จันทบุรี</option>
-                            <option value="ฉะเชิงเทรา">ฉะเชิงเทรา</option>
-                            <option value="ชลบุรี">ชลบุรี</option>
-                            <option value="ชัยนาท">ชัยนาท</option>
-                            <option value="ชัยภูมิ">ชัยภูมิ</option>
-                            <option value="ชุมพร">ชุมพร</option>
-                            <option value="เชียงราย">เชียงราย</option>
-                            <option value="เชียงใหม่">เชียงใหม่</option>
-                            <option value="ตรัง">ตรัง</option>
-                            <option value="ตราด">ตราด</option>
-                            <option value="ตาก">ตาก</option>
-                            <option value="นครนายก">นครนายก</option>
-                            <option value="นครปฐม">นครปฐม</option>
-                            <option value="นครพนม">นครพนม</option>
-                            <option value="นครราชสีมา">นครราชสีมา</option>
-                            <option value="นครศรีธรรมราช">นครศรีธรรมราช</option>
-                            <option value="นครสวรรค์">นครสวรรค์</option>
-                            <option value="นนทบุรี">นนทบุรี</option>
-                            <option value="นราธิวาส">นราธิวาส</option>
-                            <option value="น่าน">น่าน</option>
-                            <option value="บึงกาฬ">บึงกาฬ</option>
-                            <option value="บุรีรัมย์">บุรีรัมย์</option>
-                            <option value="ปทุมธานี">ปทุมธานี</option>
-                            <option value="ประจวบคีรีขันธ์">ประจวบคีรีขันธ์</option>
-                            <option value="ปราจีนบุรี">ปราจีนบุรี</option>
-                            <option value="ปัตตานี">ปัตตานี</option>
-                            <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
-                            <option value="พังงา">พังงา</option>
-                            <option value="พัทลุง">พัทลุง</option>
-                            <option value="พิจิตร">พิจิตร</option>
-                            <option value="พิษณุโลก">พิษณุโลก</option>
-                            <option value="เพชรบุรี">เพชรบุรี</option>
-                            <option value="เพชรบูรณ์">เพชรบูรณ์</option>
-                            <option value="แพร่">แพร่</option>
-                            <option value="ภูเก็ต">ภูเก็ต</option>
-                            <option value="มหาสารคาม">มหาสารคาม</option>
-                            <option value="มุกดาหาร">มุกดาหาร</option>
-                            <option value="แม่ฮ่องสอน">แม่ฮ่องสอน</option>
-                            <option value="ยโสธร">ยโสธร</option>
-                            <option value="ยะลา">ยะลา</option>
-                            <option value="ร้อยเอ็ด">ร้อยเอ็ด</option>
-                            <option value="ระนอง">ระนอง</option>
-                            <option value="ระยอง">ระยอง</option>
-                            <option value="ราชบุรี">ราชบุรี</option>
-                            <option value="ลพบุรี">ลพบุรี</option>
-                            <option value="ลำปาง">ลำปาง</option>
-                            <option value="ลำพูน">ลำพูน</option>
-                            <option value="เลย">เลย</option>
-                            <option value="ศรีสะเกษ">ศรีสะเกษ</option>
-                            <option value="สกลนคร">สกลนคร</option>
-                            <option value="สงขลา">สงขลา</option>
-                            <option value="สตูล">สตูล</option>
-                            <option value="สมุทรปราการ">สมุทรปราการ</option>
-                            <option value="สมุทรสงคราม">สมุทรสงคราม</option>
-                            <option value="สมุทรสาคร">สมุทรสาคร</option>
-                            <option value="สระแก้ว">สระแก้ว</option>
-                            <option value="สระบุรี">สระบุรี</option>
-                            <option value="สิงห์บุรี">สิงห์บุรี</option>
-                            <option value="สุโขทัย">สุโขทัย</option>
-                            <option value="สุพรรณบุรี">สุพรรณบุรี</option>
-                            <option value="สุราษฎร์ธานี">สุราษฎร์ธานี</option>
-                            <option value="สุรินทร์">สุรินทร์</option>
-                            <option value="หนองคาย">หนองคาย</option>
-                            <option value="หนองบัวลำภู">หนองบัวลำภู</option>
-                            <option value="อ่างทอง">อ่างทอง</option>
-                            <option value="อำนาจเจริญ">อำนาจเจริญ</option>
-                            <option value="อุดรธานี">อุดรธานี</option>
-                            <option value="อุตรดิตถ์">อุตรดิตถ์</option>
-                            <option value="อุทัยธานี">อุทัยธานี</option>
-                            <option value="อุบลราชธานี">อุบลราชธานี</option>
+                                <option value="">เลือกจังหวัด</option>
+                                <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                                <option value="เชียงใหม่">เชียงใหม่</option>
+                                <option value="ภูเก็ต">ภูเก็ต</option>
+                                <option value="ชลบุรี">ชลบุรี</option>
+                                <option value="นครราชสีมา">นครราชสีมา</option>
+                                <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
+                                <option value="เชียงราย">เชียงราย</option>
+                                <option value="ขอนแก่น">ขอนแก่น</option>
+                                <option value="สงขลา">สงขลา</option>
+                                <option value="นครปฐม">นครปฐม</option>
+                                <option value="อุดรธานี">อุดรธานี</option>
                                 <!-- Add more provinces as needed -->
                             </select>
                         </div>
@@ -820,9 +742,6 @@
                                 <button class="btn btn-neutral btn-active" on:click={() => openDetailModal(item)}>
 									ดูรายละเอียด
 								</button>
-                                <button class="btn btn-neutral btn-active" on:click={() => { itemToDelete = item; showDeleteConfirm = true; }}>
-									ลบสินค้า
-								</button>
                                 <!-- Facebook Share Button -->
                                 <button class="w-full btn-facebook" on:click={() => shareToFacebook(item)}>
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-2">
@@ -855,6 +774,7 @@
                 <input type="hidden" name="id" bind:value={editingItem.id} />
                 <!-- Public Switch -->
                 <div class="form-control mb-4">
+
                     <label class="label">
                         <span class="label-text">เปิดให้ผู้อื่นมองเห็นสินค้า</span>
                     </label>
@@ -909,82 +829,17 @@
                     </label>
                     <select name="province" bind:value={editingItem.Province} class="select select-bordered w-full" required>
                         <option value="">เลือกจังหวัด</option>
-                <option value="กระบี่">กระบี่</option>
-                <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
-                <option value="กาญจนบุรี">กาญจนบุรี</option>
-                <option value="กาฬสินธุ์">กาฬสินธุ์</option>
-                <option value="กำแพงเพชร">กำแพงเพชร</option>
-                <option value="ขอนแก่น">ขอนแก่น</option>
-                <option value="จันทบุรี">จันทบุรี</option>
-                <option value="ฉะเชิงเทรา">ฉะเชิงเทรา</option>
-                <option value="ชลบุรี">ชลบุรี</option>
-                <option value="ชัยนาท">ชัยนาท</option>
-                <option value="ชัยภูมิ">ชัยภูมิ</option>
-                <option value="ชุมพร">ชุมพร</option>
-                <option value="เชียงราย">เชียงราย</option>
-                <option value="เชียงใหม่">เชียงใหม่</option>
-                <option value="ตรัง">ตรัง</option>
-                <option value="ตราด">ตราด</option>
-                <option value="ตาก">ตาก</option>
-                <option value="นครนายก">นครนายก</option>
-                <option value="นครปฐม">นครปฐม</option>
-                <option value="นครพนม">นครพนม</option>
-                <option value="นครราชสีมา">นครราชสีมา</option>
-                <option value="นครศรีธรรมราช">นครศรีธรรมราช</option>
-                <option value="นครสวรรค์">นครสวรรค์</option>
-                <option value="นนทบุรี">นนทบุรี</option>
-                <option value="นราธิวาส">นราธิวาส</option>
-                <option value="น่าน">น่าน</option>
-                <option value="บึงกาฬ">บึงกาฬ</option>
-                <option value="บุรีรัมย์">บุรีรัมย์</option>
-                <option value="ปทุมธานี">ปทุมธานี</option>
-                <option value="ประจวบคีรีขันธ์">ประจวบคีรีขันธ์</option>
-                <option value="ปราจีนบุรี">ปราจีนบุรี</option>
-                <option value="ปัตตานี">ปัตตานี</option>
-                <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
-                <option value="พังงา">พังงา</option>
-                <option value="พัทลุง">พัทลุง</option>
-                <option value="พิจิตร">พิจิตร</option>
-                <option value="พิษณุโลก">พิษณุโลก</option>
-                <option value="เพชรบุรี">เพชรบุรี</option>
-                <option value="เพชรบูรณ์">เพชรบูรณ์</option>
-                <option value="แพร่">แพร่</option>
-                <option value="ภูเก็ต">ภูเก็ต</option>
-                <option value="มหาสารคาม">มหาสารคาม</option>
-                <option value="มุกดาหาร">มุกดาหาร</option>
-                <option value="แม่ฮ่องสอน">แม่ฮ่องสอน</option>
-                <option value="ยโสธร">ยโสธร</option>
-                <option value="ยะลา">ยะลา</option>
-                <option value="ร้อยเอ็ด">ร้อยเอ็ด</option>
-                <option value="ระนอง">ระนอง</option>
-                <option value="ระยอง">ระยอง</option>
-                <option value="ราชบุรี">ราชบุรี</option>
-                <option value="ลพบุรี">ลพบุรี</option>
-                <option value="ลำปาง">ลำปาง</option>
-                <option value="ลำพูน">ลำพูน</option>
-                <option value="เลย">เลย</option>
-                <option value="ศรีสะเกษ">ศรีสะเกษ</option>
-                <option value="สกลนคร">สกลนคร</option>
-                <option value="สงขลา">สงขลา</option>
-                <option value="สตูล">สตูล</option>
-                <option value="สมุทรปราการ">สมุทรปราการ</option>
-                <option value="สมุทรสงคราม">สมุทรสงคราม</option>
-                <option value="สมุทรสาคร">สมุทรสาคร</option>
-                <option value="สระแก้ว">สระแก้ว</option>
-                <option value="สระบุรี">สระบุรี</option>
-                <option value="สิงห์บุรี">สิงห์บุรี</option>
-                <option value="สุโขทัย">สุโขทัย</option>
-                <option value="สุพรรณบุรี">สุพรรณบุรี</option>
-                <option value="สุราษฎร์ธานี">สุราษฎร์ธานี</option>
-                <option value="สุรินทร์">สุรินทร์</option>
-                <option value="หนองคาย">หนองคาย</option>
-                <option value="หนองบัวลำภู">หนองบัวลำภู</option>
-                <option value="อ่างทอง">อ่างทอง</option>
-                <option value="อำนาจเจริญ">อำนาจเจริญ</option>
-                <option value="อุดรธานี">อุดรธานี</option>
-                <option value="อุตรดิตถ์">อุตรดิตถ์</option>
-                <option value="อุทัยธานี">อุทัยธานี</option>
-                <option value="อุบลราชธานี">อุบลราชธานี</option>
+                        <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                        <option value="เชียงใหม่">เชียงใหม่</option>
+                        <option value="ภูเก็ต">ภูเก็ต</option>
+                        <option value="ชลบุรี">ชลบุรี</option>
+                        <option value="นครราชสีมา">นครราชสีมา</option>
+                        <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
+                        <option value="เชียงราย">เชียงราย</option>
+                        <option value="ขอนแก่น">ขอนแก่น</option>
+                        <option value="สงขลา">สงขลา</option>
+                        <option value="นครปฐม">นครปฐม</option>
+                        <option value="อุดรธานี">อุดรธานี</option>
                     </select>
                 </div>
 
@@ -1160,17 +1015,4 @@
 			</div>
 		</div>
 	</div>
-{/if}
-
-{#if showDeleteConfirm}
-    <div class="modal modal-open">
-        <div class="modal-box">
-            <h3 class="font-bold text-lg">ยืนยันการลบสินค้า</h3>
-            <p>คุณแน่ใจหรือว่าต้องการลบสินค้านี้?</p>
-            <div class="modal-action">
-                <button class="btn" on:click={() => { showDeleteConfirm = false; itemToDelete = null; }}>ยกเลิก</button>
-                <button class="btn btn-error" on:click={confirmDeleteItem}>ยืนยัน</button>
-            </div>
-        </div>
-    </div>
 {/if}

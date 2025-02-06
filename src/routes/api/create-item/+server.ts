@@ -6,7 +6,6 @@ export const POST = async ({ locals, request }) => {
     const adminClient = await createAdminClient();
     
     try {
-        
         const formData = await request.formData();
         
         // Extract all necessary fields
@@ -35,7 +34,7 @@ export const POST = async ({ locals, request }) => {
         const itemData = {
             Name: name,
             Desc: desc,
-            price: parseFloat(price),
+            price: price,
             Size: size,
             Status: status,
             Province: province,
@@ -44,8 +43,8 @@ export const POST = async ({ locals, request }) => {
 
             public: isPublic,
             userStore: userStore,
-            price_pri: parseFloat(price_pri),
-            price_test: parseFloat(price_test),
+            price_pri: price_pri,
+            price_test: price_test,
             isPriTest: isPriTest
         };
 
