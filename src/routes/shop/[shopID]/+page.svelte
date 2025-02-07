@@ -30,7 +30,7 @@
                     <div class="card bg-base-100 shadow-xl">
                         <figure>
                             <img 
-                                src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${shop.id}/${shop.Image}`} 
+                                src={`https://file.macosplay.com/mxj3660ce5olheb/${shop.id}/${shop.Image}`} 
                                 alt="{shop.Name} Thumbnail" 
                                 class="w-full h-auto max-h-48 object-cover" 
                             />

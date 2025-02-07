@@ -213,11 +213,11 @@
 						<figure>
 							{#if item.Image}
 							<img
-								src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`}
+								src={`https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`}
 								alt="{item.Name} Thumbnail"
 								class="h-48 max-h-48 w-full cursor-pointer object-cover"
 								on:click={() =>
-									(fullImage = `https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`)}
+									(fullImage = `https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`)}
 							/>
 
 							{:else}
@@ -237,7 +237,7 @@
 									<div class="h-8 w-8 overflow-hidden rounded-full">
 										{#if item.user && item.expand?.user?.avatar}
 											<img
-												src={`https://macosplay.saas.in.th/api/files/_pb_users_auth_/${item.expand?.user?.id}/${item.expand?.user?.avatar}`}
+												src={`https://file.macosplay.com/_pb_users_auth_/${item.expand?.user?.id}/${item.expand?.user?.avatar}`}
 												alt="Avatar"
 												class="h-full w-full object-cover"
 											/>

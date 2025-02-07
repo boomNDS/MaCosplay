@@ -183,14 +183,14 @@
 	<div class="container mx-auto w-full p-4 sm:p-6 flex flex-col items-center">
         <div class="flex flex-col sm:flex-row sm:space-x-2 w-full items-center justify-center">
            
-            <img src={`https://macosplay.saas.in.th/api/files/nrxs44dis9q1tgb/${data?.StoreDetails.id}/${data?.StoreDetails.banner}`}  alt="cosshop" class="w-full h-auto object-cover">
+            <img src={`https://file.macosplay.com/nrxs44dis9q1tgb/${data?.StoreDetails.id}/${data?.StoreDetails.banner}`}  alt="cosshop" class="w-full h-auto object-cover">
 
     </div>
     <div class="avatar mb-2 flex items-center">
         <div class="h-8 w-8 overflow-hidden rounded-full mt-4">
             {#if data?.StoreDetails.expand?.user}
                 <img
-                    src={`https://macosplay.saas.in.th/api/files/_pb_users_auth_/${data?.StoreDetails.expand?.user?.id}/${data?.StoreDetails.expand?.user?.avatar}`}
+                    src={`https://file.macosplay.com/_pb_users_auth_/${data?.StoreDetails.expand?.user?.id}/${data?.StoreDetails.expand?.user?.avatar}`}
                     alt="Avatar"
                     class="h-full w-full object-cover"
                 />
@@ -421,10 +421,10 @@
                     <div class="card bg-base-100 shadow-xl">
                         <figure>
                             <img 
-                                src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`} 
+                                src={`https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`} 
                                 alt="{item.Name} Thumbnail" 
                                 class="w-full h-auto max-h-48 object-cover cursor-pointer" 
-                                on:click={() => fullImage = `https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`}
+                                on:click={() => fullImage = `https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`}
                             />
                         </figure>
                         <div class="card-body">
@@ -697,7 +697,7 @@
                         {#if editImagePreview}
                             <img src={editImagePreview} alt="Image Preview" class="w-48 h-48 object-cover rounded-lg" />
                         {:else if editingItem.Image}
-                            <img src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${editingItem.id}/${editingItem.Image}`} 
+                            <img src={`https://file.macosplay.com/mxj3660ce5olheb/${editingItem.id}/${editingItem.Image}`} 
                                  alt="Current Image" 
                                  class="w-48 h-48 object-cover rounded-lg" />
                         {/if}

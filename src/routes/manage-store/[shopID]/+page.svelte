@@ -208,7 +208,7 @@
     $: console.log('Current pricingOption:', pricingOption);
 
     function shareToFacebook(item) {
-        const imageUrl = `https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`;
+        const imageUrl = `https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`;
         const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(imageUrl)}`;
         window.open(shareUrl, '_blank');
     }
@@ -288,7 +288,7 @@
         <div class="flex flex-col sm:flex-row sm:space-x-2 w-full items-center justify-center">
             <img 
                 src={data?.StoreDetails.banner 
-                    ? `https://macosplay.saas.in.th/api/files/nrxs44dis9q1tgb/${data.StoreDetails.id}/${data.StoreDetails.banner}` 
+                    ? `https://file.macosplay.com/nrxs44dis9q1tgb/${data.StoreDetails.id}/${data.StoreDetails.banner}` 
                     : '/images/Example/Cosshop.png'} 
                 alt="cosshop" 
                 class="w-full h-auto object-cover"
@@ -785,10 +785,10 @@
                     <div class="card bg-base-100 shadow-xl">
                         <figure>
                             <img 
-                                src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`} 
+                                src={`https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`} 
                                 alt="{item.Name} Thumbnail" 
                                 class="w-full h-auto max-h-48 object-cover cursor-pointer" 
-                                on:click={() => fullImage = `https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`}
+                                on:click={() => fullImage = `https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`}
                             />
                         </figure>
                         <div class="card-body">
@@ -985,10 +985,10 @@
                     <div class="card bg-base-100 shadow-xl">
                         <figure>
                             <img 
-                                src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`} 
+                                src={`https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`} 
                                 alt="{item.Name} Thumbnail" 
                                 class="w-full h-auto max-h-48 object-cover cursor-pointer" 
-                                on:click={() => fullImage = `https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${item.id}/${item.Image}`}
+                                on:click={() => fullImage = `https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`}
                             />
                         </figure>
                         <div class="card-body">
@@ -1297,7 +1297,7 @@
                         {#if editImagePreview}
                             <img src={editImagePreview} alt="Image Preview" class="w-48 h-48 object-cover rounded-lg" />
                         {:else if editingItem.Image}
-                            <img src={`https://macosplay.saas.in.th/api/files/mxj3660ce5olheb/${editingItem.id}/${editingItem.Image}`} 
+                            <img src={`https://file.macosplay.com/mxj3660ce5olheb/${editingItem.id}/${editingItem.Image}`} 
                                  alt="Current Image" 
                                  class="w-48 h-48 object-cover rounded-lg" />
                         {/if}

@@ -17,10 +17,10 @@
                 <div class="card bg-base-100 shadow-xl">
                     <figure>
                         <img 
-                            src={`https://macosplay.saas.in.th/api/files/nrxs44dis9q1tgb/${shop.id}/${shop.banner}`} 
+                            src={`https://file.macosplay.com/nrxs44dis9q1tgb/${shop.id}/${shop.banner}`} 
                             alt="{shop.Name} Thumbnail" 
                             class="w-auto h-auto max-h-48 object-cover cursor-pointer" 
-                            on:click={() => (fullImage = `https://macosplay.saas.in.th/api/files/nrxs44dis9q1tgb/${shop.id}/${shop.banner}`)}
+                            on:click={() => (fullImage = `https://file.macosplay.com/nrxs44dis9q1tgb/${shop.id}/${shop.banner}`)}
                         />
                     </figure>
                     <div class="card-body">
