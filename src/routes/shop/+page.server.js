@@ -12,8 +12,8 @@ export const load = async ({ locals, url }) => {
 	}
 
 	const searchQuery = url.searchParams.get('search') || '';
-	const page = parseInt(url.searchParams.get('page') || '1', 10); // Get the current page from query params
-	const perPage = 10; // Define how many items per page
+	const page = parseInt(url.searchParams.get('page') || '1', 9); // Get the current page from query params
+	const perPage = 9; // Define how many items per page
 	const selectedProvince = url.searchParams.get('province') || '';
 	const selectedSize = url.searchParams.get('size') || '';
 	const selectedStatus = url.searchParams.get('status') || '';
