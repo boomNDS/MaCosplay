@@ -16,14 +16,27 @@ export const load = async ({ locals, params, url }) => {
 				sort: '-created'
 			});
 
+			const items = response.map(item => {
+				if (item.expand?.user) {
+					item.expand.user = {
+						id: item.expand.user.id,
+						name: item.expand.user.name,
+						fbProfile: item.expand.user.fbProfile,
+						VerifyShop: item.expand.user.VerifyShop,
+						avatar: item.expand.user.avatar
+					};
+				}
+				return item;
+			});
+
 			return {
-				items: serializeNonPOJOs(response),
+				items: serializeNonPOJOs(items),
 				totalPages: Math.ceil(response.length / perPage),
 				currentPage: page
 			};
 		} catch (err) {
 			console.log('Error fetching user instances: ', err);
-			throw error(err.status, err.message);
+			throw error(err.status || 500, err.message || 'Internal Server Error');
 		}
 	};
 
@@ -35,13 +48,11 @@ export const load = async ({ locals, params, url }) => {
 				expand: 'user'
 			});
 
-			// Map through the instances and select specific fields from the expanded user
 			const storeDetails = instances.map(instance => {
 				if (instance.expand?.user) {
 					instance.expand.user = {
 						id: instance.expand.user.id,
 						name: instance.expand.user.name,
-						// Add or remove fields as needed
 						fbProfile: instance.expand.user.fbProfile,
 						VerifyShop: instance.expand.user.VerifyShop,
 						avatar: instance.expand.user.avatar
@@ -50,12 +61,10 @@ export const load = async ({ locals, params, url }) => {
 				return instance;
 			});
 
-
-
 			return serializeNonPOJOs(storeDetails[0]);
 		} catch (err) {
 			console.log('Error fetching store details: ', err);
-			throw error(err.status, err.message);
+			throw error(err.status || 500, err.message || 'Internal Server Error');
 		}
 	};
 
