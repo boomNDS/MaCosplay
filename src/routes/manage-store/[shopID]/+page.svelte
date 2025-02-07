@@ -840,9 +840,12 @@
                                 <button class="w-auto btn btn-neutral btn-active" on:click={() => openEditModal(item)}>
                                     เผยแพร่หรือแก้ไข  
                                 </button>
-                                <button class="btn btn-neutral btn-active" on:click={() => openDetailModal(item)}>
-									ดูรายละเอียด
-								</button>
+                                <button class="btn btn-neutral btn-active">
+                                    <a href={item.Details} target="_blank">ดูรายละเอียด</a>
+                                </button>
+                                <button class="btn btn-error" on:click={() => confirmDeleteItem(item.id)}>
+                                    ลบสินค้า
+                                </button>
 
                          
                                 <!-- Facebook Share Button -->
@@ -1185,4 +1188,17 @@
 			</div>
 		</div>
 	</div>
+{/if}
+
+{#if showDeleteConfirm}
+    <div class="modal modal-open">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">ยืนยันการลบสินค้า</h3>
+            <p>คุณแน่ใจหรือว่าต้องการลบสินค้านี้?</p>
+            <div class="modal-action">
+                <button class="btn" on:click={() => { showDeleteConfirm = false; itemToDelete = null; }}>ยกเลิก</button>
+                <button class="btn btn-error" on:click={handleDeleteItem}>ยืนยัน</button>
+            </div>
+        </div>
+    </div>
 {/if}
