@@ -1,6 +1,7 @@
 <script lang="ts">
 	import PocketBase from 'pocketbase';
 	import { onMount } from 'svelte';
+	import Image from 'svelte-image';
 	export let data: { itemList: { items: any[]; totalPages: number; currentPage: number } };
 	let selectedProvince = '';
 	let selectedSize = '';
@@ -212,7 +213,7 @@
 					<div class="card bg-base-100 shadow-xl border border-gray-200">
 						<figure class="p-2">
 							{#if item.Image}
-							<img
+							<Image
 								src={`https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`}
 								alt="{item.Name} Thumbnail"
 								class="w-full h-full object-cover aspect-square cursor-pointer"
