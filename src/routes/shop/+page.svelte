@@ -232,8 +232,8 @@
 								<p class="text-xs font-bold">{limitText(item.Name, 33)}</p>
 								<p class="text-xs text-gray-500">{limitText(item.expand?.userStore?.Name || '', 20)}</p>
 								<div class="flex flex-wrap gap-1 mt-1">
-									<div class="badge text-xs bg-gray-200">S-XL</div>
-									<div class="badge text-xs bg-green-200">ส่งฟรี</div>
+									<div class="badge text-xs bg-gray-200">{item.Size}</div>
+									
 									<div class="badge text-xs bg-blue-200">พร้อมให้เช่า</div>
 								</div>
 							</div>
@@ -292,10 +292,8 @@
 			<p style="white-space: pre-wrap;">{detailItem.Desc}</p>
 			<div class="modal-action">
 				<button class="btn" on:click={() => detailItem = null}>ปิด</button>
-				<a href={`/store/${detailItem.expand?.userStore?.slug}`} target="_blank">
-					<button class="btn btn-primary">ไปที่ร้านค้า</button>
-				</a>
-				
+				<a href={`/store/${detailItem.expand?.userStore?.slug}`} target="_blank"></a>
+				<button class="btn btn-primary">ไปที่ร้านค้า</button>
 			</div>
 		</div>
 	</div>
