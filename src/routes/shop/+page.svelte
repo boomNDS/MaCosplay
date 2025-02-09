@@ -293,8 +293,9 @@
 			<p style="white-space: pre-wrap;">{detailItem.Desc}</p>
 			<div class="modal-action">
 				<button class="btn" on:click={() => detailItem = null}>ปิด</button>
-				<a href={`/store/${detailItem.expand?.userStore?.slug}`} target="_blank"></a>
+				<a href={`/store/${detailItem.expand?.userStore?.slug}`} target="_blank">
 				<button class="btn btn-outline btn-neutral">ไปที่ร้านค้า</button>
+			</a>
 			</div>
 		</div>
 	</div>
