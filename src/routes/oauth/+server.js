@@ -114,7 +114,7 @@ export const GET = async ({ locals, url, cookies }) => {
 		console.error('Error Logging in with Facebook OAuth2:', err);
 		throw redirect(303, '/login?error=oauth_failed');
 	}
-	throw redirect(303, '/manage-store');
+	throw redirect(303, '/');
 };
 
 // Function to fetch user profile using access token
