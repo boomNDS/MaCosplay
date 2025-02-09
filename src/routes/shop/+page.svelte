@@ -234,7 +234,7 @@
 								<div class="flex flex-wrap gap-1 mt-1">
 									<div class="badge text-xs bg-gray-200">{item.Size}</div>
 									
-									<div class="badge text-xs bg-blue-200">พร้อมให้เช่า</div>
+									<div class="badge text-xs bg-blue-200">{item.Status}</div>
 								</div>
 							</div>
 							<div class="flex justify-between items-center mt-2">
