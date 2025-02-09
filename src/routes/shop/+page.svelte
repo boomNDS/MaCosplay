@@ -205,138 +205,43 @@
 		<section class="mb-6">
 			<h2 class="mb-2 text-2xl font-semibold">ตามหาชุด/วิกเช่าได้ที่นี่เลย</h2>
 		</section>
-		<div class="grid max-h-[48rem] grid-cols-1 gap-4 overflow-y-auto sm:grid-cols-2 lg:grid-cols-3">
+		<div class="grid max-h-[48rem] grid-cols-2 gap-4 overflow-y-auto sm:grid-cols-2 lg:grid-cols-5">
 			<!-- Limit to 4 rows -->
 			{#if filteredItems().length > 0}
 				{#each filteredItems() as item}
-					<div class="card bg-base-100 shadow-xl">
-						<figure>
+					<div class="card bg-base-100 shadow-xl border border-gray-200">
+						<figure class="p-2">
 							{#if item.Image}
 							<img
 								src={`https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`}
 								alt="{item.Name} Thumbnail"
-								class="h-48 max-h-48 w-full cursor-pointer object-cover"
+								class="w-full h-full object-cover aspect-square cursor-pointer"
 								on:click={() =>
 									(fullImage = `https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`)}
 							/>
-
 							{:else}
 							<img
 								src="/images/Example/Macosplay.png"
 								alt="{item.Name} Thumbnail"
-								class="h-48 max-h-48 w-full cursor-pointer object-cover"
-								
+								class="w-full h-full object-cover aspect-square cursor-pointer"
 							/>
-
 							{/if}
-							
 						</figure>
-						<div class="card-body">
-							<div class="flex items-center justify-between">
-								<div class="avatar mb-2 flex items-center">
-									<div class="h-8 w-8 overflow-hidden rounded-full">
-										{#if item.user && item.expand?.user?.avatar}
-											<img
-												src={`https://file.macosplay.com/_pb_users_auth_/${item.expand?.user?.id}/${item.expand?.user?.avatar}`}
-												alt="Avatar"
-												class="h-full w-full object-cover"
-											/>
-										{:else}
-											<img
-												src="/images/Example/Macosplay.png"
-												alt="Fallback Avatar"
-												class="h-full w-full object-cover"
-											/>
-										{/if}
-									</div>
-									<span class="ml-2">{limitText((item.expand?.user?.name || ''), 10)}</span>
-								</div>
-                                
-								<div
-									class="badge {item.expand?.user?.VerifyShop === 'ยืนยันร้านค้าแล้ว'
-										? 'badge-primary badge-outline'
-										: item.expand?.user?.VerifyShop === 'ยังไม่ได้ยืนยันร้านค้า'} gap-2"
-								>
-									{#if item.expand?.user?.VerifyShop === 'ยืนยันร้านค้าแล้ว'}
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											class="h-4 w-4 text-blue-500"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-										>
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M5 13l4 4L19 7"
-											/>
-										</svg>
-									{/if}
-									{item.expand?.user?.VerifyShop}
+						<div class="card-body p-2 flex flex-col justify-between">
+							<div>
+								<p class="text-xs font-bold">{limitText(item.Name, 33)}</p>
+								<p class="text-xs text-gray-500">{limitText(item.expand?.userStore?.Name || '', 20)}</p>
+								<div class="flex flex-wrap gap-1 mt-1">
+									<div class="badge text-xs bg-gray-200">S-XL</div>
+									<div class="badge text-xs bg-green-200">ส่งฟรี</div>
+									<div class="badge text-xs bg-blue-200">พร้อมให้เช่า</div>
 								</div>
 							</div>
-                            <p>ร้านค้า: {limitText((item.expand?.userStore?.Name || ''), 20)}</p>
-
-                            <h2 class="card-title">{limitText(item.Name, 33)}</h2>
-							<div class="badge badge-neutral">{item.Province}</div>
-							<div class="badge badge-outline">Size: {item.Size}</div>
-							<div
-								class="badge {item.Status === 'พร้อมให้เช่า'
-									? 'badge-success'
-									: item.Status === 'กำลังถูกเช่า'
-										? 'badge-warning'
-										: item.Status === 'อยู่ระหว่างการซ่อมบำรุง'
-											? 'badge-error'
-											: ''} gap-2"
-							>
-								{item.Status}
-							</div>
-							
-							<p>{item.Details}</p>
-							<p class="font-bold">
-                                
-                                {#if item.isPriTest}
-                                ราคา: {item.price_pri.toLocaleString()} (ไพร) / {item.price_test.toLocaleString()} (เทส) บาท
-                                {:else}
-                                ราคา: {item.price.toLocaleString()} บาท
-                                {/if}
-                            </p>
-							<!--  <div class="rating mb-2">
-                                <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
-                                <input
-                                  type="radio"
-                                  name="rating-2"
-                                  class="mask mask-star-2 bg-orange-400"
-                                  checked="checked" />
-                                <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
-                                <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
-                                <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
-                              </div> -->
-                       
-							<div class="card-actions justify-end mt-12">
-								{#if item.expand?.userStore?.slug}
-									<a href={`/store/${item.expand.userStore.slug}`} class="w-auto btn btn-neutral btn-active">
-										ดูร้านค้า
-									</a>
-								{/if}
-
-								
-
-
-                                <button class="btn btn-neutral btn-active" on:click={() => openDetailModal(item)}>
-									ดูรายละเอียด
+							<div class="flex justify-between items-center mt-2">
+								<p class="text-lg font-bold">฿{item.price.toLocaleString()}</p>
+								<button class="btn btn-neutral btn-active" on:click={() => openDetailModal(item)}>
+									ดูเพิ่มเติม
 								</button>
-							
-								<a href={item?.expand?.userStore?.fbPage} target="_blank">
-									<button type="submit" class="btn btn-facebook mb-4">
-										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-2">
-											<path d="M22.675 0h-21.35C.597 0 0 .597 0 1.326v21.348C0 23.403.597 24 1.326 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.794.143v3.24l-1.918.001c-1.504 0-1.794.715-1.794 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.729 0 1.326-.597 1.326-1.326V1.326C24 .597 23.403 0 22.675 0z"/>
-										</svg>
-										ติดต่อ FB ร้านค้า
-									</button>
-								</a>
-								
 							</div>
 						</div>
 					</div>
@@ -387,6 +292,10 @@
 			<p style="white-space: pre-wrap;">{detailItem.Desc}</p>
 			<div class="modal-action">
 				<button class="btn" on:click={() => detailItem = null}>ปิด</button>
+				<a href={`/store/${detailItem.expand?.userStore?.slug}`} target="_blank">
+					<button class="btn btn-primary">ไปที่ร้านค้า</button>
+				</a>
+				
 			</div>
 		</div>
 	</div>
