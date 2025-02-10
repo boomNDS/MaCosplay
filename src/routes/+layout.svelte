@@ -2,6 +2,7 @@
 	import '../app.css';
 	import "tailwindcss/tailwind.css";
 	import { onMount } from 'svelte';
+	import { SIDEBAR } from './data/sidebar'; // Adjust the import path as necessary
 
 	let { children, data } = $props();
 
@@ -167,7 +168,7 @@
 </dialog>
 
 
-<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="max-w-[120rem] mx-auto">
 	<div class="navbar bg-base-100 bg-opacity-90 backdrop-blur-sm sticky top-0 z-10">
 		<div class="navbar-start">
 			<div class="dropdown">
@@ -253,6 +254,54 @@
 		</div>
 	  </div>
 	  {@render children()}
+</div>
+
+<div class="drawer-side z-50 md:border-r md:border-base-content/10">
+  <label
+    for="my-drawer-2"
+    aria-label="close sidebar"
+    class="drawer-overlay"
+  ></label>
+
+  <div class="menu bg-base-200 min-h-full w-80 p-0">
+    <div class="mx-7 mt-10">
+      <ul class="menu bg-base-200 gap-4">
+        {#each SIDEBAR as data, index}
+          <li>
+            {#if !data.shop}
+              <a href={data.href} class="block">
+                {#if data.title}
+                  <span class="text-lg font-semibold">
+                    {data.title}
+                  </span>
+                {/if}
+              </a>
+            {/if}
+
+            {#if data.shop}
+              <details open>
+                <summary class="font-semibold text-lg text-base-content cursor-pointer">
+                  Shop
+                </summary>
+                <ul>
+                  {#each data.shop as item, subIndex}
+                    <li>
+                      <a
+                        href={item.href}
+                        class="text-sm font-semibold text-base-content block py-3"
+                      >
+                        {item.title}
+                      </a>
+                    </li>
+                  {/each}
+                </ul>
+              </details>
+            {/if}
+          </li>
+        {/each}
+      </ul>
+    </div>
+  </div>
 </div>
 
 
