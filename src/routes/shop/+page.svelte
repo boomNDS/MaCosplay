@@ -239,7 +239,10 @@
 								</div>
 							</div>
 							<div class="flex justify-between items-center mt-2">
-								<p class="text-lg font-bold">฿{item.price.toLocaleString()}</p>
+								<p class="text-lg font-bold">
+									{item.price == 0 ? `฿${item.price_pri.toLocaleString()} / ${item.price_test.toLocaleString()}` : `฿${item.price.toLocaleString()}`}
+
+								</p>
 								<button class="btn btn-neutral btn-active" on:click={() => openDetailModal(item)}>
 									ดูเพิ่มเติม
 								</button>
