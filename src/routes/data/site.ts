@@ -11,17 +11,17 @@ export const heroData = [
   },
   {
     title: "หาชุดเช่าคอสเพลย์อย่างง่ายดาย",
-    href: "/collections/menswear",
-    image: "/images/Example/Cosshop.png",
-    desc: "เชื่อมโยงนักคอสเพลย์ที่ต้องการเช่าชุดกับเจ้าของชุดคอสเพลย์ทั่วประเทศ ด้วยฟีเจอร์ที่ใช้งานง่ายและปลอดภัย",
+    href: "/collections/newarrival",
+    image: "/images/Example/Macosplay03.jpg",
+    desc: "ค้นหาชุดคอสเพลย์ที่ต้องการเช่าได้ง่ายๆ ด้วยระบบค้นหาที่ง่ายดาย",
   },
 
-  {
+  /* {
     title: "Exclusive Women's Wear Collections",
     href: "/collections/womenswear",
     image: "/images/Example/Cosshop.png",
     desc: "Discover stylish and exclusive womenswear for every occasion. Feel confident and look your best effortlessly.",
-  },
+  }, */
 ];
 
 export const featuresData = [
