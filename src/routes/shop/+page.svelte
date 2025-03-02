@@ -1,7 +1,6 @@
 <script lang="ts">
 	import PocketBase from 'pocketbase';
 	import { onMount } from 'svelte';
-	import Image from 'svelte-image';
 	export let data: { itemList: { items: any[]; totalPages: number; currentPage: number } };
 	let selectedProvince = '';
 	let selectedSize = '';
@@ -84,6 +83,11 @@
 
 	// Create a debounced version of handleSearch
 	const debouncedHandleSearch = debounce(handleSearch, 300);
+
+	// Add type for the image URL function
+	function getOptimizedImageUrl(itemId: string, imageName: string): string {
+		return `https://file.macosplay.com/mxj3660ce5olheb/${itemId}/${imageName}?w=400&format=webp&quality=80`;
+	}
 </script>
 
 <section id="filter" class="pt-12 sm:pt-12 md:pt-14">
@@ -213,18 +217,19 @@
 					<div class="card bg-base-100 shadow-xl border border-gray-200">
 						<figure class="p-2">
 							{#if item.Image}
-							<Image
-								src={`https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`}
+							<img
+								src={getOptimizedImageUrl(item.id, item.Image)}
 								alt="{item.Name} Thumbnail"
 								class="w-full h-full object-cover aspect-square cursor-pointer"
-								on:click={() =>
-									(fullImage = `https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`)}
+								loading="lazy"
+								on:click={() => fullImage = `https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`}
 							/>
 							{:else}
 							<img
-								src="/images/Example/Macosplay.png"
+								src="/images/Example/Macosplay.png?w=400&format=webp"
 								alt="{item.Name} Thumbnail"
 								class="w-full h-full object-cover aspect-square cursor-pointer"
+								loading="lazy"
 							/>
 							{/if}
 						</figure>
@@ -283,7 +288,11 @@
 			<div class="modal-action mb-3">
 				<button class="btn" on:click={() => (fullImage = null)}>X ปิด</button>
 			</div>
-			<img src={fullImage} alt="Full Image" class="h-auto w-full object-cover" />
+			<img 
+				src={`${fullImage}?w=800&format=webp&quality=85`} 
+				alt="Full Image" 
+				class="h-auto w-full object-cover" 
+			/>
 		</div>
 	</div>
 {/if}
