@@ -86,7 +86,7 @@
 
 	// Add type for the image URL function
 	function getOptimizedImageUrl(itemId: string, imageName: string): string {
-		return `https://file.macosplay.com/mxj3660ce5olheb/${itemId}/${imageName}?w=400&format=webp&quality=80`;
+		return `https://file.macosplay.com/mxj3660ce5olheb/${itemId}/${imageName}?w=400&format=webp&quality=60`;
 	}
 </script>
 

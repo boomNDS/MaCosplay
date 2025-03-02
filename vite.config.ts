@@ -9,7 +9,7 @@ export default defineConfig({
 			defaultDirectives: new URLSearchParams({
 				format: 'webp',
 				w: '600',
-				quality: '80'
+				quality: '60'
 			})
 		})
 	],
