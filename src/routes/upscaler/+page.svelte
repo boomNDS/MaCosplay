@@ -206,7 +206,7 @@
                 </div>
                 
                 <!-- Dynamic Range Slider -->
-                <div class="mb-2">
+                <!-- <div class="mb-2">
                     <div class="flex justify-between items-center mb-2">
                         <label for="dynamic" class="text-sm font-medium text-gray-700">ช่วงไดนามิก (HDR)</label>
                         <span class="text-sm text-gray-500">{dynamic}</span>
@@ -222,7 +222,7 @@
                         class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
                     <p class="text-xs text-gray-500 mt-1">ค่าแนะนำ: 6 (ค่าสูง = HDR มากขึ้น)</p>
-                </div>
+                </div> -->
             </div>
 
             <!-- Preview Section -->
