@@ -295,12 +295,24 @@
                             ดาวน์โหลด
                         </a>
                     </div>
-                    <div class="p-4">
+                    <div class="p-4 relative">
                         <img
                             src={upscaledImageUrl}
                             alt="Upscaled"
                             class="max-h-96 mx-auto object-contain"
                         />
+                        <div class="absolute top-4 right-4">
+                            <a 
+                                href={upscaledImageUrl} 
+                                download="upscaled-image.png"
+                                class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg flex items-center justify-center transition-colors"
+                                title="ดาวน์โหลดรูปภาพ"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                            </a>
+                        </div>
                     </div>
                 </div>
             {/if}
@@ -314,7 +326,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {#each upscaledRecords as record}
                     <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                        <div class="aspect-video bg-gray-100">
+                        <div class="aspect-video bg-gray-100 relative">
                             <img
                                 src={`${import.meta.env.VITE_PB_URL}/api/files/cbkes123mm2yp1j/${record.id}/${record.Image || record.image}`}
                                 alt={record.originalName}
@@ -322,6 +334,31 @@
                                 loading="lazy"
                                 on:error={handleImageError}
                             />
+                            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <a 
+                                    href={`${import.meta.env.VITE_PB_URL}/api/files/cbkes123mm2yp1j/${record.id}/${record.Image || record.image}`} 
+                                    download={record.originalName || "upscaled-image.png"}
+                                    class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg flex items-center justify-center transition-colors"
+                                    title="ดาวน์โหลดรูปภาพ"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </a>
+                            </div>
+                            <!-- Hover overlay with download button -->
+                            <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 hover:opacity-100">
+                                <a 
+                                    href={`${import.meta.env.VITE_PB_URL}/api/files/cbkes123mm2yp1j/${record.id}/${record.Image || record.image}`} 
+                                    download={record.originalName || "upscaled-image.png"}
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md shadow-lg flex items-center transition-colors"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    ดาวน์โหลด
+                                </a>
+                            </div>
                         </div>
                         <div class="p-3">
                             <h3 class="font-semibold truncate" title={record.originalName}>
