@@ -1,7 +1,5 @@
 <!-- Upscaler History Page -->
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { pb } from '$lib/pocketbase';
     import { goto } from '$app/navigation';
     
     // Get data from page.ts
@@ -11,190 +9,15 @@
     let isLoading = false;
     let error = data.error || null;
     let totalRecords = data.totalRecords || 0;
-    let currentPage = 1;
+    let currentPage = data.currentPage || 1;
     let recordsPerPage = 12;
     let totalPages = data.totalPages || 1;
     let userProfile = data.userProfile || null;
-    let debugInfo: any = null;
-    let isAuthenticated = false;
-    let authDebugInfo: {
-        isValid: boolean;
-        hasToken: boolean;
-        hasModel: boolean;
-        userId?: string;
-        baseUrl: string;
-    } | null = null;
     
     // Filters
-    let sortBy = '-created'; // Default sort by newest
-    let searchTerm = '';
-    let filterDate: string | null = null;
-    
-    function checkAuthentication() {
-        try {
-            const isValid = pb.authStore.isValid;
-            const token = pb.authStore.token;
-            const model = pb.authStore.model;
-            
-            isAuthenticated = isValid;
-            
-            // Debug auth info
-            authDebugInfo = {
-                isValid,
-                hasToken: !!token,
-                hasModel: !!model,
-                userId: model?.id,
-                baseUrl: import.meta.env.VITE_PB_URL
-            };
-            
-            console.log('Auth debug info:', authDebugInfo);
-            
-            return isValid;
-        } catch (e) {
-            console.error('Error checking authentication:', e);
-            return false;
-        }
-    }
-    
-    async function loadUserProfile() {
-        try {
-            if (!checkAuthentication()) {
-                console.warn('User not authenticated, skipping profile load');
-                return;
-            }
-            
-            const userId = pb.authStore.model?.id;
-            if (!userId) return;
-            
-            console.log('Loading user profile for ID:', userId);
-            
-            // Get user data with avatar
-            const user = await pb.collection('users').getOne(userId);
-            console.log('User profile loaded:', user);
-            
-            if (user) {
-                userProfile = user;
-                
-                // Debug user avatar
-                if (user.avatar) {
-                    const baseUrl = import.meta.env.VITE_PB_URL;
-                    const avatarUrl = `${baseUrl}/api/files/users/${user.id}/${user.avatar}`;
-                    console.log('User avatar URL:', avatarUrl);
-                } else {
-                    console.log('User has no avatar');
-                }
-            }
-        } catch (e) {
-            console.error('Error loading user profile:', e);
-        }
-    }
-    
-    async function loadUpscaledImages(page = 1) {
-        try {
-            isLoading = true;
-            error = null;
-            debugInfo = null;
-            
-            if (!checkAuthentication()) {
-                error = 'กรุณาเข้าสู่ระบบเพื่อดูประวัติการอัพสเกลรูปภาพ';
-                isLoading = false;
-                return;
-            }
-            
-            const userId = pb.authStore.model?.id;
-            if (!userId) {
-                error = 'กรุณาเข้าสู่ระบบเพื่อดูประวัติการอัพสเกลรูปภาพ';
-                isLoading = false;
-                return;
-            }
-            
-            console.log('Loading upscaled images for user ID:', userId);
-
-            // Build filter
-            let filter = `user = "${userId}"`;
-            
-            if (searchTerm) {
-                filter += ` && (originalName ~ "${searchTerm}")`;
-            }
-            
-            if (filterDate) {
-                const date = new Date(filterDate);
-                const nextDay = new Date(date);
-                nextDay.setDate(date.getDate() + 1);
-                
-                filter += ` && (created >= "${date.toISOString()}" && created < "${nextDay.toISOString()}")`;
-            }
-            
-            console.log('Using filter:', filter);
-            
-            try {
-                // Get records for current user with expanded user data
-                const records = await pb.collection('cbkes123mm2yp1j').getList(page, recordsPerPage, {
-                    filter: filter,
-                    sort: sortBy,
-                    expand: 'user'
-                });
-                
-                console.log('Records loaded for current user:', records.items);
-                
-                // Check if user data is expanded properly
-                if (records.items.length > 0) {
-                    const sampleRecord = records.items[0];
-                    console.log('Sample record expand data:', sampleRecord.expand);
-                    
-                    if (sampleRecord.expand?.user) {
-                        console.log('User data expanded successfully:', sampleRecord.expand.user);
-                    } else {
-                        console.warn('User data not expanded properly');
-                    }
-                }
-                
-                totalRecords = records.totalItems;
-                totalPages = Math.ceil(totalRecords / recordsPerPage);
-                upscaledRecords = records.items;
-                currentPage = page;
-                
-                // Debug info
-                debugInfo = {
-                    totalRecords,
-                    recordsShown: upscaledRecords.length,
-                    currentUserId: userId,
-                    sampleRecords: records.items.slice(0, 5).map(r => ({
-                        id: r.id,
-                        user: r.user,
-                        hasImage: !!(r.Image || r.image),
-                        imageField: r.Image ? 'Image' : (r.image ? 'image' : 'none'),
-                        created: r.created,
-                        hasExpandedUser: !!r.expand?.user
-                    }))
-                };
-                
-                console.log('Debug info:', debugInfo);
-                
-                // Check if we have records but no images
-                if (upscaledRecords.length > 0 && !upscaledRecords.some(r => r.Image || r.image)) {
-                    console.warn('Records found but no images available');
-                }
-            } catch (fetchError: any) {
-                console.error('Error fetching records:', fetchError);
-                error = `ไม่สามารถโหลดข้อมูลได้: ${fetchError.message}`;
-                
-                // Add more debug info
-                debugInfo = {
-                    error: fetchError.message,
-                    filter: filter,
-                    userId: userId,
-                    page: page,
-                    recordsPerPage: recordsPerPage
-                };
-            }
-        } catch (e) {
-            console.error('Error loading upscaled images:', e);
-            error = 'ไม่สามารถโหลดประวัติการอัพสเกลรูปภาพได้';
-        } finally {
-            isLoading = false;
-        }
-    }
+    let sortBy = data.currentSort || '-created';
+    let searchTerm = data.currentSearch || '';
+    let filterDate = data.currentDate || null;
     
     function getImageUrl(record: any) {
         if (!record) {
@@ -208,14 +31,12 @@
             // Check for Image field (case sensitive)
             if (record.id && record.Image) {
                 const url = `${baseUrl}/api/files/cbkes123mm2yp1j/${record.id}/${record.Image}`;
-                console.log('Generated URL from Image field:', url);
                 return url;
             }
             
             // Check for image field (lowercase)
             if (record.id && record.image) {
                 const url = `${baseUrl}/api/files/cbkes123mm2yp1j/${record.id}/${record.image}`;
-                console.log('Generated URL from image field:', url);
                 return url;
             }
 
@@ -236,7 +57,6 @@
             if (user.id && user.avatar) {
                 // Direct URL construction for user avatar
                 const url = `${baseUrl}/api/files/users/${user.id}/${user.avatar}`;
-                console.log('Generated user avatar URL:', url);
                 return url;
             }
             
@@ -248,34 +68,36 @@
     }
     
     function handleSearch() {
-        loadUpscaledImages(1); // Reset to first page when searching
+        const searchParams = new URLSearchParams();
+        if (searchTerm) searchParams.set('search', searchTerm);
+        if (filterDate) searchParams.set('date', filterDate);
+        if (sortBy !== '-created') searchParams.set('sort', sortBy);
+        searchParams.set('page', '1');
+        
+        goto(`/upscaler/history?${searchParams.toString()}`);
     }
     
     function handleSortChange(event: Event) {
         const select = event.target as HTMLSelectElement;
         sortBy = select.value;
-        loadUpscaledImages(1); // Reset to first page when changing sort
+        handleSearch();
     }
     
     function handleDateChange(event: Event) {
         const input = event.target as HTMLInputElement;
         filterDate = input.value;
-        loadUpscaledImages(1); // Reset to first page when changing date
+        handleSearch();
     }
     
     function clearFilters() {
         searchTerm = '';
         filterDate = null;
         sortBy = '-created';
-        loadUpscaledImages(1);
+        goto('/upscaler/history');
     }
     
     function goToUpscaler() {
         goto('/upscaler');
-    }
-    
-    function goToLogin() {
-        goto('/login?redirect=/upscaler/history');
     }
     
     function formatDate(dateString: string) {
@@ -307,12 +129,16 @@
         const img = event.target as HTMLImageElement;
         img.src = '/images/image-error.png';
     }
-
-    onMount(() => {
-        checkAuthentication();
-        loadUserProfile();
-        loadUpscaledImages();
-    });
+    
+    function goToPage(page: number) {
+        const searchParams = new URLSearchParams();
+        if (searchTerm) searchParams.set('search', searchTerm);
+        if (filterDate) searchParams.set('date', filterDate);
+        if (sortBy !== '-created') searchParams.set('sort', sortBy);
+        searchParams.set('page', page.toString());
+        
+        goto(`/upscaler/history?${searchParams.toString()}`);
+    }
 </script>
 
 <div class="container mx-auto px-4 py-8">
@@ -339,20 +165,13 @@
         </button>
     </div>
     
-    {#if !isAuthenticated}
-        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-6">
-            <p class="mb-3">กรุณาเข้าสู่ระบบเพื่อดูประวัติการอัพสเกลรูปภาพ</p>
-            <button 
-                on:click={goToLogin}
-                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-                เข้าสู่ระบบ
-            </button>
-            
-            {#if authDebugInfo}
-                <details class="mt-4 text-left text-xs">
-                    <summary class="cursor-pointer text-blue-600">ข้อมูลการแก้ไขปัญหา</summary>
-                    <pre class="mt-2 p-2 bg-gray-100 rounded overflow-auto">{JSON.stringify(authDebugInfo, null, 2)}</pre>
+    {#if error}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
+            <p>{error}</p>
+            {#if data.errorDetails}
+                <details class="mt-2 text-xs">
+                    <summary class="cursor-pointer">ข้อมูลการแก้ไขปัญหา</summary>
+                    <pre class="mt-2 p-2 bg-gray-100 rounded overflow-auto">{data.errorDetails}</pre>
                 </details>
             {/if}
         </div>
@@ -449,71 +268,10 @@
             <div class="flex justify-center items-center py-12">
                 <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
             </div>
-        {:else if error}
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
-                <p>{error}</p>
-                {#if debugInfo}
-                    <details class="mt-2 text-xs">
-                        <summary class="cursor-pointer">ข้อมูลการแก้ไขปัญหา</summary>
-                        <pre class="mt-2 p-2 bg-gray-100 rounded overflow-auto">{JSON.stringify(debugInfo, null, 2)}</pre>
-                        
-                        <!-- User expansion debug -->
-                        {#if upscaledRecords.length > 0}
-                            <div class="mt-2 p-2 bg-gray-100 rounded">
-                                <p class="font-bold">User Expansion Debug:</p>
-                                <ul class="list-disc pl-5">
-                                    {#each upscaledRecords.slice(0, 3) as record, i}
-                                        <li>
-                                            Record {i+1}: 
-                                            User ID: {record.user}, 
-                                            Has expand: {!!record.expand}, 
-                                            Has user expand: {!!record.expand?.user},
-                                            {#if record.expand?.user}
-                                                User name: {record.expand.user.name || record.expand.user.username},
-                                                Has avatar: {!!record.expand.user.avatar}
-                                            {/if}
-                                        </li>
-                                    {/each}
-                                </ul>
-                            </div>
-                        {/if}
-                    </details>
-                {/if}
-            </div>
         {:else if upscaledRecords.length === 0}
             <div class="bg-gray-100 rounded-lg p-8 text-center">
                 <p class="text-lg text-gray-600">ไม่พบประวัติการอัพสเกลรูปภาพ</p>
                 <p class="text-sm text-gray-500 mt-2">คุณยังไม่เคยอัพสเกลรูปภาพ หรือรูปภาพอาจถูกลบไปแล้ว</p>
-                
-                {#if debugInfo}
-                    <details class="mt-4 text-left">
-                        <summary class="cursor-pointer text-blue-600 text-sm">ข้อมูลการแก้ไขปัญหา</summary>
-                        <div class="mt-2 p-4 bg-white rounded shadow-sm text-xs text-left">
-                            <p class="font-semibold">จำนวนรูปภาพทั้งหมดในระบบ: {debugInfo.totalRecordsInCollection || 0}</p>
-                            <p class="font-semibold mt-2">ข้อมูลการค้นหา:</p>
-                            <ul class="list-disc pl-5 mt-1">
-                                <li>User ID: {debugInfo.currentUserId || 'ไม่มี'}</li>
-                                <li>Filter: {debugInfo.filter || 'ไม่มี'}</li>
-                                <li>Collection ID: cbkes123mm2yp1j</li>
-                                <li>Base URL: {import.meta.env.VITE_PB_URL}</li>
-                            </ul>
-                            
-                            <p class="font-semibold mt-2">ตัวอย่างการสร้าง URL:</p>
-                            <code class="block p-2 bg-gray-100 rounded mt-1 overflow-auto">
-                                {import.meta.env.VITE_PB_URL}/api/files/cbkes123mm2yp1j/[RECORD_ID]/[IMAGE_FILENAME]
-                            </code>
-                            
-                            {#if debugInfo.sampleRecords && debugInfo.sampleRecords.length > 0}
-                                <p class="font-semibold mt-2">ตัวอย่างข้อมูล:</p>
-                                <ul class="list-disc pl-5 mt-1">
-                                    {#each debugInfo.sampleRecords as record}
-                                        <li>ID: {record.id}, User: {record.user}, มีรูปภาพ: {record.hasImage ? 'ใช่' : 'ไม่'}, ฟิลด์รูปภาพ: {record.imageField}, สร้างเมื่อ: {new Date(record.created).toLocaleString()}</li>
-                                    {/each}
-                                </ul>
-                            {/if}
-                        </div>
-                    </details>
-                {/if}
                 
                 <button 
                     on:click={goToUpscaler}
@@ -610,14 +368,14 @@
                 <div class="flex justify-center mt-6">
                     <nav class="inline-flex rounded-md shadow">
                         <button 
-                            on:click={() => loadUpscaledImages(1)}
+                            on:click={() => goToPage(1)}
                             disabled={currentPage === 1}
                             class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             &laquo;
                         </button>
                         <button 
-                            on:click={() => loadUpscaledImages(currentPage - 1)}
+                            on:click={() => goToPage(currentPage - 1)}
                             disabled={currentPage === 1}
                             class="px-3 py-2 border-t border-b border-gray-300 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
@@ -629,14 +387,14 @@
                         </div>
                         
                         <button 
-                            on:click={() => loadUpscaledImages(currentPage + 1)}
+                            on:click={() => goToPage(currentPage + 1)}
                             disabled={currentPage === totalPages}
                             class="px-3 py-2 border-t border-b border-gray-300 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             &rsaquo;
                         </button>
                         <button 
-                            on:click={() => loadUpscaledImages(totalPages)}
+                            on:click={() => goToPage(totalPages)}
                             disabled={currentPage === totalPages}
                             class="px-3 py-2 rounded-r-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >

@@ -1,11 +1,11 @@
 <!-- Upscaler.svelte -->
 <script lang="ts">
     import { onMount, afterUpdate } from 'svelte';
-    import { pb } from '$lib/pocketbase';
     import { goto } from '$app/navigation';
     import { enhance } from '$app/forms';
     
-    // Get form data from page.server.ts
+    // Get data from page.server.ts
+    export let data;
     export let form;
     
     let selectedFile: File | null = null;
@@ -13,15 +13,11 @@
     let upscaledImageUrl: string | null = null;
     let isLoading = false;
     let error: string | null = null;
-    let upscaledRecords: any[] = [];
-    let isAuthenticated = false;
-    let authDebugInfo: {
-        isValid: boolean;
-        hasToken: boolean;
-        hasModel: boolean;
-        userId?: string;
-        baseUrl: string;
-    } | null = null;
+    
+    // Get data from server
+    let upscaledRecords = data.recentUpscaledRecords || [];
+    let userProfile = data.userProfile || null;
+    let isAuthenticated = true; // Server-side authentication is already handled
     
     // Parameters for upscaling
     let creativity = 0.35; // Default value
@@ -29,57 +25,6 @@
     let dynamic = 6; // Default value
     
     const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
-
-    function checkAuthentication() {
-        try {
-            const isValid = pb.authStore.isValid;
-            const token = pb.authStore.token;
-            const model = pb.authStore.model;
-            
-            isAuthenticated = isValid;
-            
-            // Debug auth info
-            authDebugInfo = {
-                isValid,
-                hasToken: !!token,
-                hasModel: !!model,
-                userId: model?.id,
-                baseUrl: import.meta.env.VITE_PB_URL
-            };
-            
-            console.log('Auth debug info:', authDebugInfo);
-            
-            return isValid;
-        } catch (e) {
-            console.error('Error checking authentication:', e);
-            return false;
-        }
-    }
-
-    async function loadUpscaledImages() {
-        try {
-            if (!checkAuthentication()) {
-                console.warn('User not authenticated, skipping image load');
-                return;
-            }
-
-            const userId = pb.authStore.model?.id;
-            if (!userId) {
-                console.warn('No user ID found in auth model');
-                return;
-            }
-
-            const records = await pb.collection('cbkes123mm2yp1j').getList(1, 10, {
-                filter: `user = "${userId}"`,
-                sort: '-created',
-                expand: 'user'
-            });
-            upscaledRecords = records.items;
-            console.log('Loaded upscaled records:', upscaledRecords.length);
-        } catch (e) {
-            console.error('Error loading upscaled images:', e);
-        }
-    }
 
     function handleFileSelect(event: Event) {
         const input = event.target as HTMLInputElement;
@@ -133,10 +78,6 @@
         goto('/upscaler/history');
     }
     
-    function goToLogin() {
-        goto('/login?redirect=/upscaler');
-    }
-
     function handleImageError(event: Event) {
         const img = event.target as HTMLImageElement;
         img.src = '/images/image-error.png';
@@ -146,16 +87,13 @@
     afterUpdate(() => {
         if (form?.success && form?.upscaledImage) {
             upscaledImageUrl = form.upscaledImage;
-            loadUpscaledImages();
         } else if (form?.error) {
             error = form.error;
         }
     });
 
     onMount(() => {
-        checkAuthentication();
-        loadUpscaledImages();
-        
+        // Clean up on unmount
         return () => {
             if (previewUrl) {
                 URL.revokeObjectURL(previewUrl);
@@ -167,34 +105,19 @@
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-2">
         <h1 class="text-4xl font-bold">อัพสเกลรูปคอสเพลย์</h1>
-        {#if isAuthenticated}
-            <button 
-                on:click={goToHistory}
-                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-                ดูประวัติการอัพสเกล
-            </button>
-        {/if}
+        <button 
+            on:click={goToHistory}
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+        >
+            ดูประวัติการอัพสเกล
+        </button>
     </div>
     <p class="text-center text-gray-600 mb-8">เพิ่มความคมชัดและคุณภาพให้กับรูปคอสเพลย์ของคุณด้วย AI</p>
     
     <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
-        {#if !isAuthenticated}
-            <div class="text-center p-4 bg-yellow-100 rounded-lg mb-6">
-                <p class="text-yellow-800 mb-3">กรุณาเข้าสู่ระบบเพื่อใช้งานฟีเจอร์อัพสเกลรูปภาพ</p>
-                <button 
-                    on:click={goToLogin}
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                >
-                    เข้าสู่ระบบ
-                </button>
-                
-                {#if authDebugInfo}
-                    <details class="mt-4 text-left text-xs">
-                        <summary class="cursor-pointer text-blue-600">ข้อมูลการแก้ไขปัญหา</summary>
-                        <pre class="mt-2 p-2 bg-gray-100 rounded overflow-auto">{JSON.stringify(authDebugInfo, null, 2)}</pre>
-                    </details>
-                {/if}
+        {#if data.error}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
+                <p>{data.error}</p>
             </div>
         {/if}
 
@@ -340,7 +263,7 @@
                 <button
                     type="submit"
                     class="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={!selectedFile || isLoading || !isAuthenticated}
+                    disabled={!selectedFile || isLoading}
                     on:click={() => {
                         // Copy the selected file to the form input
                         if (selectedFile) {
@@ -385,11 +308,11 @@
     </div>
     
     <!-- Recent Upscales -->
-    {#if upscaledRecords.length > 0 && isAuthenticated}
+    {#if upscaledRecords.length > 0}
         <div class="mt-12">
             <h2 class="text-2xl font-bold mb-4">รูปภาพที่อัพสเกลล่าสุด</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {#each upscaledRecords.slice(0, 3) as record}
+                {#each upscaledRecords as record}
                     <div class="bg-white rounded-lg shadow-md overflow-hidden">
                         <div class="aspect-video bg-gray-100">
                             <img

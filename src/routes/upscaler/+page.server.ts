@@ -1,14 +1,57 @@
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import Replicate from 'replicate';
 import { createAdminClient } from '$lib/pocketbase';
 import type { ClientResponseError } from 'pocketbase';
+import type { PageServerLoad } from './$types';
+
+// Server-side authentication check
+export const load: PageServerLoad = async ({ locals }) => {
+    // If user is not logged in, redirect to login page with return URL
+    if (!locals?.user) {
+        throw redirect(302, '/login?redirect=/upscaler');
+    }
+
+    try {
+        // Create admin client for server-side operations
+        const adminPb = await createAdminClient();
+
+        // Get user's recent upscaled images
+        const records = await adminPb.collection('cbkes123mm2yp1j').getList(1, 3, {
+            filter: `user = "${locals.user.id}"`,
+            sort: '-created'
+        });
+
+        // Get user profile
+        const userProfile = await adminPb.collection('users').getOne(locals.user.id);
+
+        return {
+            title: 'อัพสเกลรูปคอสเพลย์',
+            recentUpscaledRecords: records.items,
+            userProfile,
+            authenticated: true
+        };
+    } catch (error) {
+        console.error('Error loading data:', error);
+        return {
+            title: 'อัพสเกลรูปคอสเพลย์',
+            recentUpscaledRecords: [],
+            authenticated: true,
+            error: 'ไม่สามารถโหลดข้อมูลล่าสุดได้'
+        };
+    }
+};
 
 export const actions = {
     default: async ({ request, locals }) => {
+        // Check if user is authenticated
+        if (!locals?.user?.id) {
+            return fail(401, { error: 'กรุณาเข้าสู่ระบบเพื่อใช้งานฟีเจอร์นี้' });
+        }
+
         try {
             const formData = await request.formData();
             const file = formData.get('file') as File;
-            const userId = locals.user?.id;
+            const userId = locals.user.id;
             
             // Get upscaling parameters from the request
             const creativity = parseFloat(formData.get('creativity') as string) || 0.35;
@@ -19,10 +62,6 @@ export const actions = {
             
             if (!file) {
                 return fail(400, { error: 'Image file is required' });
-            }
-
-            if (!userId) {
-                return fail(400, { error: 'User ID is required' });
             }
 
             // Convert the file to base64
