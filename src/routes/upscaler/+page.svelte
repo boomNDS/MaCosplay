@@ -242,9 +242,17 @@
             {/if}
 
             <!-- Upscale Button -->
-            <form method="POST" action="?/upscale" enctype="multipart/form-data" use:enhance={() => {
+            <form method="POST" action="?/upscale" enctype="multipart/form-data" use:enhance={({ formData }) => {
                 isLoading = true;
                 error = null;
+                
+                // Directly append the file to the FormData
+                if (selectedFile) {
+                    // Remove any existing file input to avoid duplicates
+                    formData.delete('file');
+                    // Add the file directly to the FormData
+                    formData.append('file', selectedFile);
+                }
                 
                 return async ({ update }) => {
                     isLoading = false;
@@ -255,28 +263,10 @@
                 <input type="hidden" name="scaleFactor" value={scaleFactor} />
                 <input type="hidden" name="dynamic" value={dynamic} />
                 
-                <!-- File input for form submission -->
-                {#if selectedFile}
-                    <div class="hidden">
-                        <input type="file" name="file" id="form-file" />
-                    </div>
-                {/if}
-                
                 <button
                     type="submit"
                     class="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={!selectedFile || isLoading}
-                    on:click={() => {
-                        if (selectedFile) {
-                            // Copy the selected file to the form input
-                            const formFileInput = document.getElementById('form-file') as HTMLInputElement;
-                            if (formFileInput) {
-                                const dataTransfer = new DataTransfer();
-                                dataTransfer.items.add(selectedFile);
-                                formFileInput.files = dataTransfer.files;
-                            }
-                        }
-                    }}
                 >
                     {#if isLoading}
                         <span class="inline-block animate-spin mr-2">⟳</span> กำลังอัพสเกล...

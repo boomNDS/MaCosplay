@@ -50,7 +50,7 @@ export const actions = {
 
         try {
             const formData = await request.formData();
-            const file = formData.get('file') as File;
+            const file = formData.get('file');
             const userId = locals.user.id;
             
             // Get upscaling parameters from the request
@@ -59,33 +59,53 @@ export const actions = {
             const dynamic = parseFloat(formData.get('dynamic') as string) || 6;
             
             console.log('Upscaling parameters:', { creativity, scaleFactor, dynamic });
+            console.log('File received:', file ? 'Yes' : 'No', file ? `Type: ${typeof file}` : '');
             
             if (!file) {
                 return fail(400, { error: 'Image file is required' });
+            }
+
+            // Check if the file is a valid file object
+            if (!(file instanceof Blob)) {
+                console.error('File is not a Blob or File object:', typeof file);
+                return fail(400, { error: 'Invalid file format' });
             }
 
             // Convert the file to base64
             let base64Image: string;
             try {
                 // Check if file is a File object with arrayBuffer method
-                if (file instanceof File && typeof file.arrayBuffer === 'function') {
-                    const arrayBuffer = await file.arrayBuffer();
-                    base64Image = Buffer.from(arrayBuffer).toString('base64');
+                if (typeof (file as Blob & { arrayBuffer?: () => Promise<ArrayBuffer> }).arrayBuffer === 'function') {
+                    try {
+                        const arrayBuffer = await (file as Blob & { arrayBuffer: () => Promise<ArrayBuffer> }).arrayBuffer();
+                        base64Image = Buffer.from(arrayBuffer).toString('base64');
+                    } catch (arrayBufferError) {
+                        console.error('Error using arrayBuffer method:', arrayBufferError);
+                        throw new Error('Failed to read file using arrayBuffer');
+                    }
                 } 
                 // Alternative approach for environments where arrayBuffer isn't available
-                else if (file instanceof Blob) {
+                else {
                     // Use FileReader for blob objects
                     base64Image = await new Promise<string>((resolve, reject) => {
                         const reader = new FileReader();
                         reader.onload = () => {
-                            const result = reader.result as string;
-                            // Extract the base64 part if it's a data URL
-                            const base64 = result.includes('base64,') 
-                                ? result.split('base64,')[1] 
-                                : result;
-                            resolve(base64);
+                            try {
+                                const result = reader.result as string;
+                                // Extract the base64 part if it's a data URL
+                                const base64 = result.includes('base64,') 
+                                    ? result.split('base64,')[1] 
+                                    : result;
+                                resolve(base64);
+                            } catch (readerError) {
+                                console.error('Error processing FileReader result:', readerError);
+                                reject(new Error('Failed to process file data'));
+                            }
                         };
-                        reader.onerror = reject;
+                        reader.onerror = (error) => {
+                            console.error('FileReader error:', error);
+                            reject(new Error('FileReader failed to read the file'));
+                        };
                         reader.readAsDataURL(file);
                     });
                     
@@ -93,15 +113,15 @@ export const actions = {
                     if (base64Image.includes('base64,')) {
                         base64Image = base64Image.split('base64,')[1];
                     }
-                } else {
-                    return fail(400, { error: 'Invalid file format' });
                 }
             } catch (error) {
                 console.error('Error processing file:', error);
                 return fail(500, { error: 'Failed to process the image file' });
             }
 
-            const dataUrl = `data:${file.type};base64,${base64Image}`;
+            // Get file type for the data URL
+            const fileType = (file as File).type || 'image/png';
+            const dataUrl = `data:${fileType};base64,${base64Image}`;
 
             // Replicate API call
             const replicate = new Replicate({
