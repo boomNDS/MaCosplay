@@ -65,8 +65,42 @@ export const actions = {
             }
 
             // Convert the file to base64
-            const arrayBuffer = await file.arrayBuffer();
-            const base64Image = Buffer.from(arrayBuffer).toString('base64');
+            let base64Image: string;
+            try {
+                // Check if file is a File object with arrayBuffer method
+                if (file instanceof File && typeof file.arrayBuffer === 'function') {
+                    const arrayBuffer = await file.arrayBuffer();
+                    base64Image = Buffer.from(arrayBuffer).toString('base64');
+                } 
+                // Alternative approach for environments where arrayBuffer isn't available
+                else if (file instanceof Blob) {
+                    // Use FileReader for blob objects
+                    base64Image = await new Promise<string>((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            const result = reader.result as string;
+                            // Extract the base64 part if it's a data URL
+                            const base64 = result.includes('base64,') 
+                                ? result.split('base64,')[1] 
+                                : result;
+                            resolve(base64);
+                        };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                    
+                    // If we got a full data URL, extract just the base64 part
+                    if (base64Image.includes('base64,')) {
+                        base64Image = base64Image.split('base64,')[1];
+                    }
+                } else {
+                    return fail(400, { error: 'Invalid file format' });
+                }
+            } catch (error) {
+                console.error('Error processing file:', error);
+                return fail(500, { error: 'Failed to process the image file' });
+            }
+
             const dataUrl = `data:${file.type};base64,${base64Image}`;
 
             // Replicate API call
