@@ -204,6 +204,7 @@
 					</details>
 				</li>
 				<li><a href="/pricing">อัพเกรด</a></li>
+				<li><a href="/upscaler">AI Upscale</a></li>
 			</ul>
 		</div>
 		<div class="navbar-end">
