@@ -44,6 +44,7 @@
         try {
             isLoading = true;
             error = null;
+            debugInfo = null;
             
             const userId = pb.authStore.model?.id;
             if (!userId) {
@@ -51,41 +52,76 @@
                 isLoading = false;
                 return;
             }
+            
+            console.log('Loading upscaled images for user ID:', userId);
 
             // Build filter
             let filter = `user = "${userId}"`;
+            
             if (searchTerm) {
                 filter += ` && (originalName ~ "${searchTerm}")`;
             }
+            
             if (filterDate) {
                 const date = new Date(filterDate);
                 const nextDay = new Date(date);
                 nextDay.setDate(date.getDate() + 1);
+                
                 filter += ` && (created >= "${date.toISOString()}" && created < "${nextDay.toISOString()}")`;
             }
-
+            
+            console.log('Using filter:', filter);
+            
             try {
-                // Get records with specific fields we need
+                // Get records for current user
                 const records = await pb.collection('cbkes123mm2yp1j').getList(page, recordsPerPage, {
                     filter: filter,
                     sort: sortBy,
-                    expand: 'user',
-                    fields: 'id,created,originalName,Image,image,user,creativity,scaleFactor,dynamic'
+                    expand: 'user'
                 });
                 
-                console.log('Records loaded:', records.items);
+                console.log('Records loaded for current user:', records.items);
                 
                 totalRecords = records.totalItems;
                 totalPages = Math.ceil(totalRecords / recordsPerPage);
                 upscaledRecords = records.items;
                 currentPage = page;
-
+                
+                // Debug info
+                debugInfo = {
+                    totalRecords,
+                    recordsShown: upscaledRecords.length,
+                    currentUserId: userId,
+                    sampleRecords: records.items.slice(0, 5).map(r => ({
+                        id: r.id,
+                        user: r.user,
+                        hasImage: !!(r.Image || r.image),
+                        imageField: r.Image ? 'Image' : (r.image ? 'image' : 'none'),
+                        created: r.created
+                    }))
+                };
+                
+                console.log('Debug info:', debugInfo);
+                
+                // Check if we have records but no images
+                if (upscaledRecords.length > 0 && !upscaledRecords.some(r => r.Image || r.image)) {
+                    console.warn('Records found but no images available');
+                }
             } catch (fetchError: any) {
                 console.error('Error fetching records:', fetchError);
                 error = `ไม่สามารถโหลดข้อมูลได้: ${fetchError.message}`;
+                
+                // Add more debug info
+                debugInfo = {
+                    error: fetchError.message,
+                    filter: filter,
+                    userId: userId,
+                    page: page,
+                    recordsPerPage: recordsPerPage
+                };
             }
         } catch (e) {
-            console.error('Error in loadUpscaledImages:', e);
+            console.error('Error loading upscaled images:', e);
             error = 'ไม่สามารถโหลดประวัติการอัพสเกลรูปภาพได้';
         } finally {
             isLoading = false;
@@ -101,15 +137,21 @@
         try {
             const baseUrl = import.meta.env.VITE_PB_URL;
             
-            // Check for Image field based on the record ID format shown in PocketBase
-            if (record.id) {
-                // Example ID from your interface: o8nn78k5r3d5hw7
-                const url = `${baseUrl}/api/files/cbkes123mm2yp1j/${record.id}/${record.Image || record.image}`;
-                console.log('Generated URL:', url);
+            // Check for Image field (case sensitive)
+            if (record.id && record.Image) {
+                const url = `${baseUrl}/api/files/cbkes123mm2yp1j/${record.id}/${record.Image}`;
+                console.log('Generated URL from Image field:', url);
+                return url;
+            }
+            
+            // Check for image field (lowercase)
+            if (record.id && record.image) {
+                const url = `${baseUrl}/api/files/cbkes123mm2yp1j/${record.id}/${record.image}`;
+                console.log('Generated URL from image field:', url);
                 return url;
             }
 
-            console.warn('No valid record ID found:', record);
+            console.warn('No image field found in record:', Object.keys(record));
             return '/images/image-error.png';
         } catch (e) {
             console.error('Error generating image URL:', e);
@@ -120,11 +162,20 @@
     function getUserProfileImage(user: any) {
         if (!user) return '/images/default-avatar.png';
         
-        if (user.avatar) {
-            return pb.getFileUrl(user, user.avatar, { 'collection': 'users' });
+        try {
+            const baseUrl = import.meta.env.VITE_PB_URL;
+            
+            if (user.id && user.avatar) {
+                const url = `${baseUrl}/api/files/users/${user.id}/${user.avatar}`;
+                console.log('Generated user avatar URL:', url);
+                return url;
+            }
+            
+            return '/images/default-avatar.png';
+        } catch (e) {
+            console.error('Error generating user avatar URL:', e);
+            return '/images/default-avatar.png';
         }
-        
-        return '/images/default-avatar.png';
     }
     
     function handleSearch() {
