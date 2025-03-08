@@ -74,32 +74,38 @@ export const actions = {
             // Convert the file to base64
             let base64Image: string;
             try {
-                // Use a web-standard approach that works in edge environments like Cloudflare
-                base64Image = await new Promise<string>((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        try {
-                            const result = reader.result as string;
-                            // Extract the base64 part from the data URL
-                            if (result.includes('base64,')) {
-                                resolve(result.split('base64,')[1]);
-                            } else {
-                                resolve(result);
-                            }
-                        } catch (readerError) {
-                            console.error('Error processing FileReader result:', readerError);
-                            reject(new Error('Failed to process file data'));
-                        }
-                    };
-                    reader.onerror = (error) => {
-                        console.error('FileReader error:', error);
-                        reject(new Error('FileReader failed to read the file'));
-                    };
-                    reader.readAsDataURL(file);
-                });
+                // Check if we're in a Node.js environment
+                if (typeof process !== 'undefined' && process.versions && process.versions.node) {
+                    // Node.js environment (development)
+                    console.log('Using Node.js approach for file processing');
+                    
+                    // Use arrayBuffer and Buffer for Node.js
+                    if (file instanceof Blob) {
+                        const arrayBuffer = await file.arrayBuffer();
+                        base64Image = Buffer.from(arrayBuffer).toString('base64');
+                    } else {
+                        throw new Error('File is not a valid Blob object');
+                    }
+                } else {
+                    // Browser/Edge environment (production)
+                    console.log('Using browser approach for file processing');
+                    
+                    // Use fetch API to convert the file to base64
+                    const fileData = await file.arrayBuffer();
+                    const bytes = new Uint8Array(fileData);
+                    const len = bytes.byteLength;
+                    let binary = '';
+                    for (let i = 0; i < len; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    base64Image = btoa(binary);
+                }
             } catch (error) {
                 console.error('Error processing file:', error);
-                return fail(500, { error: 'Failed to process the image file' });
+                return fail(500, { 
+                    error: 'Failed to process the image file',
+                    details: error instanceof Error ? error.message : 'Unknown error'
+                });
             }
 
             // Get file type for the data URL
@@ -148,9 +154,33 @@ export const actions = {
                     }
                     
                     const imageBuffer = await response.arrayBuffer();
-                    const blob = new Blob([imageBuffer], { type: 'image/png' });
+                    
+                    // Create a blob from the array buffer
+                    let blob: Blob;
+                    try {
+                        blob = new Blob([imageBuffer], { type: 'image/png' });
+                    } catch (blobError) {
+                        console.error('Error creating Blob:', blobError);
+                        return fail(500, { 
+                            error: 'Failed to process the upscaled image',
+                            details: blobError instanceof Error ? blobError.message : 'Error creating Blob'
+                        });
+                    }
+                    
                     const fileName = `upscaled_${Date.now()}_${Math.random().toString(36).substring(2, 10)}.png`;
-                    const imageFile = new File([blob], fileName, { type: 'image/png' });
+                    
+                    // Create a File object from the blob
+                    let imageFile: File;
+                    try {
+                        imageFile = new File([blob], fileName, { type: 'image/png' });
+                    } catch (fileError) {
+                        console.error('Error creating File:', fileError);
+                        // If File constructor fails, try to use the blob directly
+                        return fail(500, { 
+                            error: 'Failed to create file from upscaled image',
+                            details: fileError instanceof Error ? fileError.message : 'Error creating File'
+                        });
+                    }
 
                     // Create FormData for PocketBase
                     const pbFormData = new FormData();
@@ -160,7 +190,23 @@ export const actions = {
                     pbFormData.append('creativity', creativity.toString());
                     pbFormData.append('scaleFactor', scaleFactor.toString());
                     pbFormData.append('dynamic', dynamic.toString());
-                    pbFormData.append('Image', imageFile); // Using capital 'I' for Image field
+                    
+                    // Try to append the file, with fallback to blob if needed
+                    try {
+                        pbFormData.append('Image', imageFile);
+                    } catch (appendError) {
+                        console.error('Error appending file to FormData:', appendError);
+                        // Try with blob as fallback
+                        try {
+                            pbFormData.append('Image', blob, fileName);
+                        } catch (blobAppendError) {
+                            console.error('Error appending blob to FormData:', blobAppendError);
+                            return fail(500, { 
+                                error: 'Failed to prepare image for upload',
+                                details: 'Could not append image to form data'
+                            });
+                        }
+                    }
 
                     // Create record in the correct collection (cbkes123mm2yp1j)
                     console.log('Creating record in PocketBase...');
