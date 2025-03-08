@@ -16,14 +16,53 @@
     let totalPages = data.totalPages || 1;
     let userProfile = data.userProfile || null;
     let debugInfo: any = null;
+    let isAuthenticated = false;
+    let authDebugInfo: {
+        isValid: boolean;
+        hasToken: boolean;
+        hasModel: boolean;
+        userId?: string;
+        baseUrl: string;
+    } | null = null;
     
     // Filters
     let sortBy = '-created'; // Default sort by newest
     let searchTerm = '';
     let filterDate: string | null = null;
     
+    function checkAuthentication() {
+        try {
+            const isValid = pb.authStore.isValid;
+            const token = pb.authStore.token;
+            const model = pb.authStore.model;
+            
+            isAuthenticated = isValid;
+            
+            // Debug auth info
+            authDebugInfo = {
+                isValid,
+                hasToken: !!token,
+                hasModel: !!model,
+                userId: model?.id,
+                baseUrl: import.meta.env.VITE_PB_URL
+            };
+            
+            console.log('Auth debug info:', authDebugInfo);
+            
+            return isValid;
+        } catch (e) {
+            console.error('Error checking authentication:', e);
+            return false;
+        }
+    }
+    
     async function loadUserProfile() {
         try {
+            if (!checkAuthentication()) {
+                console.warn('User not authenticated, skipping profile load');
+                return;
+            }
+            
             const userId = pb.authStore.model?.id;
             if (!userId) return;
             
@@ -55,6 +94,12 @@
             isLoading = true;
             error = null;
             debugInfo = null;
+            
+            if (!checkAuthentication()) {
+                error = 'กรุณาเข้าสู่ระบบเพื่อดูประวัติการอัพสเกลรูปภาพ';
+                isLoading = false;
+                return;
+            }
             
             const userId = pb.authStore.model?.id;
             if (!userId) {
@@ -229,6 +274,10 @@
         goto('/upscaler');
     }
     
+    function goToLogin() {
+        goto('/login?redirect=/upscaler/history');
+    }
+    
     function formatDate(dateString: string) {
         return new Date(dateString).toLocaleDateString('th-TH', {
             year: 'numeric',
@@ -260,6 +309,7 @@
     }
 
     onMount(() => {
+        checkAuthentication();
         loadUserProfile();
         loadUpscaledImages();
     });
@@ -289,9 +339,22 @@
         </button>
     </div>
     
-    {#if !pb.authStore.model}
+    {#if !isAuthenticated}
         <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-6">
-            <p>กรุณาเข้าสู่ระบบเพื่อดูประวัติการอัพสเกลรูปภาพ</p>
+            <p class="mb-3">กรุณาเข้าสู่ระบบเพื่อดูประวัติการอัพสเกลรูปภาพ</p>
+            <button 
+                on:click={goToLogin}
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+                เข้าสู่ระบบ
+            </button>
+            
+            {#if authDebugInfo}
+                <details class="mt-4 text-left text-xs">
+                    <summary class="cursor-pointer text-blue-600">ข้อมูลการแก้ไขปัญหา</summary>
+                    <pre class="mt-2 p-2 bg-gray-100 rounded overflow-auto">{JSON.stringify(authDebugInfo, null, 2)}</pre>
+                </details>
+            {/if}
         </div>
     {:else}
         <!-- User Stats -->
