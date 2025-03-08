@@ -242,7 +242,7 @@
             {/if}
 
             <!-- Upscale Button -->
-            <form method="POST" enctype="multipart/form-data" use:enhance={() => {
+            <form method="POST" action="?/upscale" enctype="multipart/form-data" use:enhance={() => {
                 isLoading = true;
                 error = null;
                 
@@ -255,48 +255,26 @@
                 <input type="hidden" name="scaleFactor" value={scaleFactor} />
                 <input type="hidden" name="dynamic" value={dynamic} />
                 
-                <!-- Hidden file input for form submission -->
+                <!-- File input for form submission -->
                 {#if selectedFile}
-                    <!-- Create a hidden input that will be populated with the file -->
-                    <input type="hidden" name="fileData" id="fileData" />
+                    <div class="hidden">
+                        <input type="file" name="file" id="form-file" />
+                    </div>
                 {/if}
                 
                 <button
                     type="submit"
                     class="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={!selectedFile || isLoading}
-                    on:click|preventDefault={() => {
+                    on:click={() => {
                         if (selectedFile) {
-                            // Create a FormData object to submit the file
-                            const formData = new FormData();
-                            formData.append('file', selectedFile);
-                            formData.append('creativity', creativity.toString());
-                            formData.append('scaleFactor', scaleFactor.toString());
-                            formData.append('dynamic', dynamic.toString());
-                            
-                            // Set loading state
-                            isLoading = true;
-                            error = null;
-                            
-                            // Submit the form data manually
-                            fetch('?/default', {
-                                method: 'POST',
-                                body: formData
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                isLoading = false;
-                                if (data.upscaledImage) {
-                                    upscaledImageUrl = data.upscaledImage;
-                                } else if (data.error) {
-                                    error = data.error;
-                                }
-                            })
-                            .catch(err => {
-                                isLoading = false;
-                                error = 'เกิดข้อผิดพลาดในการอัพโหลดไฟล์: ' + err.message;
-                                console.error('Upload error:', err);
-                            });
+                            // Copy the selected file to the form input
+                            const formFileInput = document.getElementById('form-file') as HTMLInputElement;
+                            if (formFileInput) {
+                                const dataTransfer = new DataTransfer();
+                                dataTransfer.items.add(selectedFile);
+                                formFileInput.files = dataTransfer.files;
+                            }
                         }
                     }}
                 >

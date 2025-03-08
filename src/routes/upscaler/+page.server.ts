@@ -42,7 +42,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions = {
-    default: async ({ request, locals }) => {
+    upscale: async ({ request, locals }) => {
         // Check if user is authenticated
         if (!locals?.user?.id) {
             return fail(401, { error: 'กรุณาเข้าสู่ระบบเพื่อใช้งานฟีเจอร์นี้' });
