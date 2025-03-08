@@ -29,12 +29,22 @@
             
             console.log('Loading user profile for ID:', userId);
             
-            const user = await pb.collection('users').getOne(userId, {
-                expand: 'avatar'
-            });
-            
+            // Get user data with avatar
+            const user = await pb.collection('users').getOne(userId);
             console.log('User profile loaded:', user);
-            userProfile = user;
+            
+            if (user) {
+                userProfile = user;
+                
+                // Debug user avatar
+                if (user.avatar) {
+                    const baseUrl = import.meta.env.VITE_PB_URL;
+                    const avatarUrl = `${baseUrl}/api/files/users/${user.id}/${user.avatar}`;
+                    console.log('User avatar URL:', avatarUrl);
+                } else {
+                    console.log('User has no avatar');
+                }
+            }
         } catch (e) {
             console.error('Error loading user profile:', e);
         }
@@ -73,7 +83,7 @@
             console.log('Using filter:', filter);
             
             try {
-                // Get records for current user
+                // Get records for current user with expanded user data
                 const records = await pb.collection('cbkes123mm2yp1j').getList(page, recordsPerPage, {
                     filter: filter,
                     sort: sortBy,
@@ -81,6 +91,18 @@
                 });
                 
                 console.log('Records loaded for current user:', records.items);
+                
+                // Check if user data is expanded properly
+                if (records.items.length > 0) {
+                    const sampleRecord = records.items[0];
+                    console.log('Sample record expand data:', sampleRecord.expand);
+                    
+                    if (sampleRecord.expand?.user) {
+                        console.log('User data expanded successfully:', sampleRecord.expand.user);
+                    } else {
+                        console.warn('User data not expanded properly');
+                    }
+                }
                 
                 totalRecords = records.totalItems;
                 totalPages = Math.ceil(totalRecords / recordsPerPage);
@@ -97,7 +119,8 @@
                         user: r.user,
                         hasImage: !!(r.Image || r.image),
                         imageField: r.Image ? 'Image' : (r.image ? 'image' : 'none'),
-                        created: r.created
+                        created: r.created,
+                        hasExpandedUser: !!r.expand?.user
                     }))
                 };
                 
@@ -166,6 +189,7 @@
             const baseUrl = import.meta.env.VITE_PB_URL;
             
             if (user.id && user.avatar) {
+                // Direct URL construction for user avatar
                 const url = `${baseUrl}/api/files/users/${user.id}/${user.avatar}`;
                 console.log('Generated user avatar URL:', url);
                 return url;
@@ -216,7 +240,12 @@
     }
     
     function downloadImage(record: any) {
-        const imageUrl = getImageUrl(record);
+        if (!record || (!record.Image && !record.image)) {
+            console.error('Cannot download: No image found in record');
+            return;
+        }
+        
+        const imageUrl = `${import.meta.env.VITE_PB_URL}/api/files/cbkes123mm2yp1j/${record.id}/${record.Image || record.image}`;
         const link = document.createElement('a');
         link.href = imageUrl;
         link.download = record.originalName || 'upscaled-image.png';
@@ -246,6 +275,7 @@
                         src={getUserProfileImage(userProfile)} 
                         alt="โปรไฟล์" 
                         class="w-10 h-10 rounded-full object-cover border-2 border-blue-500"
+                        on:error={handleImageError}
                     />
                     <span class="ml-2 font-medium">{userProfile.name || userProfile.username}</span>
                 </div>
@@ -273,6 +303,7 @@
                             src={getUserProfileImage(userProfile)} 
                             alt="โปรไฟล์" 
                             class="w-16 h-16 rounded-full object-cover border-2 border-blue-500"
+                            on:error={handleImageError}
                         />
                         <div class="ml-4">
                             <h2 class="text-xl font-semibold">{userProfile.name || userProfile.username}</h2>
@@ -362,6 +393,27 @@
                     <details class="mt-2 text-xs">
                         <summary class="cursor-pointer">ข้อมูลการแก้ไขปัญหา</summary>
                         <pre class="mt-2 p-2 bg-gray-100 rounded overflow-auto">{JSON.stringify(debugInfo, null, 2)}</pre>
+                        
+                        <!-- User expansion debug -->
+                        {#if upscaledRecords.length > 0}
+                            <div class="mt-2 p-2 bg-gray-100 rounded">
+                                <p class="font-bold">User Expansion Debug:</p>
+                                <ul class="list-disc pl-5">
+                                    {#each upscaledRecords.slice(0, 3) as record, i}
+                                        <li>
+                                            Record {i+1}: 
+                                            User ID: {record.user}, 
+                                            Has expand: {!!record.expand}, 
+                                            Has user expand: {!!record.expand?.user},
+                                            {#if record.expand?.user}
+                                                User name: {record.expand.user.name || record.expand.user.username},
+                                                Has avatar: {!!record.expand.user.avatar}
+                                            {/if}
+                                        </li>
+                                    {/each}
+                                </ul>
+                            </div>
+                        {/if}
                     </details>
                 {/if}
             </div>
@@ -375,6 +427,19 @@
                         <summary class="cursor-pointer text-blue-600 text-sm">ข้อมูลการแก้ไขปัญหา</summary>
                         <div class="mt-2 p-4 bg-white rounded shadow-sm text-xs text-left">
                             <p class="font-semibold">จำนวนรูปภาพทั้งหมดในระบบ: {debugInfo.totalRecordsInCollection || 0}</p>
+                            <p class="font-semibold mt-2">ข้อมูลการค้นหา:</p>
+                            <ul class="list-disc pl-5 mt-1">
+                                <li>User ID: {debugInfo.currentUserId || 'ไม่มี'}</li>
+                                <li>Filter: {debugInfo.filter || 'ไม่มี'}</li>
+                                <li>Collection ID: cbkes123mm2yp1j</li>
+                                <li>Base URL: {import.meta.env.VITE_PB_URL}</li>
+                            </ul>
+                            
+                            <p class="font-semibold mt-2">ตัวอย่างการสร้าง URL:</p>
+                            <code class="block p-2 bg-gray-100 rounded mt-1 overflow-auto">
+                                {import.meta.env.VITE_PB_URL}/api/files/cbkes123mm2yp1j/[RECORD_ID]/[IMAGE_FILENAME]
+                            </code>
+                            
                             {#if debugInfo.sampleRecords && debugInfo.sampleRecords.length > 0}
                                 <p class="font-semibold mt-2">ตัวอย่างข้อมูล:</p>
                                 <ul class="list-disc pl-5 mt-1">
@@ -382,10 +447,6 @@
                                         <li>ID: {record.id}, User: {record.user}, มีรูปภาพ: {record.hasImage ? 'ใช่' : 'ไม่'}, ฟิลด์รูปภาพ: {record.imageField}, สร้างเมื่อ: {new Date(record.created).toLocaleString()}</li>
                                     {/each}
                                 </ul>
-                            {/if}
-                            {#if debugInfo.upscalerCollectionSchema}
-                                <p class="font-semibold mt-2">โครงสร้างคอลเลกชัน Upscaler:</p>
-                                <pre class="mt-1 p-2 bg-gray-100 rounded overflow-auto">{JSON.stringify(debugInfo.upscalerCollectionSchema, null, 2)}</pre>
                             {/if}
                         </div>
                     </details>
@@ -409,8 +470,9 @@
                 {#each upscaledRecords as record}
                     <div class="bg-white rounded-lg shadow-md overflow-hidden">
                         <div class="relative aspect-video bg-gray-100">
+                            <!-- Display the upscaled image -->
                             <img
-                                src={getImageUrl(record)}
+                                src={`${import.meta.env.VITE_PB_URL}/api/files/cbkes123mm2yp1j/${record.id}/${record.Image || record.image}`}
                                 alt={record.originalName}
                                 class="w-full h-full object-cover"
                                 loading="lazy"
@@ -431,6 +493,7 @@
                                         src={getUserProfileImage(record.expand.user)} 
                                         alt="โปรไฟล์" 
                                         class="w-6 h-6 rounded-full object-cover ml-2 flex-shrink-0"
+                                        on:error={handleImageError}
                                     />
                                 {/if}
                             </div>
@@ -460,7 +523,7 @@
                             
                             <div class="flex justify-between">
                                 <a 
-                                    href={getImageUrl(record)} 
+                                    href={`${import.meta.env.VITE_PB_URL}/api/files/cbkes123mm2yp1j/${record.id}/${record.Image || record.image}`}
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     class="text-blue-600 hover:text-blue-800 text-sm"

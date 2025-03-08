@@ -1,8 +1,12 @@
 <!-- Upscaler.svelte -->
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, afterUpdate } from 'svelte';
     import { pb } from '$lib/pocketbase';
     import { goto } from '$app/navigation';
+    import { enhance } from '$app/forms';
+    
+    // Get form data from page.server.ts
+    export let form;
     
     let selectedFile: File | null = null;
     let previewUrl: string | null = null;
@@ -23,7 +27,7 @@
             const userId = pb.authStore.model?.id;
             if (!userId) return;
 
-            const records = await pb.collection('upscaler').getList(1, 10, {
+            const records = await pb.collection('cbkes123mm2yp1j').getList(1, 10, {
                 filter: `user = "${userId}"`,
                 sort: '-created',
                 expand: 'user'
@@ -57,46 +61,6 @@
         }
     }
 
-    async function handleUpscale() {
-        if (!selectedFile) return;
-        if (!pb.authStore.model?.id) {
-            error = 'กรุณาเข้าสู่ระบบเพื่อใช้งานฟีเจอร์นี้';
-            return;
-        }
-
-        isLoading = true;
-        error = null;
-
-        try {
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            
-            // Add upscaling parameters
-            formData.append('creativity', creativity.toString());
-            formData.append('scaleFactor', scaleFactor.toString());
-            formData.append('dynamic', dynamic.toString());
-
-            const response = await fetch('/upscaler', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-            
-            if (data.error) {
-                throw new Error(data.error);
-            }
-
-            upscaledImageUrl = data.upscaledImage;
-            await loadUpscaledImages(); // Reload the list after successful upload
-        } catch (e) {
-            error = e instanceof Error ? e.message : 'ไม่สามารถอัพสเกลรูปภาพได้';
-            console.error('Upscale error:', e);
-        } finally {
-            isLoading = false;
-        }
-    }
-
     // Handle drag and drop
     function handleDragOver(event: DragEvent) {
         event.preventDefault();
@@ -125,6 +89,16 @@
     function goToHistory() {
         goto('/upscaler/history');
     }
+
+    // Process form result
+    afterUpdate(() => {
+        if (form?.success && form?.upscaledImage) {
+            upscaledImageUrl = form.upscaledImage;
+            loadUpscaledImages();
+        } else if (form?.error) {
+            error = form.error;
+        }
+    });
 
     onMount(() => {
         loadUpscaledImages();
@@ -192,6 +166,12 @@
                     {error}
                 </div>
             {/if}
+            
+            {#if form?.error}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                    {form.error}
+                </div>
+            {/if}
 
             <!-- Advanced Settings Section -->
             <div class="bg-gray-50 p-4 rounded-lg">
@@ -206,6 +186,7 @@
                     <input 
                         type="range" 
                         id="creativity" 
+                        name="creativity"
                         min="0" 
                         max="1" 
                         step="0.01" 
@@ -224,6 +205,7 @@
                     <input 
                         type="range" 
                         id="scaleFactor" 
+                        name="scaleFactor"
                         min="1" 
                         max="2" 
                         step="0.5" 
@@ -234,7 +216,7 @@
                 </div>
                 
                 <!-- Dynamic Range Slider -->
-                <div class="mb-2">
+               <!--  <div class="mb-2">
                     <div class="flex justify-between items-center mb-2">
                         <label for="dynamic" class="text-sm font-medium text-gray-700">ช่วงไดนามิก (HDR)</label>
                         <span class="text-sm text-gray-500">{dynamic}</span>
@@ -242,110 +224,135 @@
                     <input 
                         type="range" 
                         id="dynamic" 
+                        name="dynamic"
                         min="1" 
                         max="50" 
                         step="1" 
                         bind:value={dynamic}
                         class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
-                    <p class="text-xs text-gray-500 mt-1">ค่าแนะนำ: 3 - 9 (ค่าสูง = คอนทราสต์มากขึ้น)</p>
-                </div>
+                    <p class="text-xs text-gray-500 mt-1">ค่าแนะนำ: 6 (ค่าสูง = HDR มากขึ้น)</p>
+                </div> -->
             </div>
 
             <!-- Preview Section -->
             {#if previewUrl}
-                <div class="mt-6">
-                    <h3 class="text-lg font-semibold mb-2">รูปภาพต้นฉบับ</h3>
-                    <img
-                        src={previewUrl}
-                        alt="ตัวอย่างรูปภาพ"
-                        class="max-w-full h-auto rounded-lg shadow-md"
-                    />
-                    <button
-                        on:click={handleUpscale}
-                        disabled={isLoading || !pb.authStore.model}
-                        class="mt-4 px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {isLoading ? 'กำลังอัพสเกล...' : 'อัพสเกลรูปภาพ'}
-                    </button>
+                <div class="border rounded-lg overflow-hidden">
+                    <div class="p-2 bg-gray-100 border-b">
+                        <h3 class="font-medium">ตัวอย่างรูปภาพ</h3>
+                    </div>
+                    <div class="p-4">
+                        <img
+                            src={previewUrl}
+                            alt="Preview"
+                            class="max-h-64 mx-auto object-contain"
+                        />
+                    </div>
                 </div>
             {/if}
+
+            <!-- Upscale Button -->
+            <form method="POST" use:enhance={() => {
+                isLoading = true;
+                error = null;
+                
+                return async ({ update }) => {
+                    isLoading = false;
+                    await update();
+                };
+            }}>
+                <input type="hidden" name="creativity" value={creativity} />
+                <input type="hidden" name="scaleFactor" value={scaleFactor} />
+                <input type="hidden" name="dynamic" value={dynamic} />
+                
+                <!-- Hidden file input for form submission -->
+                {#if selectedFile}
+                    <input type="file" name="file" class="hidden" id="form-file" />
+                {/if}
+                
+                <button
+                    type="submit"
+                    class="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={!selectedFile || isLoading || !pb.authStore.model}
+                    on:click={() => {
+                        // Copy the selected file to the form input
+                        if (selectedFile) {
+                            const formFileInput = document.getElementById('form-file') as HTMLInputElement;
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(selectedFile);
+                            formFileInput.files = dataTransfer.files;
+                        }
+                    }}
+                >
+                    {#if isLoading}
+                        <span class="inline-block animate-spin mr-2">⟳</span> กำลังอัพสเกล...
+                    {:else}
+                        อัพสเกลรูปภาพ
+                    {/if}
+                </button>
+            </form>
 
             <!-- Result Section -->
             {#if upscaledImageUrl}
-                <div class="mt-6">
-                    <h3 class="text-lg font-semibold mb-2">รูปภาพที่อัพสเกลแล้ว</h3>
-                    <img
-                        src={upscaledImageUrl}
-                        alt="รูปภาพที่อัพสเกลแล้ว"
-                        class="max-w-full h-auto rounded-lg shadow-md"
-                    />
-                    <a
-                        href={upscaledImageUrl}
-                        download="upscaled-image.png"
-                        class="mt-4 inline-block px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                        ดาวน์โหลดรูปภาพ
-                    </a>
-                </div>
-            {/if}
-
-            <!-- Previous Upscales Section -->
-            {#if upscaledRecords.length > 0}
-                <div class="mt-8">
-                    <h3 class="text-xl font-semibold mb-4">รูปภาพที่เคยอัพสเกล</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        {#each upscaledRecords as record}
-                            <div class="bg-gray-50 rounded-lg p-3">
-                                <img
-                                    src={pb.getFileUrl(record, record.Image)}
-                                    alt={record.originalName}
-                                    class="w-full h-auto rounded-lg"
-                                />
-                                <p class="mt-2 text-sm text-gray-600 truncate">
-                                    {record.originalName}
-                                </p>
-                                <p class="text-xs text-gray-500">
-                                    {new Date(record.created).toLocaleDateString('th-TH', {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    })}
-                                </p>
-                            </div>
-                        {/each}
+                <div class="border rounded-lg overflow-hidden">
+                    <div class="p-2 bg-gray-100 border-b flex justify-between items-center">
+                        <h3 class="font-medium">รูปภาพที่อัพสเกลแล้ว</h3>
+                        <a
+                            href={upscaledImageUrl}
+                            download="upscaled-image.png"
+                            class="text-blue-600 hover:text-blue-800 text-sm"
+                        >
+                            ดาวน์โหลด
+                        </a>
+                    </div>
+                    <div class="p-4">
+                        <img
+                            src={upscaledImageUrl}
+                            alt="Upscaled"
+                            class="max-h-96 mx-auto object-contain"
+                        />
                     </div>
                 </div>
             {/if}
-
-            <!-- Feature Description -->
-            <div class="mt-8 bg-gray-50 p-6 rounded-lg">
-                <h3 class="text-xl font-semibold mb-4">เกี่ยวกับฟีเจอร์อัพสเกลรูปภาพ</h3>
-                <div class="space-y-4">
-                    <p>ฟีเจอร์อัพสเกลรูปภาพช่วยให้คุณสามารถเพิ่มความคมชัดและคุณภาพให้กับรูปคอสเพลย์ของคุณได้อย่างง่ายดาย โดยใช้เทคโนโลยี AI ที่ทันสมัย</p>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h4 class="font-semibold text-lg mb-2">เพิ่มความละเอียด</h4>
-                            <p class="text-sm text-gray-600">เพิ่มความละเอียดของรูปภาพโดยไม่ทำให้เกิดความเบลอหรือจุดรบกวน</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h4 class="font-semibold text-lg mb-2">ปรับปรุงคุณภาพ</h4>
-                            <p class="text-sm text-gray-600">ปรับปรุงคุณภาพของรูปภาพให้ดูสวยงามและคมชัดมากขึ้น</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h4 class="font-semibold text-lg mb-2">ใช้งานง่าย</h4>
-                            <p class="text-sm text-gray-600">เพียงอัพโหลดรูปภาพและกดปุ่มอัพสเกล ระบบจะทำงานให้โดยอัตโนมัติ</p>
-                        </div>
-                    </div>
-                    
-                    <!-- <p class="text-sm text-gray-500 mt-4">หมายเหตุ: ฟีเจอร์นี้ใช้เทคโนโลยี AI จาก Clarity Upscaler โดย philz1337x เพื่อให้ได้ผลลัพธ์ที่ดีที่สุด</p> -->
-                </div>
-            </div>
         </div>
     </div>
+    
+    <!-- Recent Upscales -->
+    {#if upscaledRecords.length > 0 && pb.authStore.model}
+        <div class="mt-12">
+            <h2 class="text-2xl font-bold mb-4">รูปภาพที่อัพสเกลล่าสุด</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {#each upscaledRecords.slice(0, 3) as record}
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="aspect-video bg-gray-100">
+                            <img
+                                src={`${import.meta.env.VITE_PB_URL}/api/files/cbkes123mm2yp1j/${record.id}/${record.Image || record.image}`}
+                                alt={record.originalName}
+                                class="w-full h-full object-cover"
+                                loading="lazy"
+                            />
+                        </div>
+                        <div class="p-3">
+                            <h3 class="font-semibold truncate" title={record.originalName}>
+                                {record.originalName || 'ไม่มีชื่อ'}
+                            </h3>
+                            <p class="text-xs text-gray-500">
+                                {new Date(record.created).toLocaleDateString('th-TH')}
+                            </p>
+                        </div>
+                    </div>
+                {/each}
+            </div>
+            <div class="text-center mt-4">
+                <button
+                    on:click={goToHistory}
+                    class="text-blue-600 hover:text-blue-800"
+                >
+                    ดูทั้งหมด
+                </button>
+            </div>
+        </div>
+    {/if}
 </div>
 
 <style>
