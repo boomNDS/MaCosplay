@@ -1,52 +1,43 @@
 import { error } from "@sveltejs/kit";
 import { serializeNonPOJOs } from "$lib/utils";
 import { createAdminClient } from '$lib/pocketbase';
-import PocketBase from 'pocketbase';
 
 export const load = async ({ locals }) => {
-	const adminClient = new PocketBase(import.meta.env.VITE_PB_URL);
-	adminClient.autoCancellation(false)
-	await adminClient.admins.authWithPassword(
-		import.meta.env.VITE_AUTH_ADMIN_NAME,
-		import.meta.env.VITE_AUTH_ADMIN_PASS,
-		{
-			// This will trigger auto refresh or auto reauthentication in case
-			// the token has expired or is going to expire in the next 30 minutes.
-			autoRefreshThreshold: 30 * 60
-		}
-	);
-
-	if (!locals.user) {
-		console.log("User is not defined");
-		return {
-			user: undefined,
-		};
-	}
-
-	const user = await adminClient.collection('users').getOne(locals.user.id);
-	if(user.Upgrade === 1){
-		adminClient.collection('users').update(locals.user.id, {
-			VerifyShop: "ยืนยันร้านค้าแล้ว"
-		});
-	}
-
-	const getUserInstances = async () => {
+	try {
 		const adminClient = await createAdminClient();
 
-		try {
-			// Fetch instances filtered by the current user's ID
-			const instances = await adminClient.collection('userStore').getFullList({
-				filter: `user = "${locals.user.id}"` // Adjust the field name as necessary
-			});
-			return serializeNonPOJOs(instances); // Serialize the instances
-		} catch (err) {
-			console.log('Error fetching user instances: ', err);
-			throw error(err.status, err.message);
+		if (!locals.user) {
+			console.log("User is not defined");
+			return {
+				user: undefined
+			};
 		}
-	};
 
-	return {
-		user: locals.user,
-		userStore: await getUserInstances(),
-	};
+		const user = await adminClient.collection('users').getOne(locals.user.id);
+		if (user.Upgrade === 1) {
+			await adminClient.collection('users').update(locals.user.id, {
+				VerifyShop: "ยืนยันร้านค้าแล้ว"
+			});
+		}
+
+		// Get user instances
+		let userStore = [];
+		try {
+			const instances = await adminClient.collection('userStore').getFullList({
+				filter: `user = "${locals.user.id}"`
+			});
+			userStore = serializeNonPOJOs(instances);
+		} catch (err) {
+			console.error('Error fetching user instances:', err);
+			// Don't throw error here, just return empty array
+		}
+
+		return {
+			user: locals.user,
+			userStore
+		};
+	} catch (err) {
+		console.error('Error in layout load function:', err);
+		throw error(500, 'Internal server error');
+	}
 };
