@@ -107,7 +107,7 @@
         <h1 class="text-4xl font-bold">อัพสเกลรูปคอสเพลย์</h1>
         <button 
             on:click={goToHistory}
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md transition-colors flex items-center justify-center gap-2"
         >
             ดูประวัติการอัพสเกล
         </button>
@@ -138,7 +138,7 @@
                 />
                 <label
                     for="file-upload"
-                    class="cursor-pointer inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
                     เลือกรูปภาพ
                 </label>
@@ -265,7 +265,7 @@
                 
                 <button
                     type="submit"
-                    class="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="btn w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={!selectedFile || isLoading}
                 >
                     {#if isLoading}
@@ -284,8 +284,11 @@
                         <a
                             href={upscaledImageUrl}
                             download="upscaled-image.png"
-                            class="text-blue-600 hover:text-blue-800 text-sm"
+                            class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md transition-colors flex items-center justify-center gap-2"
                         >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
                             ดาวน์โหลด
                         </a>
                     </div>
@@ -299,7 +302,7 @@
                             <a 
                                 href={upscaledImageUrl} 
                                 download="upscaled-image.png"
-                                class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg flex items-center justify-center transition-colors"
+                                class="btn bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-md transition-colors flex items-center justify-center"
                                 title="ดาวน์โหลดรูปภาพ"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -332,7 +335,7 @@
                                 <a 
                                     href={`${import.meta.env.VITE_PB_URL}/api/files/cbkes123mm2yp1j/${record.id}/${record.Image || record.image}`} 
                                     download={record.originalName || "upscaled-image.png"}
-                                    class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg flex items-center justify-center transition-colors"
+                                    class="btn bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-md transition-colors flex items-center justify-center"
                                     title="ดาวน์โหลดรูปภาพ"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -345,7 +348,7 @@
                                 <a 
                                     href={`${import.meta.env.VITE_PB_URL}/api/files/cbkes123mm2yp1j/${record.id}/${record.Image || record.image}`} 
                                     download={record.originalName || "upscaled-image.png"}
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md shadow-lg flex items-center transition-colors"
+                                    class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md transition-colors flex items-center justify-center gap-2"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -368,7 +371,7 @@
             <div class="text-center mt-4">
                 <button
                     on:click={goToHistory}
-                    class="text-blue-600 hover:text-blue-800"
+                    class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md transition-colors flex items-center justify-center gap-2"
                 >
                     ดูทั้งหมด
                 </button>

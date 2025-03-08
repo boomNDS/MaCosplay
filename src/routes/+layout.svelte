@@ -180,13 +180,16 @@
 				<ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
 					<li><a>บทความ</a></li>
 					<li>
-						<a>Parent</a>
-						<ul class="p-2">
-							<li><a>Submenu 1</a></li>
-							<li><a>Submenu 2</a></li>
-						</ul>
+						<details>
+							<summary>เรียนรู้เพิ่มเติม</summary>
+							<ul class="p-2">
+								<li><a>Submenu 1</a></li>
+								<li><a>Submenu 2</a></li>
+							</ul>
+						</details>
 					</li>
-					<li><a>Item 3</a></li>
+					<li><a href="/pricing">อัพเกรด</a></li>
+					<li><a href="/upscaler">AI Upscale</a></li>
 				</ul>
 			</div>
 			<h1 class="btn btn-ghost text-xl"><a href="/">MaCosplay</a></h1>
