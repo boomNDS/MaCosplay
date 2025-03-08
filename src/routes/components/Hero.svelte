@@ -66,6 +66,21 @@
 					<div class="flex flex-col md:flex-row mt-5 md:mt-10 lg:rounded-3xl gap-4">
 						<a
 							class="w-36 md:w-52 btn rounded-full flex items-center justify-center gap-2"
+							href="/upscaler"
+						>
+							AI Upscale
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="18"
+								height="18"
+								fill="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path d="M7 7h8.586L5.293 17.293l1.414 1.414L17 8.414V17h2V5H7v2z" />
+							</svg>
+						</a>
+						<a
+							class="w-36 md:w-52 btn rounded-full flex items-center justify-center gap-2"
 							href="/manage-store"
 						>
 							เปิดร้านค้า
