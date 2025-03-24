@@ -191,6 +191,81 @@ This section lists the labels we use to help us track and manage issues and pull
 - `help wanted` - Extra attention is needed
 - `wontfix` - This will not be worked on
 
+## Pull Request Guidelines
+
+We love your input! Making a great pull request helps us integrate your changes quickly and efficiently. Follow these guidelines to ensure a smooth process:
+
+### 1. Fork and Branch
+
+```bash
+# Ensure your fork is up to date with the main repository
+git remote add upstream https://github.com/idea2547/MaCosplay.git
+git fetch upstream
+git checkout main
+git merge upstream/main
+
+# Create a descriptive branch name
+git checkout -b feature/amazing-feature
+# or
+git checkout -b fix/issue-123
+```
+
+### 2. Keep Changes Focused
+
+- Each PR should address a single concern (feature, bugfix, or enhancement)
+- Keep changes small and manageable (under 500 lines of code when possible)
+- If you're working on multiple features, create separate branches and PRs
+
+### 3. Follow Code Style
+
+- Match the existing code style and structure
+- Run linting before submitting: `yarn lint`
+- Add appropriate tests for your changes: `yarn test`
+
+### 4. Write a Meaningful Description
+
+A good PR description includes:
+
+- **What**: Summary of the changes
+- **Why**: The problem you're solving
+- **How**: Brief explanation of your implementation
+- **Testing**: How you tested the changes
+- **Screenshots**: For UI changes (if applicable)
+
+Example:
+
+```
+feat: add ability to customize cosplay character profiles
+
+This adds a new form that allows users to customize their character profiles
+with detailed information and references.
+
+Resolves: #123
+```
+
+### 5. Responding to Review Comments
+
+- Be responsive to feedback
+- Address all review comments
+- If you disagree with a suggestion, explain your reasoning politely
+- Make requested changes in the same branch and push updates
+
+### 6. PR Checklist
+
+Before submitting, make sure you can check all these boxes:
+
+- [ ] Code follows project style guidelines
+- [ ] Changes are tested
+- [ ] Documentation is updated (if necessary)
+- [ ] PR description clearly explains changes
+- [ ] PR is linked to related issues
+- [ ] All CI checks pass
+
+### 7. After Your PR is Merged
+
+- Delete your branch
+- Keep your fork synced with the main repository
+- Celebrate your contribution! 🎉
 ---
 
 ## Thank You!
