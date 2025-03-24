@@ -111,6 +111,7 @@ npm install
    ```
 
 2. Update the `.env` file with your configuration:
+
    ```
    PUBLIC_POCKETBASE_URL=your_pocketbase_url
    # PocketBase Configuration
