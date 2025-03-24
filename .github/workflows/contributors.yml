@@ -9,6 +9,9 @@ on:
 jobs:
   add-contributors:
     runs-on: ubuntu-latest
+    # Add these permissions to allow the workflow to modify repository contents
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v2
       - uses: BobAnkh/add-contributors@master
