@@ -61,8 +61,8 @@ By creating an open-source platform, we aim to build a thriving ecosystem where 
 ## 🖼️ Screenshots
 
 <p align="center">
-  <img src="./static/images/Example/screenshot1.png" alt="MaCosplay Screenshot" width="400"/>
-  <img src="./static/images/Example/screenshot2.png" alt="MaCosplay Screenshot" width="400"/>
+  <img src="./static/images/screens/macosplay-main-page.png" alt="MaCosplay Screenshot" width="400"/>
+  <img src="./static/images/screens/macosplay-search-page.png" alt="MaCosplay Screenshot" width="400"/>
 </p>
 
 ## 🧩 Why Open Source?
@@ -87,6 +87,7 @@ By creating an open-source platform, we aim to build a thriving ecosystem where 
 - Node.js (v18 or higher)
 - Yarn or npm
 - Git
+- [PocketBase](https://pocketbase.io/docs/) (for local development)
 
 ### Installation
 
@@ -97,18 +98,58 @@ cd MaCosplay
 
 # Install dependencies
 yarn install
-
-# Start the development server
-yarn dev
+# or if using npm
+npm install
 ```
 
 ### Environment Setup
 
-Create a `.env` file in the root directory with the following variables:
+1. Copy the example environment file:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Update the `.env` file with your configuration:
+   ```
+   PUBLIC_POCKETBASE_URL=your_pocketbase_url
+   ```
+
+### Running the Application
+
+#### Development Mode
 
 ```bash
-PUBLIC_POCKETBASE_URL=your_pocketbase_url
+# Start the development server
+yarn dev
+# or
+npm run dev
+
+# Open http://localhost:5173 in your browser
 ```
+
+#### Production Build
+
+```bash
+# Create a production build
+yarn build
+# or
+npm run build
+
+# Preview the production build locally
+yarn preview
+# or
+npm run preview
+```
+
+### Setting Up PocketBase
+
+1. [Download PocketBase](https://pocketbase.io/docs/) for your platform
+2. Extract and run the PocketBase executable
+3. Access the admin dashboard at `http://127.0.0.1:8090/_/`
+4. Create a new admin account
+5. Import our schema from the `pocketbase-schema.json` file (if available)
+6. Update your `.env` file with `PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090`
 
 ## 📱 How to Use
 
@@ -116,10 +157,6 @@ PUBLIC_POCKETBASE_URL=your_pocketbase_url
 2. **Browse Costumes**: Search for costumes by character, series, or size
 3. **Rent a Costume**: Select dates and make a request
 4. **List Your Costume**: Add photos, description, and set your rental terms
-
-## 🔍 API Reference
-
-Our API documentation is available at [api.macosplay.com](https://api.macosplay.com) (coming soon).
 
 ## 🧪 Testing
 
