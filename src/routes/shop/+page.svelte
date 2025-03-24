@@ -50,7 +50,8 @@
 			const matchesSize = !selectedSize || item.Size === selectedSize;
 			const matchesStatus = !selectedStatus || item.Status === selectedStatus;
 			const matchesSearch =
-				!searchQuery || item.Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				!searchQuery ||
+				item.Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				item.expand?.userStore?.Name.toLowerCase().includes(searchQuery.toLowerCase());
 			return matchesProvince && matchesSize && matchesStatus && matchesSearch;
 		});
@@ -68,14 +69,14 @@
 	}
 
 	function navigateToStore(item) {
-        const storeSlug = item.expand.userStore.slug;
-        goto(`/store/${storeSlug}`);
-    }
+		const storeSlug = item.expand.userStore.slug;
+		goto(`/store/${storeSlug}`);
+	}
 
 	// Debounce function to limit the rate of handleSearch calls
 	function debounce(func, wait) {
 		let timeout;
-		return function(...args) {
+		return function (...args) {
 			clearTimeout(timeout);
 			timeout = setTimeout(() => func.apply(this, args), wait);
 		};
@@ -100,82 +101,82 @@
 		<label class="input input-bordered flex w-full items-center gap-2 sm:w-auto">
 			<select class="grow" bind:value={selectedProvince}>
 				<option value="">เลือกจังหวัด</option>
-							<option value="กระบี่">กระบี่</option>
-							<option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
-							<option value="กาญจนบุรี">กาญจนบุรี</option>
-							<option value="กาฬสินธุ์">กาฬสินธุ์</option>
-							<option value="กำแพงเพชร">กำแพงเพชร</option>
-							<option value="ขอนแก่น">ขอนแก่น</option>
-							<option value="จันทบุรี">จันทบุรี</option>
-							<option value="ฉะเชิงเทรา">ฉะเชิงเทรา</option>
-							<option value="ชลบุรี">ชลบุรี</option>
-							<option value="ชัยนาท">ชัยนาท</option>
-							<option value="ชัยภูมิ">ชัยภูมิ</option>
-							<option value="ชุมพร">ชุมพร</option>
-							<option value="เชียงราย">เชียงราย</option>
-							<option value="เชียงใหม่">เชียงใหม่</option>
-							<option value="ตรัง">ตรัง</option>
-							<option value="ตราด">ตราด</option>
-							<option value="ตาก">ตาก</option>
-							<option value="นครนายก">นครนายก</option>
-							<option value="นครปฐม">นครปฐม</option>
-							<option value="นครพนม">นครพนม</option>
-							<option value="นครราชสีมา">นครราชสีมา</option>
-							<option value="นครศรีธรรมราช">นครศรีธรรมราช</option>
-							<option value="นครสวรรค์">นครสวรรค์</option>
-							<option value="นนทบุรี">นนทบุรี</option>
-							<option value="นราธิวาส">นราธิวาส</option>
-							<option value="น่าน">น่าน</option>
-							<option value="บึงกาฬ">บึงกาฬ</option>
-							<option value="บุรีรัมย์">บุรีรัมย์</option>
-							<option value="ปทุมธานี">ปทุมธานี</option>
-							<option value="ประจวบคีรีขันธ์">ประจวบคีรีขันธ์</option>
-							<option value="ปราจีนบุรี">ปราจีนบุรี</option>
-							<option value="ปัตตานี">ปัตตานี</option>
-							<option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
-							<option value="พังงา">พังงา</option>
-							<option value="พัทลุง">พัทลุง</option>
-							<option value="พิจิตร">พิจิตร</option>
-							<option value="พิษณุโลก">พิษณุโลก</option>
-							<option value="เพชรบุรี">เพชรบุรี</option>
-							<option value="เพชรบูรณ์">เพชรบูรณ์</option>
-							<option value="แพร่">แพร่</option>
-							<option value="ภูเก็ต">ภูเก็ต</option>
-							<option value="มหาสารคาม">มหาสารคาม</option>
-							<option value="มุกดาหาร">มุกดาหาร</option>
-							<option value="แม่ฮ่องสอน">แม่ฮ่องสอน</option>
-							<option value="ยโสธร">ยโสธร</option>
-							<option value="ยะลา">ยะลา</option>
-							<option value="ร้อยเอ็ด">ร้อยเอ็ด</option>
-							<option value="ระนอง">ระนอง</option>
-							<option value="ระยอง">ระยอง</option>
-							<option value="ราชบุรี">ราชบุรี</option>
-							<option value="ลพบุรี">ลพบุรี</option>
-							<option value="ลำปาง">ลำปาง</option>
-							<option value="ลำพูน">ลำพูน</option>
-							<option value="เลย">เลย</option>
-							<option value="ศรีสะเกษ">ศรีสะเกษ</option>
-							<option value="สกลนคร">สกลนคร</option>
-							<option value="สงขลา">สงขลา</option>
-							<option value="สตูล">สตูล</option>
-							<option value="สมุทรปราการ">สมุทรปราการ</option>
-							<option value="สมุทรสงคราม">สมุทรสงคราม</option>
-							<option value="สมุทรสาคร">สมุทรสาคร</option>
-							<option value="สระแก้ว">สระแก้ว</option>
-							<option value="สระบุรี">สระบุรี</option>
-							<option value="สิงห์บุรี">สิงห์บุรี</option>
-							<option value="สุโขทัย">สุโขทัย</option>
-							<option value="สุพรรณบุรี">สุพรรณบุรี</option>
-							<option value="สุราษฎร์ธานี">สุราษฎร์ธานี</option>
-							<option value="สุรินทร์">สุรินทร์</option>
-							<option value="หนองคาย">หนองคาย</option>
-							<option value="หนองบัวลำภู">หนองบัวลำภู</option>
-							<option value="อ่างทอง">อ่างทอง</option>
-							<option value="อำนาจเจริญ">อำนาจเจริญ</option>
-							<option value="อุดรธานี">อุดรธานี</option>
-							<option value="อุตรดิตถ์">อุตรดิตถ์</option>
-							<option value="อุทัยธานี">อุทัยธานี</option>
-							<option value="อุบลราชธานี">อุบลราชธานี</option>
+				<option value="กระบี่">กระบี่</option>
+				<option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+				<option value="กาญจนบุรี">กาญจนบุรี</option>
+				<option value="กาฬสินธุ์">กาฬสินธุ์</option>
+				<option value="กำแพงเพชร">กำแพงเพชร</option>
+				<option value="ขอนแก่น">ขอนแก่น</option>
+				<option value="จันทบุรี">จันทบุรี</option>
+				<option value="ฉะเชิงเทรา">ฉะเชิงเทรา</option>
+				<option value="ชลบุรี">ชลบุรี</option>
+				<option value="ชัยนาท">ชัยนาท</option>
+				<option value="ชัยภูมิ">ชัยภูมิ</option>
+				<option value="ชุมพร">ชุมพร</option>
+				<option value="เชียงราย">เชียงราย</option>
+				<option value="เชียงใหม่">เชียงใหม่</option>
+				<option value="ตรัง">ตรัง</option>
+				<option value="ตราด">ตราด</option>
+				<option value="ตาก">ตาก</option>
+				<option value="นครนายก">นครนายก</option>
+				<option value="นครปฐม">นครปฐม</option>
+				<option value="นครพนม">นครพนม</option>
+				<option value="นครราชสีมา">นครราชสีมา</option>
+				<option value="นครศรีธรรมราช">นครศรีธรรมราช</option>
+				<option value="นครสวรรค์">นครสวรรค์</option>
+				<option value="นนทบุรี">นนทบุรี</option>
+				<option value="นราธิวาส">นราธิวาส</option>
+				<option value="น่าน">น่าน</option>
+				<option value="บึงกาฬ">บึงกาฬ</option>
+				<option value="บุรีรัมย์">บุรีรัมย์</option>
+				<option value="ปทุมธานี">ปทุมธานี</option>
+				<option value="ประจวบคีรีขันธ์">ประจวบคีรีขันธ์</option>
+				<option value="ปราจีนบุรี">ปราจีนบุรี</option>
+				<option value="ปัตตานี">ปัตตานี</option>
+				<option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
+				<option value="พังงา">พังงา</option>
+				<option value="พัทลุง">พัทลุง</option>
+				<option value="พิจิตร">พิจิตร</option>
+				<option value="พิษณุโลก">พิษณุโลก</option>
+				<option value="เพชรบุรี">เพชรบุรี</option>
+				<option value="เพชรบูรณ์">เพชรบูรณ์</option>
+				<option value="แพร่">แพร่</option>
+				<option value="ภูเก็ต">ภูเก็ต</option>
+				<option value="มหาสารคาม">มหาสารคาม</option>
+				<option value="มุกดาหาร">มุกดาหาร</option>
+				<option value="แม่ฮ่องสอน">แม่ฮ่องสอน</option>
+				<option value="ยโสธร">ยโสธร</option>
+				<option value="ยะลา">ยะลา</option>
+				<option value="ร้อยเอ็ด">ร้อยเอ็ด</option>
+				<option value="ระนอง">ระนอง</option>
+				<option value="ระยอง">ระยอง</option>
+				<option value="ราชบุรี">ราชบุรี</option>
+				<option value="ลพบุรี">ลพบุรี</option>
+				<option value="ลำปาง">ลำปาง</option>
+				<option value="ลำพูน">ลำพูน</option>
+				<option value="เลย">เลย</option>
+				<option value="ศรีสะเกษ">ศรีสะเกษ</option>
+				<option value="สกลนคร">สกลนคร</option>
+				<option value="สงขลา">สงขลา</option>
+				<option value="สตูล">สตูล</option>
+				<option value="สมุทรปราการ">สมุทรปราการ</option>
+				<option value="สมุทรสงคราม">สมุทรสงคราม</option>
+				<option value="สมุทรสาคร">สมุทรสาคร</option>
+				<option value="สระแก้ว">สระแก้ว</option>
+				<option value="สระบุรี">สระบุรี</option>
+				<option value="สิงห์บุรี">สิงห์บุรี</option>
+				<option value="สุโขทัย">สุโขทัย</option>
+				<option value="สุพรรณบุรี">สุพรรณบุรี</option>
+				<option value="สุราษฎร์ธานี">สุราษฎร์ธานี</option>
+				<option value="สุรินทร์">สุรินทร์</option>
+				<option value="หนองคาย">หนองคาย</option>
+				<option value="หนองบัวลำภู">หนองบัวลำภู</option>
+				<option value="อ่างทอง">อ่างทอง</option>
+				<option value="อำนาจเจริญ">อำนาจเจริญ</option>
+				<option value="อุดรธานี">อุดรธานี</option>
+				<option value="อุตรดิตถ์">อุตรดิตถ์</option>
+				<option value="อุทัยธานี">อุทัยธานี</option>
+				<option value="อุบลราชธานี">อุบลราชธานี</option>
 			</select>
 		</label>
 
@@ -214,39 +215,43 @@
 			<!-- Limit to 4 rows -->
 			{#if filteredItems().length > 0}
 				{#each filteredItems() as item}
-					<div class="card bg-base-100 shadow-xl border border-gray-200">
+					<div class="card border border-gray-200 bg-base-100 shadow-xl">
 						<figure class="p-2">
 							{#if item.Image}
-							<img
-								src={getOptimizedImageUrl(item.id, item.Image)}
-								alt="{item.Name} Thumbnail"
-								class="w-full h-full object-cover aspect-square cursor-pointer"
-								loading="lazy"
-								on:click={() => fullImage = `https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`}
-							/>
+								<img
+									src={getOptimizedImageUrl(item.id, item.Image)}
+									alt="{item.Name} Thumbnail"
+									class="aspect-square h-full w-full cursor-pointer object-cover"
+									loading="lazy"
+									on:click={() =>
+										(fullImage = `https://file.macosplay.com/mxj3660ce5olheb/${item.id}/${item.Image}`)}
+								/>
 							{:else}
-							<img
-								src="/images/Example/Macosplay.png?w=400&format=webp"
-								alt="{item.Name} Thumbnail"
-								class="w-full h-full object-cover aspect-square cursor-pointer"
-								loading="lazy"
-							/>
+								<img
+									src="/images/Example/Macosplay.png?w=400&format=webp"
+									alt="{item.Name} Thumbnail"
+									class="aspect-square h-full w-full cursor-pointer object-cover"
+									loading="lazy"
+								/>
 							{/if}
 						</figure>
-						<div class="card-body p-2 flex flex-col justify-between">
+						<div class="card-body flex flex-col justify-between p-2">
 							<div>
 								<p class="text-xs font-bold">{limitText(item.Name, 33)}</p>
-								<p class="text-xs text-gray-500">{limitText(item.expand?.userStore?.Name || '', 20)}</p>
-								<div class="flex flex-wrap gap-1 mt-1">
-									<div class="badge text-xs bg-gray-200">{item.Size}</div>
-									
-									<div class="badge text-xs bg-blue-200">{item.Status}</div>
+								<p class="text-xs text-gray-500">
+									{limitText(item.expand?.userStore?.Name || '', 20)}
+								</p>
+								<div class="mt-1 flex flex-wrap gap-1">
+									<div class="badge bg-gray-200 text-xs">{item.Size}</div>
+
+									<div class="badge bg-blue-200 text-xs">{item.Status}</div>
 								</div>
 							</div>
-							<div class="flex justify-between items-center mt-2">
+							<div class="mt-2 flex items-center justify-between">
 								<p class="text-lg font-bold">
-									{item.price == 0 ? `฿${item.price_pri.toLocaleString()} / ${item.price_test.toLocaleString()}` : `฿${item.price.toLocaleString()}`}
-
+									{item.price == 0
+										? `฿${item.price_pri.toLocaleString()} / ${item.price_test.toLocaleString()}`
+										: `฿${item.price.toLocaleString()}`}
 								</p>
 								<button class="btn btn-neutral btn-active" on:click={() => openDetailModal(item)}>
 									ดูเพิ่มเติม
@@ -288,10 +293,10 @@
 			<div class="modal-action mb-3">
 				<button class="btn" on:click={() => (fullImage = null)}>X ปิด</button>
 			</div>
-			<img 
-				src={`${fullImage}?w=800&format=webp&quality=85`} 
-				alt="Full Image" 
-				class="h-auto w-full object-cover" 
+			<img
+				src={`${fullImage}?w=800&format=webp&quality=85`}
+				alt="Full Image"
+				class="h-auto w-full object-cover"
 			/>
 		</div>
 	</div>
@@ -301,48 +306,44 @@
 {#if detailItem}
 	<div class="modal modal-open">
 		<div class="modal-box">
-			<h3 class="font-bold text-lg">รายละเอียดสินค้า</h3>
+			<h3 class="text-lg font-bold">รายละเอียดสินค้า</h3>
 			<p style="white-space: pre-wrap;">{detailItem.Desc}</p>
 			<div class="modal-action">
-				<button class="btn" on:click={() => detailItem = null}>ปิด</button>
+				<button class="btn" on:click={() => (detailItem = null)}>ปิด</button>
 				<a href={`/store/${detailItem.expand?.userStore?.slug}`} target="_blank">
-				<button class="btn btn-outline btn-neutral">ไปที่ร้านค้า</button>
-			</a>
+					<button class="btn btn-outline btn-neutral">ไปที่ร้านค้า</button>
+				</a>
 			</div>
 		</div>
 	</div>
-
 {/if}
 
 <style>
 	.btn-facebook {
-        background-color: #3b5998;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        border-radius: 5px;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
+		background-color: #3b5998;
+		color: white;
+		border: none;
+		padding: 10px 20px;
+		font-size: 16px;
+		border-radius: 5px;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
 
-    .btn-facebook:hover {
-        background-color: #2d4373;
-    }
+	.btn-facebook:hover {
+		background-color: #2d4373;
+	}
 
-    .btn-facebook:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(59, 89, 152, 0.5);
-    }
-
+	.btn-facebook:focus {
+		outline: none;
+		box-shadow: 0 0 0 3px rgba(59, 89, 152, 0.5);
+	}
 
 	.join {
-        display: flex;
-        justify-content: center;
-        margin-top: 30px;
-    }
-	
-	
+		display: flex;
+		justify-content: center;
+		margin-top: 30px;
+	}
 </style>

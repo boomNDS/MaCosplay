@@ -1,7 +1,7 @@
 # Add 'documentation' label to any changes to markdown files
 documentation:
   - changed-files:
-    - any-glob-to-any-file: ['**/*.md', 'docs/**/*']
+      - any-glob-to-any-file: ['**/*.md', 'docs/**/*']
 
 # Add 'bug' label to any PR that has the word 'fix' in the title
 bug:
@@ -14,19 +14,19 @@ enhancement:
 # Add 'ui' label to any changes to UI components
 ui:
   - changed-files:
-    - any-glob-to-any-file: ['src/**/*.svelte']
+      - any-glob-to-any-file: ['src/**/*.svelte']
 
 # Add 'backend' label to any changes to backend code
 backend:
   - changed-files:
-    - any-glob-to-any-file: ['src/routes/api/**/*']
+      - any-glob-to-any-file: ['src/routes/api/**/*']
 
 # Add 'dependencies' label to package.json or yarn.lock changes
 dependencies:
   - changed-files:
-    - any-glob-to-any-file: ['package.json', 'yarn.lock']
+      - any-glob-to-any-file: ['package.json', 'yarn.lock']
 
 # Add 'good first issue' for simple changes
 good first issue:
   - changed-files:
-    - any-glob-to-any-file: ['static/**/*', '**/*.css'] 
+      - any-glob-to-any-file: ['static/**/*', '**/*.css']

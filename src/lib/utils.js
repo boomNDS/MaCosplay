@@ -1,4 +1,3 @@
-
 const randomBytes = (length) => {
 	const array = new Uint8Array(length);
 	crypto.getRandomValues(array);
@@ -6,11 +5,11 @@ const randomBytes = (length) => {
 };
 
 export const generateUUID = () => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = (crypto.getRandomValues(new Uint8Array(1))[0] & 0xf) >> (c === 'x' ? 0 : 1);
-        const v = c === 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+		const r = (crypto.getRandomValues(new Uint8Array(1))[0] & 0xf) >> (c === 'x' ? 0 : 1);
+		const v = c === 'x' ? r : (r & 0x3) | 0x8;
+		return v.toString(16);
+	});
 };
 
 export const serializeNonPOJOs = (obj) => {
@@ -59,28 +58,22 @@ export const validateData = async (formData, schema) => {
 	}
 };
 
-
-
-
 export function getLocaleFromCookie(cookies, defaultLocale = 'th') {
-
-	const cookie = cookies.get('locale')
+	const cookie = cookies.get('locale');
 
 	if (cookie) {
 		return cookie;
 	} else {
 		cookies.set('locale', defaultLocale);
 		return defaultLocale;
-
 	}
-	
+
 	// If no locale cookie exists, set it with the default value
-	
-  }
+}
 
 // src/lib/utils.js
 
 export function getInviteCodeFromCookie(cookies) {
-    const inviteCodeCookie = cookies.get('invite_code');
-    return inviteCodeCookie || null;
+	const inviteCodeCookie = cookies.get('invite_code');
+	return inviteCodeCookie || null;
 }

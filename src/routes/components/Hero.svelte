@@ -20,7 +20,7 @@
 	};
 </script>
 
-<div class="lg:py-5 lg:px-14">
+<div class="lg:px-14 lg:py-5">
 	<swiper-container
 		slides-per-view="1"
 		navigation-prev-el=".swiper-button-prev-hero"
@@ -30,7 +30,7 @@
 		keyboard="true"
 		autoplay-delay="4000"
 		autoplay-disable-on-interaction="true"
-		class="relative lg:rounded-3xl bg-black overflow-hidden"
+		class="relative overflow-hidden bg-black lg:rounded-3xl"
 		data-theme="light"
 		on:swiperprogress={onProgress}
 		on:swiperslidechange={onSlideChange}
@@ -40,32 +40,32 @@
 				<img
 					src={data.image}
 					alt={data.title}
-					class="w-full h-[28rem] md:h-[40rem] object-cover"
+					class="h-[28rem] w-full object-cover md:h-[40rem]"
 					width="800"
 					height="400"
 				/>
 				<div class="absolute inset-0 bg-base-content/30" />
 				<div
-					class="absolute inset-0 left-5 md:left-10 lg:left-20 flex flex-col justify-center mt-10 md:mt-0"
+					class="absolute inset-0 left-5 mt-10 flex flex-col justify-center md:left-10 md:mt-0 lg:left-20"
 				>
 					<div class="flex flex-col">
 						<!-- <div class="badge badge-sm font-black italic mb-4 rounded-full">
 							GET UPTO 50% OFF SHOP NOW
 						</div> -->
 						<h1
-							class="text-4xl md:text-5xl lg:text-[4rem] font-extrabold text-base-100 max-w-sm md:max-w-xl lg:max-w-2xl"
+							class="max-w-sm text-4xl font-extrabold text-base-100 md:max-w-xl md:text-5xl lg:max-w-2xl lg:text-[4rem]"
 						>
 							{data.title}
 						</h1>
 						<p
-							class="text-base-100/80 mt-4 md:mt-5 max-w-xs md:max-w-md lg:max-w-xl text-sm md:text-lg"
+							class="mt-4 max-w-xs text-sm text-base-100/80 md:mt-5 md:max-w-md md:text-lg lg:max-w-xl"
 						>
 							{data.desc}
 						</p>
 					</div>
-					<div class="flex flex-col md:flex-row mt-5 md:mt-10 lg:rounded-3xl gap-4">
+					<div class="mt-5 flex flex-col gap-4 md:mt-10 md:flex-row lg:rounded-3xl">
 						<a
-							class="w-36 md:w-52 btn rounded-full flex items-center justify-center gap-2"
+							class="btn flex w-36 items-center justify-center gap-2 rounded-full md:w-52"
 							href="/upscaler"
 						>
 							AI Upscale
@@ -80,7 +80,7 @@
 							</svg>
 						</a>
 						<a
-							class="w-36 md:w-52 btn rounded-full flex items-center justify-center gap-2"
+							class="btn flex w-36 items-center justify-center gap-2 rounded-full md:w-52"
 							href="/manage-store"
 						>
 							เปิดร้านค้า
@@ -95,7 +95,7 @@
 							</svg>
 						</a>
 						<a
-							class="w-36 md:w-52 btn rounded-full flex items-center justify-center gap-2"
+							class="btn flex w-36 items-center justify-center gap-2 rounded-full md:w-52"
 							href="/shop"
 						>
 							หาชุดเช่า
@@ -114,11 +114,8 @@
 			</swiper-slide>
 		{/each}
 
-		<div class="absolute flex gap-7 top-7 right-7 z-10">
-			<button
-				aria-label="hero-prev"
-				class="swiper-button-prev-hero btn btn-circle btn-sm"
-			>
+		<div class="absolute right-7 top-7 z-10 flex gap-7">
+			<button aria-label="hero-prev" class="swiper-button-prev-hero btn btn-circle btn-sm">
 				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
 					<path
 						fill="currentColor"
@@ -127,10 +124,7 @@
 				</svg>
 			</button>
 
-			<button
-				aria-label="hero-next"
-				class="swiper-button-next-hero btn btn-circle btn-sm"
-			>
+			<button aria-label="hero-next" class="swiper-button-next-hero btn btn-circle btn-sm">
 				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
 					<path
 						fill="currentColor"

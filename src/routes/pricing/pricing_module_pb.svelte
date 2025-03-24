@@ -2,7 +2,6 @@
 	import { pricingPlans } from './pricing_plans';
 	import { goto } from '$app/navigation';
 
-	
 	async function checkout(price_id: string) {
 		console.log(price_id);
 		let res;
@@ -36,8 +35,8 @@
 	export let center = true;
 
 	let packages = JSON.parse(data?.packages).sort((a, b) => {
-		if (a.name === "LifeTime") return -1;
-		if (b.name === "LifeTime") return 1;
+		if (a.name === 'LifeTime') return -1;
+		if (b.name === 'LifeTime') return 1;
 		if (a.price_monthly === 0) return 1;
 		if (b.price_monthly === 0) return -1;
 		if (a.price_monthly === -5) return 1;
@@ -46,16 +45,16 @@
 	});
 </script>
 
-<div class="flex flex-col lg:flex-row gap-10 {center ? 'place-content-center' : ''} flex-wrap">
+<div class="flex flex-col gap-10 lg:flex-row {center ? 'place-content-center' : ''} flex-wrap">
 	{#each packages as plan}
 		<div
-			class="flex-none card card-bordered {plan.name === highlightedPlanId
+			class="card card-bordered flex-none {plan.name === highlightedPlanId
 				? 'border-primary'
-				: 'border-gray-200'} shadow-xl flex-1 flex-grow min-w-[260px] max-w-[310px] p-6"
+				: 'border-gray-200'} min-w-[260px] max-w-[310px] flex-1 flex-grow p-6 shadow-xl"
 		>
-			<div class="flex flex-col h-full">
+			<div class="flex h-full flex-col">
 				<div class="text-xl font-bold">{plan.name}</div>
-				<p class="mt-2 text-sm text-gray-500 leading-relaxed">
+				<p class="mt-2 text-sm leading-relaxed text-gray-500">
 					{@html plan.description}
 				</p>
 				<div class="mt-auto pt-4 text-sm text-gray-600">
@@ -65,21 +64,21 @@
 				<div class="pt-8">
 					<span class="text-4xl font-bold">{plan.currency}{plan.price}</span>
 					<span class="text-gray-400">{plan.priceIntervalName}</span>
-					<div class="mt-6 pt-4 flex-1 flex flex-row items-center">
+					<div class="mt-6 flex flex-1 flex-row items-center pt-4">
 						<!-- {#if plan.id === currentPlanId}
 							<div class="btn btn-outline btn-success no-animation w-[80%] mx-auto cursor-default">
 								Current Plan
 							</div>
 						{:else} -->
-							<button
-								on:click={async (e) => {
-									e.preventDefault();
-									await checkout(plan?.price_id ?? 'free_plan');
-								}}
-								class="btn btn-outline btn-secondary w-[80%] mx-auto"
-							>
-								อัพเกรด
-							</button>
+						<button
+							on:click={async (e) => {
+								e.preventDefault();
+								await checkout(plan?.price_id ?? 'free_plan');
+							}}
+							class="btn btn-outline btn-secondary mx-auto w-[80%]"
+						>
+							อัพเกรด
+						</button>
 						<!-- {/if} -->
 					</div>
 				</div>

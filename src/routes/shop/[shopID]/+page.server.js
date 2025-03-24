@@ -1,9 +1,8 @@
-import { error } from "@sveltejs/kit";
-import { serializeNonPOJOs } from "$lib/utils";
+import { error } from '@sveltejs/kit';
+import { serializeNonPOJOs } from '$lib/utils';
 import { createAdminClient } from '$lib/pocketbase';
 
 export const load = async ({ locals, params }) => {
-
 	const getItemList = async (shopID) => {
 		const adminClient = await createAdminClient();
 		try {
@@ -22,12 +21,12 @@ export const load = async ({ locals, params }) => {
 	if (locals.user) {
 		return {
 			user: locals.user,
-			itemList: await getItemList(params.shopID),
+			itemList: await getItemList(params.shopID)
 		};
 	}
 
 	return {
 		user: undefined,
-		itemList: await getItemList(params.shopID), // Pass shopID to the function
+		itemList: await getItemList(params.shopID) // Pass shopID to the function
 	};
 };

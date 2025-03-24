@@ -55,7 +55,7 @@
 						bind:value={shopName}
 						class="input input-bordered w-full"
 						required
-						on:input={event => {
+						on:input={(event) => {
 							// Allow letters, numbers, spaces, and Thai characters
 							shopName = event.target.value.replace(/[^a-zA-Z0-9ก-๙ ]/g, '');
 							slug = generateSlug(shopName); // Generate slug from shop name
@@ -70,7 +70,7 @@
 						bind:value={shopDetails}
 						class="input input-bordered w-full"
 						required
-						on:input={event => {
+						on:input={(event) => {
 							// Remove any character that is not a letter or number
 							shopDetails = event.target.value.replace(/[^a-zA-Z0-9]/g, '');
 						}}
@@ -84,12 +84,12 @@
 						bind:value={slug}
 						class="input input-bordered w-full"
 						required
-						on:input={event => {
+						on:input={(event) => {
 							// Allow letters, numbers, and hyphens
 							slug = event.target.value.replace(/[^a-zA-Z0-9-]/g, '');
 						}}
 					/>
-					<p class="text-sm mt-2 text-gray-500 break-all">{baseUrl}{slug}</p>
+					<p class="mt-2 break-all text-sm text-gray-500">{baseUrl}{slug}</p>
 				</div>
 				<form class="mt-6" on:submit|preventDefault={createInstance}>
 					<div class="mb-4">
@@ -201,42 +201,47 @@
 						
 						</select>
 					  </div> -->
-					 
-						<button type="submit" class="btn btn-facebook mb-4" disabled>
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-2">
-								<path d="M22.675 0h-21.35C.597 0 0 .597 0 1.326v21.348C0 23.403.597 24 1.326 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.794.143v3.24l-1.918.001c-1.504 0-1.794.715-1.794 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.729 0 1.326-.597 1.326-1.326V1.326C24 .597 23.403 0 22.675 0z"/>
-							</svg>
-							เชื่อมต่อกับเพจบน Facebook
-						</button>
-				
-					
-					<button type="submit" class="w-full btn btn-neutral">เปิดร้านค้า</button>
+
+					<button type="submit" class="btn-facebook btn mb-4" disabled>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							class="mr-2 h-6 w-6"
+						>
+							<path
+								d="M22.675 0h-21.35C.597 0 0 .597 0 1.326v21.348C0 23.403.597 24 1.326 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.794.143v3.24l-1.918.001c-1.504 0-1.794.715-1.794 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.729 0 1.326-.597 1.326-1.326V1.326C24 .597 23.403 0 22.675 0z"
+							/>
+						</svg>
+						เชื่อมต่อกับเพจบน Facebook
+					</button>
+
+					<button type="submit" class="btn btn-neutral w-full">เปิดร้านค้า</button>
 					<div class="mb-4">
-                    {#if showAlert}
-						<div role="alert" class="alert alert-error">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								class="h-6 w-6 shrink-0 stroke-current"
-								fill="none"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-								/>
-							</svg>
-							<span>{errorMessage || 'Error! Task failed successfully.'}</span>
-						</div>
-					{/if}
-                </div>
+						{#if showAlert}
+							<div role="alert" class="alert alert-error">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="h-6 w-6 shrink-0 stroke-current"
+									fill="none"
+									viewBox="0 0 24 24"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+									/>
+								</svg>
+								<span>{errorMessage || 'Error! Task failed successfully.'}</span>
+							</div>
+						{/if}
+					</div>
 				</form>
 			</div>
 		</div>
 	</div>
 </section>
-
 
 <style>
 	.login-card {

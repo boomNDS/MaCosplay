@@ -10,9 +10,11 @@
 				ลดเวลาการเสียเวลาไปกับด้านการติดตั้งฐานข้อมูลสำหรับการสร้างเว็บไซต์
 				และเวลามากขึ้นในการสร้างฟีเจอร์ที่แก้ปัญหาให้กับผู้คนได้อย่างแท้จริง
 			</p>
-			<div class="flex flex-col sm:flex-row sm:space-x-2 mt-4">
-				<a href="/dashboard"><button class="btn btn-neutral btn-active w-full sm:w-auto">เริ่มใช้งาน</button></a>
-				<button class="btn btn-outline w-full sm:w-auto mt-2 sm:mt-0">ติดต่อ</button>
+			<div class="mt-4 flex flex-col sm:flex-row sm:space-x-2">
+				<a href="/dashboard"
+					><button class="btn btn-neutral btn-active w-full sm:w-auto">เริ่มใช้งาน</button></a
+				>
+				<button class="btn btn-outline mt-2 w-full sm:mt-0 sm:w-auto">ติดต่อ</button>
 			</div>
 		</article>
 	</div>
@@ -24,8 +26,9 @@
 		<section class="mb-6">
 			<h2 class="mb-2 text-2xl font-semibold">เลือกเครื่องมือสำหรับช่วยสร้าง SaaS</h2>
 		</section>
-		<div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-6"> <!-- Flex container for horizontal layout -->
-			<div class="card w-full sm:w-96 bg-base-100 shadow-xl">
+		<div class="mt-6 flex flex-col justify-center space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
+			<!-- Flex container for horizontal layout -->
+			<div class="card w-full bg-base-100 shadow-xl sm:w-96">
 				<figure>
 					<img src="/images/pocketbaseweb.png" alt="PocketBase" />
 				</figure>
@@ -36,37 +39,39 @@
 						จัดการผู้ใช้ได้อย่างมีประสิทธิภาพ ใช้ทรัพยากรน้อยแต่รองรับผู้ใช้งานจำนวนมาก!
 					</p>
 					<div class="card-actions justify-end">
-						<button class="btn btn-neutral btn-active"><a href="/create-pb-instance">เริ่มใช้งาน</a></button>
+						<button class="btn btn-neutral btn-active"
+							><a href="/create-pb-instance">เริ่มใช้งาน</a></button
+						>
 					</div>
 				</div>
 			</div>
 
-			<div class="card w-full sm:w-96 bg-base-100 shadow-xl">
+			<div class="card w-full bg-base-100 shadow-xl sm:w-96">
 				<figure>
 					<img src="/images/pocketbaseweb.png" alt="PocketBase" />
 				</figure>
 				<div class="card-body">
 					<h2 class="card-title">Coming Soon!</h2>
-					<p>
-						Coming Soon!
-					</p>
+					<p>Coming Soon!</p>
 					<div class="card-actions justify-end">
-						<button class="btn btn-neutral btn-active"><a href="/create-pb-instance">เริ่มใช้งาน</a></button>
+						<button class="btn btn-neutral btn-active"
+							><a href="/create-pb-instance">เริ่มใช้งาน</a></button
+						>
 					</div>
 				</div>
 			</div>
 
-			<div class="card w-full sm:w-96 bg-base-100 shadow-xl">
+			<div class="card w-full bg-base-100 shadow-xl sm:w-96">
 				<figure>
 					<img src="/images/pocketbaseweb.png" alt="PocketBase" />
 				</figure>
 				<div class="card-body">
 					<h2 class="card-title">Coming Soon!</h2>
-					<p>
-						Coming Soon!
-					</p>
+					<p>Coming Soon!</p>
 					<div class="card-actions justify-end">
-						<button class="btn btn-neutral btn-active"><a href="/create-pb-instance">เริ่มใช้งาน</a></button>
+						<button class="btn btn-neutral btn-active"
+							><a href="/create-pb-instance">เริ่มใช้งาน</a></button
+						>
 					</div>
 				</div>
 			</div>

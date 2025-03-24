@@ -27,11 +27,18 @@ export const actions = {
 		/* let packages = 'eq0tudgxce90g0o' */
 		try {
 			console.log('success');
-			await adminClient.collection('users').create({ username, ...formData, UserNumber, MaxShop: 1, VerifyShop: "ยังไม่ได้ยืนยันร้านค้า" });
+			await adminClient
+				.collection('users')
+				.create({
+					username,
+					...formData,
+					UserNumber,
+					MaxShop: 1,
+					VerifyShop: 'ยังไม่ได้ยืนยันร้านค้า'
+				});
 			await adminClient.collection('users').requestVerification(formData.email);
-		
+
 			console.log('create new user');
-			
 		} catch (err) {
 			if (err.data?.data?.username?.code) {
 				return { errors: { username: 'Username already exists' } };
@@ -42,7 +49,7 @@ export const actions = {
 			if (err.data?.data?.password?.code) {
 				return { errors: { password: 'Password does not meet requirements' } };
 			}
-		
+
 			console.error('Unexpected error:', err);
 			return { errors: { general: 'An unexpected error occurred.' } };
 		}

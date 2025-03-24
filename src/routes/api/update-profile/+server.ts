@@ -2,54 +2,53 @@ import { json } from '@sveltejs/kit';
 import { createAdminClient } from '$lib/pocketbase';
 
 export const PUT = async ({ request, locals }) => {
-    const adminClient = await createAdminClient();
-    
-    try {
-        const formData = await request.formData();
-        const userId = locals.user.id;
-        const name = formData.get('name');
-        const avatar = formData.get('avatar');
-        const size = formData.get('size');
-        const fbProfile = formData.get('fbProfile');
+	const adminClient = await createAdminClient();
 
-        console.log(fbProfile)
+	try {
+		const formData = await request.formData();
+		const userId = locals.user.id;
+		const name = formData.get('name');
+		const avatar = formData.get('avatar');
+		const size = formData.get('size');
+		const fbProfile = formData.get('fbProfile');
 
-        if (!userId) {
-            return json({ error: 'User ID is required' }, { status: 400 });
-        }
+		console.log(fbProfile);
 
-        // Fetch existing user profile
-        const existingUser = await adminClient.collection('users').getOne(userId);
+		if (!userId) {
+			return json({ error: 'User ID is required' }, { status: 400 });
+		}
 
-        // Prepare update data
-        const updateData = {
-            name,
-            size,
-            fbProfile
-        };
+		// Fetch existing user profile
+		const existingUser = await adminClient.collection('users').getOne(userId);
 
-        // Include avatar if it's a File and not null
-        if (avatar instanceof File && avatar.size > 0) {
-            updateData.avatar = avatar;
-        }
+		// Prepare update data
+		const updateData = {
+			name,
+			size,
+			fbProfile
+		};
 
-        // Check for changes
-        const hasChanges = Object.keys(updateData).some(key => updateData[key] !== existingUser[key]);
+		// Include avatar if it's a File and not null
+		if (avatar instanceof File && avatar.size > 0) {
+			updateData.avatar = avatar;
+		}
 
-        if (!hasChanges) {
-            return json({ message: 'No changes detected' }, { status: 200 });
-        }
+		// Check for changes
+		const hasChanges = Object.keys(updateData).some((key) => updateData[key] !== existingUser[key]);
 
-        // Update user profile
-        const updatedUser = await adminClient.collection('users').update(userId, updateData);
-        return json(updatedUser, { status: 200 });
+		if (!hasChanges) {
+			return json({ message: 'No changes detected' }, { status: 200 });
+		}
 
-    } catch (error) {
-        console.error('Error updating user profile:', error);
-        return json({ error: error.message }, { status: error.status || 500 });
-    }
+		// Update user profile
+		const updatedUser = await adminClient.collection('users').update(userId, updateData);
+		return json(updatedUser, { status: 200 });
+	} catch (error) {
+		console.error('Error updating user profile:', error);
+		return json({ error: error.message }, { status: error.status || 500 });
+	}
 };
 
 function serializeNonPOJOs(obj) {
-    return structuredClone(obj);
+	return structuredClone(obj);
 }
