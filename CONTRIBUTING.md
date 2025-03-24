@@ -196,3 +196,8 @@ This section lists the labels we use to help us track and manage issues and pull
 ## Thank You!
 
 Your contributions to open source, large or small, make projects like MaCosplay possible. Thank you for taking the time to contribute.
+
+<p align="center">
+  <a href="https://github.com/idea2547/MaCosplay/graphs/contributors"><img src="https://img.shields.io/github/contributors/idea2547/MaCosplay?style=for-the-badge" alt="Contributors"/></a>
+  <a href="https://github.com/idea2547/MaCosplay/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22"><img src="https://img.shields.io/github/issues/idea2547/MaCosplay/help%20wanted?style=for-the-badge" alt="Help Wanted Issues"/></a>
+</p>

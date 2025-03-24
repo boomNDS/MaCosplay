@@ -163,19 +163,12 @@ This project follows the [SvelteKit project structure](https://svelte.dev/docs/k
 - [Facebook](https://www.facebook.com/profile.php?id=61571822900726) - Follow us for updates
 - [GitHub Issues](https://github.com/idea2547/MaCosplay/issues) - Report bugs or request features
 
+## 👥 Contributors
+
 ## 🔮 Roadmap
 
 - [x] Launch MVP version
 - [x] Reach 200+ registered users
-- [ ] Add international language support
-- [ ] Implement advanced search features
-- [ ] Create mobile app version
-
-## 👨‍💻 Team
-
-- **Founder** - [idea2547](https://github.com/idea2547)
-- **Lead Developer** - [Your Name](https://github.com/username)
-- **UI/UX Designer** - [Designer Name](https://github.com/designer)
 
 ## 📝 License
 
