@@ -87,7 +87,7 @@ By creating an open-source platform, we aim to build a thriving ecosystem where 
 - Node.js (v18 or higher)
 - Yarn or npm
 - Git
-- [PocketBase](https://pocketbase.io/docs/) (for local development)
+- [PocketBase](https://pocketbase.io/docs/) (for local development) / PocketBase v0.22.27: Download the executable for your platform
 
 ### Installation
 
@@ -113,9 +113,41 @@ npm install
 2. Update the `.env` file with your configuration:
    ```
    PUBLIC_POCKETBASE_URL=your_pocketbase_url
+   # PocketBase Configuration
+    VITE_PB_URL=http://127.0.0.1:8090              # Your PocketBase instance URL
+    VITE_AUTH_ADMIN_NAME=admin                    # PocketBase admin username
+    VITE_AUTH_ADMIN_PASS=securepassword123        # PocketBase admin password
+    
+    # Facebook OAuth (optional, for social login)
+    VITE_FB_CLIENT_ID=your_app_id                 # From Facebook Developer App
+    VITE_FB_CLIENT_SECRET=your_app_secret         # From Facebook Developer App
+    
+    # Base URL for Development
+    VITE_BASE_URL=http://localhost:5173           # Local development URL
+    
+    # Stripe Payments (optional, for payment features)
+    VITE_STRIPE_SECRET_KEY=sk_test_xxx            # From Stripe Dashboard
+    VITE_STRIPE_WEBHOOK_KEY=whsec_xxx             # From Stripe Dashboard
+    
+    # AI Integration (optional, for image upscaling)
+    VITE_REPLICATE_API_TOKEN=your_replicate_key   # From Replicate API
+    
+    # Deployment Settings
+    NODE_ENV=development                          # Set to 'production' for prod builds
+    PORT=5173                                     # Local server port
+    # PUBLIC_SITE_URL=https://macosplay.com       # Uncomment and update for production
    ```
 
 ### Running the Application
+
+Import Collections:
+Download pb_schema.json from this [https://gist.github.com/idea2547/a26283693b013ce1c34d32f41e8244bd].
+
+In the PocketBase admin UI, go to Settings > Import Collections.
+
+Upload pb_schema.json to set up the required database structure.
+
+
 
 #### Development Mode
 
@@ -157,6 +189,8 @@ npm run preview
 2. **Browse Costumes**: Search for costumes by character, series, or size
 3. **Rent a Costume**: Select dates and make a request
 4. **List Your Costume**: Add photos, description, and set your rental terms
+
+   
 
 ## 🧪 Testing
 
