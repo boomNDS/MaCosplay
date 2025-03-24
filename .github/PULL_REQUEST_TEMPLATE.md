@@ -4,7 +4,7 @@
 
 This adds a new form that allows users to customize their character profiles with detailed information and references.
 
-Resolves: #123
+Resolves: #<!-- Replace with actual issue number -->
 
 ## Type of change
 
@@ -26,6 +26,16 @@ Please describe the tests that you ran to verify your changes. Provide instructi
 
 - [ ] Test A
 - [ ] Test B
+
+## Checklist
+
+Before submitting, please make sure:
+
+- [ ] Code follows project style guidelines
+- [ ] Changes are tested
+- [ ] Documentation is updated (if necessary)
+- [ ] All CI checks pass (linting, tests, build verification)
+- [ ] PR is linked to related issues
 
 ## Additional context
 

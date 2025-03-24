@@ -191,6 +191,46 @@ This section lists the labels we use to help us track and manage issues and pull
 - `help wanted` - Extra attention is needed
 - `wontfix` - This will not be worked on
 
+### Pull Request Labels
+
+We use labels to categorize and manage pull requests effectively. Here are the labels you might encounter:
+
+- **bug**: Indicates that the pull request addresses a bug in the application.
+- **enhancement**: Used for pull requests that introduce new features or improvements.
+- **documentation**: For changes that involve documentation updates.
+- **help wanted**: Indicates that the pull request needs additional attention or review.
+- **good first issue**: A label for issues that are suitable for newcomers to the project.
+- **wontfix**: Indicates that the issue will not be addressed or fixed.
+
+When creating a pull request, please add relevant labels to help maintainers understand the nature of your changes.
+
+## Contributing with Pull Requests
+
+We welcome your contributions through pull requests! There are two main sections below:
+
+1. General pull request process
+2. Specific guidelines for creating effective pull requests
+
+### Pull Request Process
+
+The process described here has several goals:
+
+- Maintain MaCosplay's quality
+- Fix problems that are important to users
+- Engage the community in working toward the best possible MaCosplay
+- Enable a sustainable system for MaCosplay's maintainers to review contributions
+
+Please follow these steps to have your contribution considered by the maintainers:
+
+1. Follow the [styleguides](#styleguides)
+2. After you submit your pull request, verify that all [status checks](https://help.github.com/articles/about-status-checks/) are passing
+   - Our CI pipeline runs the following checks:
+     - **Linting**: Ensures code follows our style guidelines using ESLint
+     - **Tests**: Runs unit tests to verify functionality works as expected
+     - **Build Check**: Verifies the project builds successfully
+
+While the prerequisites above must be satisfied prior to having your pull request reviewed, the reviewer(s) may ask you to complete additional design work, tests, or other changes before your pull request can be ultimately accepted.
+
 ## Pull Request Guidelines
 
 We love your input! Making a great pull request helps us integrate your changes quickly and efficiently. Follow these guidelines to ensure a smooth process:
@@ -266,6 +306,7 @@ Before submitting, make sure you can check all these boxes:
 - Delete your branch
 - Keep your fork synced with the main repository
 - Celebrate your contribution! 🎉
+
 ---
 
 ## Thank You!
