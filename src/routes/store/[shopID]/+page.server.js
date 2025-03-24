@@ -1,5 +1,5 @@
-import { error } from "@sveltejs/kit";
-import { serializeNonPOJOs } from "$lib/utils";
+import { error } from '@sveltejs/kit';
+import { serializeNonPOJOs } from '$lib/utils';
 import { createAdminClient } from '$lib/pocketbase';
 
 export const load = async ({ locals, params, url }) => {
@@ -16,7 +16,7 @@ export const load = async ({ locals, params, url }) => {
 				sort: '-created'
 			});
 
-			const items = response.map(item => {
+			const items = response.map((item) => {
 				if (item.expand?.user) {
 					item.expand.user = {
 						id: item.expand.user.id,
@@ -48,7 +48,7 @@ export const load = async ({ locals, params, url }) => {
 				expand: 'user'
 			});
 
-			const storeDetails = instances.map(instance => {
+			const storeDetails = instances.map((instance) => {
 				if (instance.expand?.user) {
 					instance.expand.user = {
 						id: instance.expand.user.id,
@@ -72,13 +72,13 @@ export const load = async ({ locals, params, url }) => {
 		return {
 			user: locals.user,
 			StoreDetails: await getStoreDetails(params.shopID),
-			itemList: await getItemList(),
+			itemList: await getItemList()
 		};
 	}
 
 	return {
 		user: undefined,
 		StoreDetails: await getStoreDetails(params.shopID),
-		itemList: await getItemList(),
+		itemList: await getItemList()
 	};
 };

@@ -1,5 +1,5 @@
-import { error } from "@sveltejs/kit";
-import { serializeNonPOJOs } from "$lib/utils";
+import { error } from '@sveltejs/kit';
+import { serializeNonPOJOs } from '$lib/utils';
 import { createAdminClient } from '$lib/pocketbase';
 import { invalidate } from '$app/navigation';
 
@@ -24,7 +24,9 @@ export const load = async ({ locals, url }) => {
 	console.log('selectedStatus:', selectedStatus);
 
 	// Determine if any filter is applied
-	const isFilterApplied = Boolean(searchQuery || selectedProvince || selectedSize || selectedStatus);
+	const isFilterApplied = Boolean(
+		searchQuery || selectedProvince || selectedSize || selectedStatus
+	);
 	console.log('isFilterApplied:', isFilterApplied);
 
 	const getItemList = async () => {
@@ -37,17 +39,18 @@ export const load = async ({ locals, url }) => {
 			if (isFilterApplied) {
 				// Use getFullList when filters are applied
 				const response = await adminClient.collection('itemList').getFullList({
-					filter: `public=True${searchQuery ? ` && Name ~ "${searchQuery}"` : ''}`
-						+ `${selectedProvince ? ` && Province="${selectedProvince}"` : ''}`
-						+ `${selectedSize ? ` && Size="${selectedSize}"` : ''}`
-						+ `${selectedStatus ? ` && Status="${selectedStatus}"` : ''}`,
+					filter:
+						`public=True${searchQuery ? ` && Name ~ "${searchQuery}"` : ''}` +
+						`${selectedProvince ? ` && Province="${selectedProvince}"` : ''}` +
+						`${selectedSize ? ` && Size="${selectedSize}"` : ''}` +
+						`${selectedStatus ? ` && Status="${selectedStatus}"` : ''}`,
 					expand: 'user,userStore',
 					sort: '-created'
 				});
 
 				console.log('API Response (Full List):', response);
 
-				items = response.map(item => {
+				items = response.map((item) => {
 					if (item.expand?.user) {
 						item.expand.user = {
 							id: item.expand.user.id,
@@ -62,17 +65,18 @@ export const load = async ({ locals, url }) => {
 			} else {
 				// Use getList when no filters are applied
 				const response = await adminClient.collection('itemList').getList(page, perPage, {
-					filter: `public=True${searchQuery ? ` && Name ~ "${searchQuery}"` : ''}`
-						+ `${selectedProvince ? ` && Province="${selectedProvince}"` : ''}`
-						+ `${selectedSize ? ` && Size="${selectedSize}"` : ''}`
-						+ `${selectedStatus ? ` && Status="${selectedStatus}"` : ''}`,
+					filter:
+						`public=True${searchQuery ? ` && Name ~ "${searchQuery}"` : ''}` +
+						`${selectedProvince ? ` && Province="${selectedProvince}"` : ''}` +
+						`${selectedSize ? ` && Size="${selectedSize}"` : ''}` +
+						`${selectedStatus ? ` && Status="${selectedStatus}"` : ''}`,
 					expand: 'user,userStore',
 					sort: '-created'
 				});
 
 				console.log('API Response (Paginated List):', response);
 
-				items = response.items.map(item => {
+				items = response.items.map((item) => {
 					if (item.expand?.user) {
 						item.expand.user = {
 							id: item.expand.user.id,
@@ -109,23 +113,23 @@ export const load = async ({ locals, url }) => {
 	if (locals.user) {
 		return {
 			user: locals.user,
-			itemList: await getItemList(),
+			itemList: await getItemList()
 		};
 	}
 
 	return {
 		user: undefined,
-		itemList: await getItemList(), // Default to an empty array if user is not logged in
+		itemList: await getItemList() // Default to an empty array if user is not logged in
 	};
 };
 
 async function applyFilters() {
 	const url = new URL(window.location.href);
-	url.searchParams.set("search", searchQuery);
-	url.searchParams.set("selectedProvince", selectedProvince);
-	url.searchParams.set("selectedSize", selectedSize);
-	url.searchParams.set("selectedStatus", selectedStatus);
-	
+	url.searchParams.set('search', searchQuery);
+	url.searchParams.set('selectedProvince', selectedProvince);
+	url.searchParams.set('selectedSize', selectedSize);
+	url.searchParams.set('selectedStatus', selectedStatus);
+
 	history.pushState({}, '', url); // Update URL without reload
 	await invalidate('items'); // Force SvelteKit to reload data
 }

@@ -5,4 +5,3 @@ export const load = ({ locals }) => {
 		throw redirect(303, '/login');
 	}
 };
-

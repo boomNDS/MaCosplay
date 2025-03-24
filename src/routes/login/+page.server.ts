@@ -1,4 +1,4 @@
-import { redirect } from "@sveltejs/kit";
+import { redirect } from '@sveltejs/kit';
 
 export const load = ({ locals }) => {
 	if (locals.pb?.authStore.isValid) {
@@ -11,7 +11,9 @@ export const actions = {
 		const formData = await request.formData();
 
 		try {
-			await locals.pb.collection("users").authWithPassword(formData.get('email'), formData.get('password'));
+			await locals.pb
+				.collection('users')
+				.authWithPassword(formData.get('email'), formData.get('password'));
 
 			// Check if the user is verified
 			if (!locals.pb?.authStore?.model?.verified) {
@@ -20,41 +22,45 @@ export const actions = {
 					status: 401,
 					body: {
 						notVerified: true,
-						errorMessage: 'Your account is not verified. Please check your email for the verification link.',
+						errorMessage:
+							'Your account is not verified. Please check your email for the verification link.'
 					}
 				};
 			}
 
 			throw redirect(303, '/'); // Redirect after successful login
 		} catch (err) {
-			console.error("Error during login:", err?.data?.message);
+			console.error('Error during login:', err?.data?.message);
 
 			return {
 				status: err?.status || 500,
 				body: {
-					errorMessage: err?.data?.message || 'An unexpected error occurred. Please try again later.',
+					errorMessage:
+						err?.data?.message || 'An unexpected error occurred. Please try again later.'
 				}
 			};
 		}
 	},
 	OAuth: async ({ cookies, url, locals }) => {
 		const authMethods = await locals.pb?.collection('users').listAuthMethods();
-		
+
 		if (!authMethods?.authProviders?.length) {
-			console.error("No authentication providers available.");
+			console.error('No authentication providers available.');
 			return {
 				status: 500,
-				body: { error: "No authentication providers available." }
+				body: { error: 'No authentication providers available.' }
 			};
 		}
 
-		const FacebookAuthProvider = authMethods.authProviders.find(provider => provider.name === "facebook");
+		const FacebookAuthProvider = authMethods.authProviders.find(
+			(provider) => provider.name === 'facebook'
+		);
 
 		if (!FacebookAuthProvider) {
-			console.error("Facebook OAuth provider not found.");
+			console.error('Facebook OAuth provider not found.');
 			return {
 				status: 400,
-				body: { error: "Facebook OAuth provider not found." }
+				body: { error: 'Facebook OAuth provider not found.' }
 			};
 		}
 
@@ -62,14 +68,23 @@ export const actions = {
 		const verifier = FacebookAuthProvider.codeVerifier;
 
 		// Save state and verifier in cookies
-		cookies.set('state', state, { path: '/', httpOnly: true, secure: url.origin.startsWith("https"), maxAge: 600 });
-		cookies.set('verifier', verifier, { path: '/', httpOnly: true, secure: url.origin.startsWith("https"), maxAge: 600 });
+		cookies.set('state', state, {
+			path: '/',
+			httpOnly: true,
+			secure: url.origin.startsWith('https'),
+			maxAge: 600
+		});
+		cookies.set('verifier', verifier, {
+			path: '/',
+			httpOnly: true,
+			secure: url.origin.startsWith('https'),
+			maxAge: 600
+		});
 
 		const redirectURL = `${url.origin}/oauth`; // Ensure this matches your app's settings
 		const authProviderRedirect = `${FacebookAuthProvider.authUrl}&redirect_uri=${encodeURIComponent(redirectURL)}`;
 
-
-		console.log("Redirecting to:", authProviderRedirect);
+		console.log('Redirecting to:', authProviderRedirect);
 		throw redirect(302, authProviderRedirect);
 	}
 };

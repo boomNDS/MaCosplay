@@ -1,62 +1,61 @@
 <script lang="ts">
-    import PricingModule from "./pricing_module_pb.svelte"
-    
-  
+	import PricingModule from './pricing_module_pb.svelte';
+
 	export let data; // Define data type
 	let packages = JSON.parse(data?.packages).sort((a, b) => {
-		if (a.name === "LifeTime") return -1;
-		if (b.name === "LifeTime") return 1;
+		if (a.name === 'LifeTime') return -1;
+		if (b.name === 'LifeTime') return 1;
 		if (a.price_monthly === 0) return 1;
 		if (b.price_monthly === 0) return -1;
 		if (a.price_monthly === -5) return 1;
 		if (b.price_monthly === -5) return -1;
 		return a.price_monthly - b.price_monthly;
 	});
-	
-    type PlanFeatureRow = {
-      name: string
-      freeIncluded?: boolean
-      proIncluded?: boolean
-      freeString?: string
-      proString?: string
-      header?: boolean
-    }
-  
-    const planFeatures: PlanFeatureRow[] = [
-      {
-        name: "Section 1",
-        header: true,
-      },
-      {
-        name: "Feature 1",
-        freeIncluded: true,
-        proIncluded: true,
-      },
-      {
-        name: "Feature 2",
-        freeIncluded: false,
-        proIncluded: true,
-      },
-      {
-        name: "Feature 3",
-        freeString: "3",
-        proString: "Unlimited",
-      },
-      {
-        name: "Section 2",
-        header: true,
-      },
-      {
-        name: "Feature 4",
-        freeIncluded: true,
-        proIncluded: true,
-      },
-      {
-        name: "Feature 5",
-        freeIncluded: false,
-        proIncluded: true,
-      },
-    ]
+
+	type PlanFeatureRow = {
+		name: string;
+		freeIncluded?: boolean;
+		proIncluded?: boolean;
+		freeString?: string;
+		proString?: string;
+		header?: boolean;
+	};
+
+	const planFeatures: PlanFeatureRow[] = [
+		{
+			name: 'Section 1',
+			header: true
+		},
+		{
+			name: 'Feature 1',
+			freeIncluded: true,
+			proIncluded: true
+		},
+		{
+			name: 'Feature 2',
+			freeIncluded: false,
+			proIncluded: true
+		},
+		{
+			name: 'Feature 3',
+			freeString: '3',
+			proString: 'Unlimited'
+		},
+		{
+			name: 'Section 2',
+			header: true
+		},
+		{
+			name: 'Feature 4',
+			freeIncluded: true,
+			proIncluded: true
+		},
+		{
+			name: 'Feature 5',
+			freeIncluded: false,
+			proIncluded: true
+		}
+	];
 </script>
 
 <svelte:head>
@@ -64,14 +63,12 @@
 	<meta name="description" content="Pricing - HertaSaaS" />
 </svelte:head>
 
-<div class="min-h-[70vh] pb-8 pt-[5vh] px-4">
-	<h1 class="text-3xl font-bold text-center">Pricing</h1>
-	<h2 class="text-xl text-center text-slate-500 mt-1 pb-3">
-		อัพเกรดแพลนเพื่อยืนยันตัวตนของคุณ
-	</h2>
+<div class="min-h-[70vh] px-4 pb-8 pt-[5vh]">
+	<h1 class="text-center text-3xl font-bold">Pricing</h1>
+	<h2 class="mt-1 pb-3 text-center text-xl text-slate-500">อัพเกรดแพลนเพื่อยืนยันตัวตนของคุณ</h2>
 
-	<div class="w-full my-8">
-		<PricingModule callToAction="Get Started" highlightedPlanId="pro" data={data}/>
+	<div class="my-8 w-full">
+		<PricingModule callToAction="Get Started" highlightedPlanId="pro" {data} />
 		<!-- <h1 class="text-2xl font-bold text-center mt-24">Pricing FAQ</h1>
 		<div class="flex place-content-center">
 			<div class="join join-vertical max-w-xl py-6 mx-auto">

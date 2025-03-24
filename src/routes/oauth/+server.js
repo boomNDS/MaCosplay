@@ -2,12 +2,10 @@ import { redirect } from '@sveltejs/kit';
 import PocketBase from 'pocketbase';
 import { serializeNonPOJOs } from '$lib/utils';
 
-
 export const GET = async ({ locals, url, cookies }) => {
-
 	const adminClient = new PocketBase(import.meta.env.VITE_PB_URL);
 
-	adminClient.authStore.clear()
+	adminClient.authStore.clear();
 
 	console.log('OAUTH CALL');
 
@@ -17,7 +15,6 @@ export const GET = async ({ locals, url, cookies }) => {
 		import.meta.env.VITE_AUTH_ADMIN_PASS
 	);
 
-	
 	// Extract state and code from URL
 	const state = url.searchParams.get('state');
 	const code = url.searchParams.get('code');
@@ -33,7 +30,7 @@ export const GET = async ({ locals, url, cookies }) => {
 	}
 
 	// Find the Facebook OAuth provider
-	const provider = authMethods.authProviders.find(p => p.name === "facebook");
+	const provider = authMethods.authProviders.find((p) => p.name === 'facebook');
 	if (!provider) {
 		console.log('Facebook Provider Not Found');
 		throw redirect(303, '/login');
@@ -46,20 +43,18 @@ export const GET = async ({ locals, url, cookies }) => {
 	}
 
 	try {
-		
 		const resultList = await adminClient.collection('users').getList(1, 1, { sort: '-created' });
 		const UserNumAdd = (resultList?.items[0]?.UserNumber || 0) + 1;
 		let UserNumber = UserNumAdd;
 
 		// Exchange authorization code for an access token
-		const authData = await locals.pb.collection('users').authWithOAuth2(
-			provider.name, code, expectedVerifier, `${url.origin}/oauth`,
-			{
+		const authData = await locals.pb
+			.collection('users')
+			.authWithOAuth2(provider.name, code, expectedVerifier, `${url.origin}/oauth`, {
 				MaxShop: 1,
 				UserNumber: 0,
-				VerifyShop: "ยังไม่ได้ยืนยันร้านค้า"
-			}
-		);
+				VerifyShop: 'ยังไม่ได้ยืนยันร้านค้า'
+			});
 
 		// Log the entire authData object
 		console.log('Auth Data:', serializeNonPOJOs(authData));
@@ -72,8 +67,6 @@ export const GET = async ({ locals, url, cookies }) => {
 		const userEmail = userProfile?.email;
 		const userAvatarUrl = userProfile?.picture.data.url;
 		const userName = userProfile?.name;
-
-
 
 		// Extract the Facebook ID from the userProfile
 		const facebookId = authData.meta.id;
@@ -100,16 +93,15 @@ export const GET = async ({ locals, url, cookies }) => {
 		} else {
 			// Update user profile in PocketBase
 			await adminClient.collection('users').update(authData.record.id, {
-/* 				avatar: avatarFile, // Pass the avatar as a File */
+				/* 				avatar: avatarFile, // Pass the avatar as a File */
 				name: userName,
 				email: userEmail,
 				UserNumber: UserNumber,
 				MaxShop: 1,
-				VerifyShop: "ยังไม่ได้ยืนยันร้านค้า",
+				VerifyShop: 'ยังไม่ได้ยืนยันร้านค้า',
 				fbProfile: facebookProfileUrl // Add the Facebook profile URL
 			});
 		}
-
 	} catch (err) {
 		console.error('Error Logging in with Facebook OAuth2:', err);
 		throw redirect(303, '/login?error=oauth_failed');
@@ -119,11 +111,12 @@ export const GET = async ({ locals, url, cookies }) => {
 
 // Function to fetch user profile using access token
 async function fetchUserProfile(accessToken) {
-	const response = await fetch('https://graph.facebook.com/v22.0/me?fields=id,name,email,picture,link&access_token=' + accessToken);
+	const response = await fetch(
+		'https://graph.facebook.com/v22.0/me?fields=id,name,email,picture,link&access_token=' +
+			accessToken
+	);
 	if (!response.ok) {
 		throw new Error('Failed to fetch user profile');
 	}
 	return await response.json();
 }
-
-

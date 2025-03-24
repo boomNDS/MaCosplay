@@ -8,7 +8,9 @@ export const handle = async ({ event, resolve }) => {
 
 	try {
 		if (event.locals.pb.authStore.isValid) {
-			const user = await event.locals.pb.collection('users').getOne(event.locals.pb.authStore.model.id);
+			const user = await event.locals.pb
+				.collection('users')
+				.getOne(event.locals.pb.authStore.model.id);
 			event.locals.user = serializeNonPOJOs(user);
 		}
 	} catch (_) {
